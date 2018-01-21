@@ -24,6 +24,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 /**
  * These utilities will be used to communicate with the network.
  */
@@ -67,6 +71,7 @@ public class NetworkUtils {
         return queryUrl;
     }
 
+
     /**
      * This method returns the entire result from the HTTP response.
      *
@@ -91,5 +96,26 @@ public class NetworkUtils {
         } finally {
             urlConnection.disconnect();
         }
+    }
+
+    /**
+     * Using OkHttp cline to download query data
+     */
+    private static String getResponseFromUrl(String url){
+        String downloadData =  new String();
+
+        OkHttpClient client = new OkHttpClient();
+        try {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            Response response = client.newCall(request).execute();
+            downloadData = response.body().string();
+        }
+        catch (IOException ex){
+            ex.printStackTrace();
+        }
+        return downloadData;
+
     }
 }
