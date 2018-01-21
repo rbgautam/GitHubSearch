@@ -99,7 +99,7 @@ public class NetworkUtils {
     }
 
     /**
-     * Using OkHttp cline to download query data
+     * Using OkHttp client to download query data
      */
     private static String getResponseFromUrl(String url){
         String downloadData =  new String();

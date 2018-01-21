@@ -16,6 +16,7 @@
 package com.example.android.datafrominternet;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -25,6 +26,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.datafrominternet.utilities.NetworkUtils;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,10 +55,36 @@ public class MainActivity extends AppCompatActivity {
 
         String searchStr = mSearchBoxEditText.getText().toString();
         if(!searchStr.isEmpty()) {
-            NetworkUtils.buildUrl(searchStr);
-            mUrlDisplayTextView.setText(searchStr);
+            URL queryURL = NetworkUtils.buildUrl(searchStr);
+            mUrlDisplayTextView.setText(queryURL.toString());
+
+            new GithubQueryTask().execute(queryURL);
+
         }
     }
+
+    private class GithubQueryTask extends AsyncTask<URL,Void,String>{
+
+        @Override
+        protected String doInBackground(URL... params) {
+            String downloadData =  new String();
+            URL queryURL  = params[0];
+            try {
+                downloadData = NetworkUtils.getResponseFromHttpUrl(queryURL);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return downloadData;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s != null && !s.isEmpty())
+                mSearchResultsTextView.setText(s);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
