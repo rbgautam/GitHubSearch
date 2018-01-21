@@ -19,6 +19,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -91,14 +93,16 @@ public class MainActivity extends AppCompatActivity {
             for(int i=0; i< items.length();i++){
 
                 JSONObject itemObj = (JSONObject) items.get(i);
-                strBuilder.append(itemObj.getString("url") +"-"+itemObj.getString("description")+"\n\n");
+                String formattedLink = "</br>\n"+itemObj.getString("description")+"\n</br>"+itemObj.getString("html_url") +"\n\n</br>";
+                strBuilder.append(formattedLink);
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        mSearchResultsTextView.setText(strBuilder.toString());
+        mSearchResultsTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        mSearchResultsTextView.setText(Html.fromHtml(strBuilder.toString()));
+        //mSearchResultsTextView.setText(strBuilder.toString());
         mErrorMessageTextView.setVisibility(View.INVISIBLE);
     }
 
