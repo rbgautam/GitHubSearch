@@ -3,5 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".DetailActivity">
-<item android:checkable="true" android:id="@+id/share" android:title="Share" android:visible="true" app:showAsAction="ifRoom"></item>
+    <item
+        android:id="@+id/share"
+        android:checkable="true"
+        android:title="Share"
+        android:visible="true"
+        app:showAsAction="ifRoom"></item>
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        app:showAsAction="ifRoom" />
 </menu>

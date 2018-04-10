@@ -26,8 +26,13 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.share){
+        int id =item.getItemId();
+        if( id == R.id.share){
             shareWeatherdata();
+        }
+        else if(id == R.id.action_settings){
+            Intent settingsIntent = new Intent(DetailActivity.this,SettingsActivity.class);
+            startActivity(settingsIntent);
         }
         return true;
 

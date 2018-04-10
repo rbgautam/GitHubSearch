@@ -117,18 +117,16 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
         URL weatherRequestUrl = NetworkUtils.buildUrl(location);
 
 
-
         LoaderManager loadermanager = getSupportLoaderManager();
         Loader<String[]> loader = loadermanager.getLoader(WEATHER_DATA_LOADER);
 
         Bundle weatherQuery = new Bundle();
-        weatherQuery.putString(WEATHER_QUERY_URL_EXTRA,weatherRequestUrl.toString());
+        weatherQuery.putString(WEATHER_QUERY_URL_EXTRA, weatherRequestUrl.toString());
 
-        if(loader == null){
-            loadermanager.initLoader(WEATHER_DATA_LOADER,weatherQuery,this);
-        }else
-        {
-            loadermanager.restartLoader(WEATHER_DATA_LOADER,weatherQuery,this);
+        if (loader == null) {
+            loadermanager.initLoader(WEATHER_DATA_LOADER, weatherQuery, this);
+        } else {
+            loadermanager.restartLoader(WEATHER_DATA_LOADER, weatherQuery, this);
 
         }
 
@@ -149,8 +147,8 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
         // TODO (3) Remove the Toast and launch the DetailActivity using an explicit Intent
         //Toast.makeText(context, weatherForDay, Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(MainActivity.this,DetailActivity.class);
-        intent.putExtra(Intent.EXTRA_TEXT,weatherForDay);
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        intent.putExtra(Intent.EXTRA_TEXT, weatherForDay);
         startActivity(intent);
     }
 
@@ -184,11 +182,11 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
 
     @Override
     public Loader<String[]> onCreateLoader(int id, final Bundle args) {
-        return new AsyncTaskLoader<String[]>(this){
+        return new AsyncTaskLoader<String[]>(this) {
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                if(args == null)
+                if (args == null)
                     return;
                 mLoadingIndicator.setVisibility(View.VISIBLE);
                 forceLoad();
@@ -199,12 +197,12 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
 
                 String weatherRequestUrl = args.getString(WEATHER_QUERY_URL_EXTRA);
 
-                if(weatherRequestUrl ==null || TextUtils.isEmpty(weatherRequestUrl))
+                if (weatherRequestUrl == null || TextUtils.isEmpty(weatherRequestUrl))
                     return null;
 
 
                 try {
-                    URL weatherURL =  new URL(weatherRequestUrl);
+                    URL weatherURL = new URL(weatherRequestUrl);
                     String jsonWeatherResponse = NetworkUtils
                             .getResponseFromHttpUrl(weatherURL);
 
@@ -218,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
                     return null;
                 }
             }
-        } ;
+        };
 
     }
 
@@ -239,8 +237,6 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
     }
 
 
-    
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
@@ -259,6 +255,9 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
             mForecastAdapter.setWeatherData(null);
             loadWeatherData();
             return true;
+        }else if(id == R.id.action_settings){
+            Intent settingsIntent = new Intent(MainActivity.this,SettingsActivity.class);
+            startActivity(settingsIntent);
         }
 
         return super.onOptionsItemSelected(item);
