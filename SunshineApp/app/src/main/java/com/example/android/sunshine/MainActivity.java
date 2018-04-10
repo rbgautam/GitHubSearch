@@ -17,11 +17,14 @@ package com.example.android.sunshine;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,7 +40,7 @@ import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements ForecastAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements ForecastAdapterOnClickHandler, LoaderManager.LoaderCallbacks<String[]> {
 
     private RecyclerView mRecyclerView;
     private ForecastAdapter mForecastAdapter;
@@ -45,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
     private TextView mErrorMessageDisplay;
 
     private ProgressBar mLoadingIndicator;
+
+    private static final String WEATHER_QUERY_URL_EXTRA = "query";
+
+    private static final int WEATHER_DATA_LOADER = 29;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +113,26 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
         showWeatherDataView();
 
         String location = SunshinePreferences.getPreferredWeatherLocation(this);
-        new FetchWeatherTask().execute(location);
+
+        URL weatherRequestUrl = NetworkUtils.buildUrl(location);
+
+
+
+        LoaderManager loadermanager = getSupportLoaderManager();
+        Loader<String[]> loader = loadermanager.getLoader(WEATHER_DATA_LOADER);
+
+        Bundle weatherQuery = new Bundle();
+        weatherQuery.putString(WEATHER_QUERY_URL_EXTRA,weatherRequestUrl.toString());
+
+        if(loader == null){
+            loadermanager.initLoader(WEATHER_DATA_LOADER,weatherQuery,this);
+        }else
+        {
+            loadermanager.restartLoader(WEATHER_DATA_LOADER,weatherQuery,this);
+
+        }
+
+        //new FetchWeatherTask().execute(location);
     }
 
     /**
@@ -156,51 +182,64 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String[] doInBackground(String... params) {
-
-            /* If there's no zip code, there's nothing to look up. */
-            if (params.length == 0) {
-                return null;
+    @Override
+    public Loader<String[]> onCreateLoader(int id, final Bundle args) {
+        return new AsyncTaskLoader<String[]>(this){
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                if(args == null)
+                    return;
+                mLoadingIndicator.setVisibility(View.VISIBLE);
+                forceLoad();
             }
 
-            String location = params[0];
-            URL weatherRequestUrl = NetworkUtils.buildUrl(location);
+            @Override
+            public String[] loadInBackground() {
 
-            try {
-                String jsonWeatherResponse = NetworkUtils
-                        .getResponseFromHttpUrl(weatherRequestUrl);
+                String weatherRequestUrl = args.getString(WEATHER_QUERY_URL_EXTRA);
 
-                String[] simpleJsonWeatherData = OpenWeatherJsonUtils
-                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+                if(weatherRequestUrl ==null || TextUtils.isEmpty(weatherRequestUrl))
+                    return null;
 
-                return simpleJsonWeatherData;
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                try {
+                    URL weatherURL =  new URL(weatherRequestUrl);
+                    String jsonWeatherResponse = NetworkUtils
+                            .getResponseFromHttpUrl(weatherURL);
+
+                    String[] simpleJsonWeatherData = OpenWeatherJsonUtils
+                            .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+
+                    return simpleJsonWeatherData;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
-        }
+        } ;
 
-        @Override
-        protected void onPostExecute(String[] weatherData) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (weatherData != null) {
-                showWeatherDataView();
-                mForecastAdapter.setWeatherData(weatherData);
-            } else {
-                showErrorMessage();
-            }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String[]> loader, String[] data) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        if (data != null) {
+            showWeatherDataView();
+            mForecastAdapter.setWeatherData(data);
+        } else {
+            showErrorMessage();
         }
     }
+
+    @Override
+    public void onLoaderReset(Loader<String[]> loader) {
+
+    }
+
+
+    
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
