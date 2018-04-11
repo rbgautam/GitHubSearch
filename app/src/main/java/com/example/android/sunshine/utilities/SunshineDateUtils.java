@@ -194,4 +194,8 @@ public final class SunshineDateUtils {
             return dayFormat.format(dateInMillis);
         }
     }
+
+    public static long getNormalizedUtcDateForToday() {
+        return 0;
+    }
 }
