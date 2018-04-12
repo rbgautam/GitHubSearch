@@ -15,7 +15,6 @@
  */
 package com.example.android.datafrominternet;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +26,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.datafrominternet.utilities.NetworkUtils;
 
@@ -52,6 +50,16 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO (24) Create a ProgressBar variable to store a reference to the ProgressBar
     private ProgressBar mDownloadRequestProgressBar;
+
+
+    //TODO:S
+    //TODO: Add MVP pattern
+    //TODO: Add retofit to parse data
+    //TODO: ADD cards to display data
+    //TODO: Add details if click on card
+    //TODO: Navigate to Website
+    //TODO: Share link
+    //TODO: 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
