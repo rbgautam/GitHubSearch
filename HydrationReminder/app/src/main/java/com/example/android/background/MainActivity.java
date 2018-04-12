@@ -34,7 +34,12 @@ import com.example.android.background.sync.ReminderUtilities;
 import com.example.android.background.sync.WaterReminderIntentService;
 import com.example.android.background.utilities.PreferenceUtilities;
 
-
+//TODO:S
+//TODO: Add MVP pattern
+//TODO: ADD Settings : Reminder duration, mesurement(liters/Oz)
+//TODO: ADD dynamic image which updates acccoring to needs (Start with 8 glasses)
+//TODO: Add suggest recommended water intake according to weight, height, gender, age
+//TODO: Connect to H/w and BT
 
 public class MainActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
