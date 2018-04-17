@@ -27,6 +27,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.datafrominternet.data.GitHubRestAdapter;
+import com.example.android.datafrominternet.datamodel.GitHubSeachResponse;
+import com.example.android.datafrominternet.datamodel.Item;
 import com.example.android.datafrominternet.utilities.NetworkUtils;
 
 import org.json.JSONArray;
@@ -35,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar mDownloadRequestProgressBar;
 
 
+
     //TODO:S
     //TODO: Add MVP pattern
     //TODO: Add retofit to parse data
@@ -59,12 +64,13 @@ public class MainActivity extends AppCompatActivity {
     //TODO: Add details if click on card
     //TODO: Navigate to Website
     //TODO: Share link
-    //TODO: 
+    //TODO:
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
 
@@ -75,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO (25) Get a reference to the ProgressBar using findViewById
         mDownloadRequestProgressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+
+
     }
 
     // TODO (2) Create a method called makeGithubSearchQuery
@@ -83,10 +91,10 @@ public class MainActivity extends AppCompatActivity {
 
         String searchStr = mSearchBoxEditText.getText().toString();
         if(!searchStr.isEmpty()) {
-            URL queryURL = NetworkUtils.buildUrl(searchStr);
-            mUrlDisplayTextView.setText(queryURL.toString());
 
-            new GithubQueryTask().execute(queryURL);
+            GitHubSearchQuery repoAsychQuery = new GitHubSearchQuery();
+
+            repoAsychQuery.execute(searchStr);
 
         }
     }
@@ -114,12 +122,87 @@ public class MainActivity extends AppCompatActivity {
         mErrorMessageTextView.setVisibility(View.INVISIBLE);
     }
 
+    private void showJsonToPOJODataView(List<Item> githubSearchResults){
+        StringBuilder strBuilder = new StringBuilder();
+        mUrlDisplayTextView.setText(queryAdapter.urlString);
+
+        try {
+
+            for(Item item: githubSearchResults){
+                String formattedLink = "\n"+item.getDescription()+"\n"+item.getHtmlUrl() +"\n";
+                strBuilder.append(formattedLink);
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //mSearchResultsTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        //mSearchResultsTextView.setText(Html.fromHtml(strBuilder.toString()));
+        mSearchResultsTextView.setVisibility(View.VISIBLE);
+        mSearchResultsTextView.setText(strBuilder.toString());
+        mErrorMessageTextView.setVisibility(View.INVISIBLE);
+    }
     // TODO (15) Create a method called showErrorMessage to show the error and hide the data
     private void showErrorMessage(){
         mErrorMessageTextView.setText(R.string.error_message);
         mSearchResultsTextView.setVisibility(View.INVISIBLE);
 
     }
+
+    GitHubRestAdapter queryAdapter = new GitHubRestAdapter();
+
+    private class GitHubSearchQuery extends AsyncTask<String,Void,GitHubSeachResponse> implements GitHubRestAdapter.AsyncWebResponse {
+        private GitHubSeachResponse mGitHubSeachResponse;
+        public GitHubRestAdapter.AsyncWebResponse delegate = null;
+
+        @Override
+        protected void onPreExecute() {
+            mDownloadRequestProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected GitHubSeachResponse doInBackground(String... strings) {
+
+            //GitHubRestAdapter queryAdapter = new GitHubRestAdapter();
+            queryAdapter.delegate = this;
+
+            queryAdapter.getGitHubData(strings[0]);
+            return mGitHubSeachResponse;
+
+        }
+
+        @Override
+        protected void onPostExecute(GitHubSeachResponse githubSearchResults) {
+            // TODO (27) As soon as the loading is complete, hide the loading indicator
+            mDownloadRequestProgressBar.setVisibility(View.INVISIBLE);
+            if (githubSearchResults != null && !(githubSearchResults.getItems().size() == 0)) {
+                // TODO (17) Call showJsonDataView if we have valid, non-null results
+                showJsonToPOJODataView(githubSearchResults.getItems());
+
+            }else{
+                showErrorMessage();
+            }
+            // TODO (16) Call showErrorMessage if the result is null in onPostExecute
+        }
+
+
+        @Override
+        public void processFinish(GitHubSeachResponse githubSearchResults) {
+            //GitHubSeachResponse mGitHubSeachResponse = githubSearchResults;
+
+            // TODO (27) As soon as the loading is complete, hide the loading indicator
+            mDownloadRequestProgressBar.setVisibility(View.INVISIBLE);
+            if (githubSearchResults != null && !(githubSearchResults.getItems().size() == 0)) {
+                // TODO (17) Call showJsonDataView if we have valid, non-null results
+                showJsonToPOJODataView(githubSearchResults.getItems());
+
+            }else{
+                showErrorMessage();
+            }
+        }
+    }
+
     private class GithubQueryTask extends AsyncTask<URL,Void,String>{
 
         @Override

@@ -17,33 +17,37 @@ package com.example.android.datafrominternet.utilities;
 
 import android.net.Uri;
 
+import com.example.android.datafrominternet.error.ErrorInterceptor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
+import dagger.Module;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
+
+import static com.example.android.datafrominternet.utilities.URLManager.GITHUB_API_URL;
+import static com.example.android.datafrominternet.utilities.URLManager.GITHUB_BASE_URL;
+import static com.example.android.datafrominternet.utilities.URLManager.PARAM_QUERY;
+import static com.example.android.datafrominternet.utilities.URLManager.PARAM_SORT;
+import static com.example.android.datafrominternet.utilities.URLManager.sortBy;
 
 /**
  * These utilities will be used to communicate with the network.
  */
+@Module
 public class NetworkUtils {
 
-    final static String GITHUB_BASE_URL =
-            "https://api.github.com/search/repositories";
 
-    final static String PARAM_QUERY = "q";
-
-    /*
-     * The sort field. One of stars, forks, or updated.
-     * Default: results are sorted by best match if no field is specified.
-     */
-    final static String PARAM_SORT = "sort";
-    final static String sortBy = "stars";
 
     /**
      * Builds the URL used to query Github.
@@ -53,7 +57,7 @@ public class NetworkUtils {
      */
     public static URL buildUrl(String githubSearchQuery) {
         // TODO (1) Fill in this method to build the proper Github query URL
-        Uri builtUri = Uri.parse(GITHUB_BASE_URL).buildUpon()
+        Uri builtUri = Uri.parse(GITHUB_BASE_URL+GITHUB_API_URL).buildUpon()
                 .appendQueryParameter(PARAM_QUERY,githubSearchQuery)
                 .appendQueryParameter(PARAM_SORT,sortBy)
                 .build();
@@ -118,4 +122,26 @@ public class NetworkUtils {
         return downloadData;
 
     }
+
+
+    public static Retrofit provideRetrofit(){
+        OkHttpClient client =
+                new OkHttpClient.Builder()
+                        .addInterceptor(
+                                new ErrorInterceptor()
+                        )
+                        .connectTimeout(10, TimeUnit.SECONDS)
+                        .writeTimeout(10, TimeUnit.SECONDS)
+                        .readTimeout(20, TimeUnit.SECONDS)
+                        .retryOnConnectionFailure(true)
+                        .build();
+
+        return new Retrofit.Builder()
+                .client(client)
+                .baseUrl(URLManager.GITHUB_BASE_URL)
+                .addConverterFactory(MoshiConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+    }
+
 }
