@@ -97,11 +97,59 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     }
 
+    /**
+     * Makes the progressbar VISIBLE
+     */
+    @Override
+    public void showProgress() {
+        mDownloadRequestProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Makes the progressbar INVISIBLE
+     */
+    @Override
+    public void hideProgress() {
+        mDownloadRequestProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Sets the text in the ResultsTextView
+     */
+    @Override
+    public void setResultsTextView(String text) {
+        mSearchResultsTextView.setText(text);
+    }
+
+    /**
+     * Sets the error message
+     */
+    @Override
+    public void setErrorMessageTextView(int error) {
+        mErrorMessageTextView.setText(error);
+
+    }
+
+    /**
+     * @return text from edittext
+     */
+    @Override
+    public String getSearchStringEditText() {
+        return mSearchBoxEditText.getText().toString();
+    }
+
+    @Override
+    public void setUrlDisplayTextView(String text) {
+        mUrlDisplayTextView.setText(text);
+
+    }
+
     // TODO (2) Create a method called makeGithubSearchQuery
     // TODO (3) Within this method, build the URL with the text from the EditText and set the built URL to the TextView
     private void makeGithubSearchQuery() {
 
-        String searchStr = mSearchBoxEditText.getText().toString();
+        String searchStr = getSearchStringEditText();
+
         if (!searchStr.isEmpty()) {
 
             GitHubSearchQuery repoAsychQuery = new GitHubSearchQuery(queryAdapter);
@@ -117,7 +165,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         StringBuilder strBuilder = new StringBuilder();
 
-        mUrlDisplayTextView.setText(queryAdapter.urlString);
+
+
+        setUrlDisplayTextView(queryAdapter.urlString);
 
         try
         {
@@ -132,13 +182,13 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
 
         showResultsTextView();
-        mSearchResultsTextView.setText(strBuilder.toString());
+        setResultsTextView(strBuilder.toString());
         hideErrorMessageTextView();
     }
 
     // TODO (15) Create a method called showErrorMessage to show the error and hide the data
     private void showErrorMessage() {
-        mErrorMessageTextView.setText(R.string.error_message);
+        setErrorMessageTextView(R.string.error_message);
         hideResultsTextView();
 
     }
@@ -156,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         @Override
         protected void onPreExecute() {
-            mDownloadRequestProgressBar.setVisibility(View.VISIBLE);
+            showProgress();
         }
 
         @Override
@@ -180,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         public void processFinish(GitHubSeachResponse githubSearchResults) {
 
             // TODO (27) As soon as the loading is complete, hide the loading indicator
-            mDownloadRequestProgressBar.setVisibility(View.INVISIBLE);
+            hideProgress();
             if (githubSearchResults != null && !(githubSearchResults.getItems().size() == 0)) {
                 // TODO (17) Call showJsonDataView if we have valid, non-null results
                 showJsonDataView(githubSearchResults.getItems());
