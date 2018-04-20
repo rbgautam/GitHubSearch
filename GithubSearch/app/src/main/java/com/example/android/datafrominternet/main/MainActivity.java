@@ -47,16 +47,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
     // TODO (24) Create a ProgressBar variable to store a reference to the ProgressBar
     private ProgressBar mDownloadRequestProgressBar;
 
-    GitHubRestAdapter queryAdapter = new GitHubRestAdapter();
+    //GitHubRestAdapter queryAdapter = new GitHubRestAdapter();
+
+    private MainPresenter mPresenter;
 
     //TODO:S
     //TODO: Add MVP pattern
-    //TODO: Add retofit to parse data
+    //TODO: completed : Add retofit to parse data
     //TODO: ADD cards to display data
     //TODO: Add details if click on card
     //TODO: Navigate to Website
     //TODO: Share link
-    //TODO:
+    //TODO: Add loader manager AsyncTaskLoader
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         // TODO (25) Get a reference to the ProgressBar using findViewById
         mDownloadRequestProgressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+
+        mPresenter = new MainPresenter(this, new GitHubRestAdapter());
 
     }
 
@@ -125,8 +129,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
      * Sets the error message
      */
     @Override
-    public void setErrorMessageTextView(int error) {
-        mErrorMessageTextView.setText(error);
+    public void setErrorMessageTextView(int text) {
+        mErrorMessageTextView.setText(text);
+        hideResultsTextView();
 
     }
 
@@ -150,96 +155,25 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         String searchStr = getSearchStringEditText();
 
-        if (!searchStr.isEmpty()) {
-
-            GitHubSearchQuery repoAsychQuery = new GitHubSearchQuery(queryAdapter);
-
-            repoAsychQuery.execute(searchStr);
-
-        }
+        mPresenter.makeGithubSearchQuery(searchStr);
     }
 
 
     // TODO (14) Create a method called showJsonDataView to show the data and hide the error
     private void showJsonDataView(List<Item> githubSearchResults) {
 
-        StringBuilder strBuilder = new StringBuilder();
+        mPresenter.showJsonDataView(githubSearchResults);
 
-
-
-        setUrlDisplayTextView(queryAdapter.urlString);
-
-        try
-        {
-
-            for (Item item : githubSearchResults) {
-                String formattedLink = "\n" + item.getDescription() + "\n" + item.getHtmlUrl() + "\n";
-                strBuilder.append(formattedLink);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        showResultsTextView();
-        setResultsTextView(strBuilder.toString());
-        hideErrorMessageTextView();
     }
 
     // TODO (15) Create a method called showErrorMessage to show the error and hide the data
-    private void showErrorMessage() {
+    public void showErrorMessage() {
         setErrorMessageTextView(R.string.error_message);
         hideResultsTextView();
 
     }
 
 
-    private class GitHubSearchQuery extends AsyncTask<String, Void, GitHubSeachResponse> implements GitHubRestAdapter.AsyncWebResponse {
-        private GitHubSeachResponse mGitHubSeachResponse;
-        public GitHubRestAdapter.AsyncWebResponse delegate = null;
-
-        GitHubRestAdapter mQueryAdapter;
-
-        public GitHubSearchQuery(GitHubRestAdapter queryAdapter) {
-            this.mQueryAdapter = queryAdapter;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            showProgress();
-        }
-
-        @Override
-        protected GitHubSeachResponse doInBackground(String... strings) {
-
-            //GitHubRestAdapter queryAdapter = new GitHubRestAdapter();
-            mQueryAdapter.delegate = this;
-
-            mQueryAdapter.getGitHubData(strings[0]);
-            return mGitHubSeachResponse;
-
-        }
-
-        @Override
-        protected void onPostExecute(GitHubSeachResponse githubSearchResults) {
-
-        }
-
-
-        @Override
-        public void processFinish(GitHubSeachResponse githubSearchResults) {
-
-            // TODO (27) As soon as the loading is complete, hide the loading indicator
-            hideProgress();
-            if (githubSearchResults != null && !(githubSearchResults.getItems().size() == 0)) {
-                // TODO (17) Call showJsonDataView if we have valid, non-null results
-                showJsonDataView(githubSearchResults.getItems());
-
-            } else {
-                showErrorMessage();
-            }
-        }
-    }
 
 
     @Override
@@ -250,13 +184,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int itemThatWasClickedId = item.getItemId();
-        if (itemThatWasClickedId == R.id.action_search) {
-            // TODO (4) Remove the Toast message when the search menu item is clicked
-            // TODO (5) Call makeGithubSearchQuery when the search menu item is clicked
-            makeGithubSearchQuery();
-            return true;
-        }
+        mPresenter.onMenuItemClicked(item);
         return super.onOptionsItemSelected(item);
     }
 }

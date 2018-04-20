@@ -16,6 +16,8 @@ public interface MainView {
 
     public void hideErrorMessageTextView();
 
+    public void setErrorMessageTextView(int text);
+
     /**
      * Makes the progressbar VISIBLE
      */
@@ -34,10 +36,9 @@ public interface MainView {
     /**
      * Sets the error message
      */
-    public void setErrorMessageTextView(int error);
+    public void showErrorMessage();
 
     /**
-     *
      * @return text from edittext
      */
     public String getSearchStringEditText();
