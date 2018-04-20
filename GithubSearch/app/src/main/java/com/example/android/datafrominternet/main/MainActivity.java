@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private MainPresenter mPresenter;
 
     //TODO:S
-    //TODO: Add MVP pattern
+    //TODO: completed Add MVP pattern
     //TODO: completed : Add retofit to parse data
     //TODO: ADD cards to display data
     //TODO: Add details if click on card

@@ -27,7 +27,6 @@ import java.net.URL;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-import dagger.Module;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -44,7 +43,6 @@ import static com.example.android.datafrominternet.utilities.URLManager.sortBy;
 /**
  * These utilities will be used to communicate with the network.
  */
-@Module
 public class NetworkUtils {
 
 
