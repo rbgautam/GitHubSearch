@@ -15,9 +15,10 @@
  */
 package com.example.android.datafrominternet.main;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,11 +27,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.datafrominternet.R;
+import com.example.android.datafrominternet.data.GitHubListItemAdapter;
 import com.example.android.datafrominternet.data.GitHubRestAdapter;
 import com.example.android.datafrominternet.datamodel.GitHubSeachResponse;
-import com.example.android.datafrominternet.datamodel.Item;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
@@ -51,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private MainPresenter mPresenter;
 
+    private GitHubListItemAdapter mGitHubListItemAdapter;
+    private RecyclerView mRecyclerView;
+    private int mPosition = RecyclerView.NO_POSITION;
     //TODO:S
     //TODO: completed Add MVP pattern
     //TODO: completed : Add retofit to parse data
@@ -66,17 +68,30 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setContentView(R.layout.activity_main);
 
 
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_github);
+
+
+
         mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
 
         mUrlDisplayTextView = (TextView) findViewById(R.id.tv_url_display);
-        mSearchResultsTextView = (TextView) findViewById(R.id.tv_github_search_results_json);
+        //mSearchResultsTextView = (TextView) findViewById(R.id.tv_github_search_results_json);
         // TODO (13) Get a reference to the error TextView using findViewById
         mErrorMessageTextView = (TextView) findViewById(R.id.tv_error_message_display);
 
         // TODO (25) Get a reference to the ProgressBar using findViewById
         mDownloadRequestProgressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        mPresenter = new MainPresenter(this, new GitHubRestAdapter());
+        LinearLayoutManager linearLayoutManager =  new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mGitHubListItemAdapter = new GitHubListItemAdapter(this);
+
+        mRecyclerView.setAdapter(mGitHubListItemAdapter);
+
+
+        mPresenter = new MainPresenter(this, new GitHubRestAdapter(),mGitHubListItemAdapter);
 
     }
 
@@ -160,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
 
     // TODO (14) Create a method called showJsonDataView to show the data and hide the error
-    private void showJsonDataView(List<Item> githubSearchResults) {
+    private void showJsonDataView(GitHubSeachResponse githubSearchResults) {
 
         mPresenter.showJsonDataView(githubSearchResults);
 

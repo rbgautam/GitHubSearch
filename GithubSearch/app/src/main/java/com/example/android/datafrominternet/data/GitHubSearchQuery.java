@@ -49,7 +49,7 @@ public class GitHubSearchQuery extends AsyncTask<String, Void, GitHubSeachRespon
         mMainPresenter.hideProgress();
         if (githubSearchResults != null && !(githubSearchResults.getItems().size() == 0)) {
             // TODO (17) Call showJsonDataView if we have valid, non-null results
-            mMainPresenter.showJsonDataView(githubSearchResults.getItems());
+            mMainPresenter.showJsonDataView(githubSearchResults);
 
         } else {
             mMainPresenter.showErrorMessage();

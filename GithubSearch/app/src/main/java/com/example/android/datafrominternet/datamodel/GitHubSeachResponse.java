@@ -17,6 +17,10 @@ public class GitHubSeachResponse {
         return totalCount;
     }
 
+    public Integer getSearchCount() {
+        return getItems().size();
+    }
+
     public void setTotalCount(Integer totalCount) {
         this.totalCount = totalCount;
     }

@@ -46,14 +46,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp">
 
-        <TextView
-            android:id="@+id/tv_github_search_results_json"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:linksClickable="true"
-            android:autoLink="web"
-            android:text="Make a search!"
-            android:textSize="18sp" />
+        <!--<TextView-->
+            <!--android:id="@+id/tv_github_search_results_json"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:linksClickable="true"-->
+            <!--android:autoLink="web"-->
+            <!--android:text="Make a search!"-->
+            <!--android:textSize="18sp" />-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_github"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp"/>
     </ScrollView>
     <TextView
         android:id="@+id/tv_error_message_display"

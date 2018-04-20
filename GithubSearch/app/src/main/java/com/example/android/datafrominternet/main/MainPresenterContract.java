@@ -2,9 +2,7 @@ package com.example.android.datafrominternet.main;
 
 import android.view.MenuItem;
 
-import com.example.android.datafrominternet.datamodel.Item;
-
-import java.util.List;
+import com.example.android.datafrominternet.datamodel.GitHubSeachResponse;
 
 /**
  * Created by Rahul B Gautam on 4/18/18.
@@ -19,7 +17,7 @@ public interface MainPresenterContract {
      * Returns the data to be displayed on the results textView
      * @param githubSearchResults
      */
-    public void showJsonDataView(List<Item> githubSearchResults);
+    public void showJsonDataView(GitHubSeachResponse githubSearchResults);
 
     /**
      * Makes the progressbar VISIBLE

@@ -3,11 +3,10 @@ package com.example.android.datafrominternet.main;
 import android.view.MenuItem;
 
 import com.example.android.datafrominternet.R;
+import com.example.android.datafrominternet.data.GitHubListItemAdapter;
 import com.example.android.datafrominternet.data.GitHubRestAdapter;
 import com.example.android.datafrominternet.data.GitHubSearchQuery;
-import com.example.android.datafrominternet.datamodel.Item;
-
-import java.util.List;
+import com.example.android.datafrominternet.datamodel.GitHubSeachResponse;
 
 /**
  * Created by Rahul B Gautam on 4/18/18.
@@ -19,10 +18,13 @@ public class MainPresenter implements MainPresenterContract {
     //TODO: completed : add model instance
 
     private GitHubRestAdapter mGitHubRestAdapter;
+    private GitHubListItemAdapter mGitHubListItemAdapter;
 
-    public MainPresenter(MainView mMainView, GitHubRestAdapter mGitHubRestAdapter) {
+
+    public MainPresenter(MainView mMainView, GitHubRestAdapter mGitHubRestAdapter, GitHubListItemAdapter gitHubListItemAdapter) {
         this.mMainView = mMainView;
         this.mGitHubRestAdapter = mGitHubRestAdapter;
+        this.mGitHubListItemAdapter = gitHubListItemAdapter;
     }
 
     /**
@@ -47,7 +49,7 @@ public class MainPresenter implements MainPresenterContract {
      * @param githubSearchResults
      */
     @Override
-    public void showJsonDataView(List<Item> githubSearchResults) {
+    public void showJsonDataView(GitHubSeachResponse githubSearchResults) {
         StringBuilder strBuilder = new StringBuilder();
 
         mMainView.setUrlDisplayTextView(mGitHubRestAdapter.urlString);
@@ -55,17 +57,19 @@ public class MainPresenter implements MainPresenterContract {
         try
         {
 
-            for (Item item : githubSearchResults) {
-                String formattedLink = "\n" + item.getDescription() + "\n" + item.getHtmlUrl() + "\n";
-                strBuilder.append(formattedLink);
-            }
+            mGitHubListItemAdapter.setGitHubData(githubSearchResults);
+//            for (Item item : githubSearchResults) {
+//                String formattedLink = "\n" + item.getDescription() + "\n" + item.getHtmlUrl() + "\n";
+//                strBuilder.append(formattedLink);
+//            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        mMainView.showResultsTextView();
-        mMainView.setResultsTextView(strBuilder.toString());
+//        mMainView.showResultsTextView();
+//        mMainView.setResultsTextView(strBuilder.toString());
         mMainView.hideErrorMessageTextView();
     }
 
