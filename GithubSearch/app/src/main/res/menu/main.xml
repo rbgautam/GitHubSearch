@@ -19,6 +19,8 @@
     <item
         android:id="@+id/action_search"
         android:orderInCategory="1"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always|withText"
+        android:icon="@drawable/ic_search_icon"
+        android:tooltipText="@string/search"
         android:title="@string/search"/>
 </menu>

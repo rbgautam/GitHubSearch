@@ -14,7 +14,7 @@
   limitations under the License.
   -->
 <resources>
-    <string name="app_name">Github Query</string>
+    <string name="app_name">GitHub Elite</string>
     <string name="search">Search</string>
     <string name="error_message">An error occured, please retry!!</string>
 </resources>
