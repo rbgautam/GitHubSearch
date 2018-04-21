@@ -150,8 +150,12 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             //String weatherForDay = mWeatherData[adapterPosition];
-//            Item item = mGitHubData.getItems().get(adapterPosition);
-//            Log.i("onclick",item.getHtmlUrl());
+            Item item = mGitHubData.getItems().get(adapterPosition);
+            Log.i("onclick",item.getHtmlUrl());
+
+            openWebPage(item.getHtmlUrl(),view);
+
+
         }
 
 
@@ -163,13 +167,14 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
      * @param url Url of webpage to open. Should start with http:// or https:// as that is the
      *            scheme of the URI expected with this Intent according to the Common Intents page
      */
-    private void openWebPage(String url) {
+    private void openWebPage(String url,View view) {
         // COMPLETED (2) Use Uri.parse to parse the String into a Uri
         /*
          * We wanted to demonstrate the Uri.parse method because its usage occurs frequently. You
          * could have just as easily passed in a Uri as the parameter of this method.
          */
         Uri webpage = Uri.parse(url);
+
 
         // COMPLETED (3) Create an Intent with Intent.ACTION_VIEW and the webpage Uri as parameters
         /*
@@ -185,8 +190,9 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
          * with the data we've specified. Without this check, in those cases your app would crash.
          */
 
-//        if (intent.resolveActivity(mContext.getPackageManager()) != null) {
-//             startActivity(intent);
-//        }
+
+        if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+             mContext.startActivity(intent);
+        }
     }
 }
