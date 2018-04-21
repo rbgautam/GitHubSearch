@@ -72,7 +72,7 @@ public class MainPresenter implements MainPresenterContract {
             e.printStackTrace();
         }
 
-//        mMainView.showResultsTextView();
+        mMainView.showResultsTextView();
 //        mMainView.setResultsTextView(strBuilder.toString());
         mMainView.hideErrorMessageTextView();
     }

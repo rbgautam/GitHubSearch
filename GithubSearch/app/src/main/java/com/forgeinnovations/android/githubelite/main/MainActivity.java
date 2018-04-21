@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
@@ -101,12 +102,15 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public void showResultsTextView() {
-        mSearchResultsTextView.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideResultsTextView() {
-        mSearchResultsTextView.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        Toast.makeText(this,R.string.error_message,Toast.LENGTH_LONG);
+        showErrorMessageTextView();
+
     }
 
     @Override
@@ -182,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private void showJsonDataView(GitHubSeachResponse githubSearchResults) {
 
         mPresenter.showJsonDataView(githubSearchResults);
+        mRecyclerView.setVisibility(View.VISIBLE);
 
     }
 

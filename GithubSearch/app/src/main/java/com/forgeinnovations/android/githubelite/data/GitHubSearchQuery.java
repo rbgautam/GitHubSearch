@@ -47,7 +47,7 @@ public class GitHubSearchQuery extends AsyncTask<String, Void, GitHubSeachRespon
 
         // TODO (27) As soon as the loading is complete, hide the loading indicator
         mMainPresenter.hideProgress();
-        if (githubSearchResults != null && !(githubSearchResults.getItems().size() == 0)) {
+        if (githubSearchResults.getItems() != null ) {
             // TODO (17) Call showJsonDataView if we have valid, non-null results
             mMainPresenter.showJsonDataView(githubSearchResults);
 

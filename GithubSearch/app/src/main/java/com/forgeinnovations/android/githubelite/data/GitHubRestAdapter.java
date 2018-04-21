@@ -90,6 +90,7 @@ public class GitHubRestAdapter {
             public void onFailure(Call<GitHubSeachResponse> call, Throwable t) {
                 // Log error here since request failed
                 Log.e("IOCALL","Call failed");
+                delegate.processFinish(searchData);
             }
         };
 

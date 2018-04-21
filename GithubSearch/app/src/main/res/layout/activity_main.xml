@@ -52,6 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
+                android:visibility="visible"
                 android:paddingBottom="8dp" />
         </ScrollView>
 
@@ -61,7 +62,8 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:text="@string/error_message"
-            android:textSize="22sp"
+            android:textSize="18sp"
+            android:textColor="@android:color/holo_red_dark"
             android:visibility="invisible" />
 
         <!--TODO (18) Add a ProgressBar to indicate loading to your users-->
