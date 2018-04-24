@@ -7,97 +7,29 @@ package com.forgeinnovations.android.climespot.datamodel;
 
 import com.squareup.moshi.Json;
 
+import java.util.List;
+
 public class WeatherApiResponse {
 
-    @Json(name = "latitude")
-    private Double latitude;
-    @Json(name = "longitude")
-    private Double longitude;
-    @Json(name = "timezone")
-    private String timezone;
-    @Json(name = "currently")
-    private Currently currently;
-    @Json(name = "minutely")
-    private Minutely minutely;
-    @Json(name = "hourly")
-    private Hourly hourly;
-    @Json(name = "daily")
-    private Daily daily;
-    @Json(name = "flags")
-    private Flags flags;
-    @Json(name = "offset")
-    private Integer offset;
+    @Json(name = "data")
+    private List<Datum> data = null;
+    @Json(name = "count")
+    private Integer count;
 
-    public Double getLatitude() {
-        return latitude;
+    public List<Datum> getData() {
+        return data;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
+    public void setData(List<Datum> data) {
+        this.data = data;
     }
 
-    public Double getLongitude() {
-        return longitude;
+    public Integer getCount() {
+        return count;
     }
 
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getTimezone() {
-        return timezone;
-    }
-
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
-
-    public Currently getCurrently() {
-        return currently;
-    }
-
-    public void setCurrently(Currently currently) {
-        this.currently = currently;
-    }
-
-    public Minutely getMinutely() {
-        return minutely;
-    }
-
-    public void setMinutely(Minutely minutely) {
-        this.minutely = minutely;
-    }
-
-    public Hourly getHourly() {
-        return hourly;
-    }
-
-    public void setHourly(Hourly hourly) {
-        this.hourly = hourly;
-    }
-
-    public Daily getDaily() {
-        return daily;
-    }
-
-    public void setDaily(Daily daily) {
-        this.daily = daily;
-    }
-
-    public Flags getFlags() {
-        return flags;
-    }
-
-    public void setFlags(Flags flags) {
-        this.flags = flags;
-    }
-
-    public Integer getOffset() {
-        return offset;
-    }
-
-    public void setOffset(Integer offset) {
-        this.offset = offset;
+    public void setCount(Integer count) {
+        this.count = count;
     }
 
 }
