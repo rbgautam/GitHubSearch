@@ -1,4 +1,4 @@
-package com.forgeinnovations.android.climespot.datamodel;
+package com.forgeinnovations.android.climespot.datamodel.current;
 
 import com.squareup.moshi.Json;
 

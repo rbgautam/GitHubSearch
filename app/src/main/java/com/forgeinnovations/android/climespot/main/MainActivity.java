@@ -16,11 +16,9 @@
 package com.forgeinnovations.android.climespot.main;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,16 +31,25 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.android.sunshine.R;
-import com.forgeinnovations.android.climespot.detail.DetailActivity;
 import com.forgeinnovations.android.climespot.data.SunshinePreferences;
+import com.forgeinnovations.android.climespot.data.WeatherApiRESTAdapter;
 import com.forgeinnovations.android.climespot.data.WeatherContract;
+import com.forgeinnovations.android.climespot.datamodel.RecycleViewItem;
+import com.forgeinnovations.android.climespot.datamodel.WeatherApiRequest;
+import com.forgeinnovations.android.climespot.datamodel.current.WeatherApiCurrentResponse;
+import com.forgeinnovations.android.climespot.datamodel.fiveday.WeatherApiForecastResponse;
+import com.forgeinnovations.android.climespot.datamodel.tenday.WeatherApi10DayForecastResponse;
+import com.forgeinnovations.android.climespot.detail.DetailActivity;
 import com.forgeinnovations.android.climespot.settings.SettingsActivity;
 import com.forgeinnovations.android.climespot.sync.SunshineSyncUtils;
-import com.forgeinnovations.android.climespot.utilities.ForecastAdapter;
+import com.forgeinnovations.android.climespot.utilities.ForecastAdapterNew;
+import com.forgeinnovations.android.climespot.utilities.UrlManager;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>,
-        ForecastAdapter.ForecastAdapterOnClickHandler {
+        LoaderManager.LoaderCallbacks<List<RecycleViewItem>>,
+        ForecastAdapterNew.ForecastAdapterNewOnClickHandler, WeatherApiRESTAdapter.AsyncWebResponse {
 
     private final String TAG = MainActivity.class.getSimpleName();
 
@@ -77,10 +84,11 @@ public class MainActivity extends AppCompatActivity implements
      */
     private static final int ID_FORECAST_LOADER = 44;
 
-    private ForecastAdapter mForecastAdapter;
+    private ForecastAdapterNew mForecastAdapter;
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
-
+    private List<RecycleViewItem> mRecycleViewData;
+    private WeatherApi10DayForecastResponse mApiResponse;
     private ProgressBar mLoadingIndicator;
 
 
@@ -141,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements
          * MainActivity implements the ForecastAdapter ForecastOnClickHandler interface, "this"
          * is also an instance of that type of handler.
          */
-        mForecastAdapter = new ForecastAdapter(this, this);
+        mForecastAdapter = new ForecastAdapterNew(this, this);
 
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mRecyclerView.setAdapter(mForecastAdapter);
@@ -196,38 +204,35 @@ public class MainActivity extends AppCompatActivity implements
      * @return A new Loader instance that is ready to start loading.
      */
     @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+    public Loader<List<RecycleViewItem>> onCreateLoader(int loaderId, Bundle bundle) {
+        return new android.support.v4.content.AsyncTaskLoader<List<RecycleViewItem>>(this) {
+            /**
+             * Subclasses must implement this to take care of loading their data,
+             * as per {@link #startLoading()}.  This is not called by clients directly,
+             * but as a result of a call to {@link #startLoading()}.
+             */
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                forceLoad();
+            }
 
-
-        switch (loaderId) {
-
-            case ID_FORECAST_LOADER:
-                /* URI for all rows of weather data in our weather table */
-                Uri forecastQueryUri = WeatherContract.WeatherEntry.CONTENT_URI;
-                /* Sort order: Ascending by date */
-                String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-                /*
-                 * A SELECTION in SQL declares which rows you'd like to return. In our case, we
-                 * want all weather data from today onwards that is stored in our weather table.
-                 * We created a handy method to do that in our WeatherEntry class.
-                 */
-                String selection = WeatherContract.WeatherEntry.getSqlSelectForTodayOnwards();
-
-                return new CursorLoader(this,
-                        forecastQueryUri,
-                        MAIN_FORECAST_PROJECTION,
-                        selection,
-                        null,
-                        sortOrder);
-
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loaderId);
-        }
+            @Override
+            public List<RecycleViewItem> loadInBackground() {
+                WeatherApiRESTAdapter mQueryAdapter = new WeatherApiRESTAdapter();
+                WeatherApiRequest newReq = new WeatherApiRequest("Chicago", "US", "IL", "I", UrlManager.WEATHERAPI_KEY);
+                mRecycleViewData = mQueryAdapter.get10DayWeatherForRecycleView(newReq.city, newReq.country, newReq.state, newReq.units, newReq.apiKey);
+                //List<RecycleViewItem> listViewDta = getForecastData();
+                return mRecycleViewData;
+            }
+        };
     }
+
+
 
     /**
      * Called when a Loader has finished loading its data.
-     *
+     * <p>
      * NOTE: There is one small bug in this code. If no data is present in the cursor do to an
      * initial load being performed with no access to internet, the loading indicator will show
      * indefinitely, until data is present from the ContentProvider. This will be fixed in a
@@ -237,13 +242,11 @@ public class MainActivity extends AppCompatActivity implements
      * @param data   The data generated by the Loader.
      */
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-
+    public void onLoadFinished(Loader<List<RecycleViewItem>> loader, List<RecycleViewItem> data) {
         mForecastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
-        if (data.getCount() != 0) showWeatherDataView();
+        if (data.size() != 0) showWeatherDataView();
     }
 
     /**
@@ -253,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements
      * @param loader The Loader that is being reset.
      */
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(Loader<List<RecycleViewItem>> loader) {
         /*
          * Since this Loader's data is now invalid, we need to clear the Adapter that is
          * displaying the data.
@@ -264,14 +267,26 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * This method is for responding to clicks from our list.
      *
-     * @param date Normalized UTC time that represents the local date of the weather in GMT time.
+     * @param itemData Passing the data for the clicked item
      * @see WeatherContract.WeatherEntry#COLUMN_DATE
      */
     @Override
-    public void onClick(long date) {
+    public void onClick(RecycleViewItem itemData) {
         Intent weatherDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
-        Uri uriForDateClicked = WeatherContract.WeatherEntry.buildWeatherUriWithDate(date);
-        weatherDetailIntent.setData(uriForDateClicked);
+
+        weatherDetailIntent.putExtra("HUMIDITY_DATA",itemData.Humidity);
+        weatherDetailIntent.putExtra("PRESSURE_DATA",itemData.Pressure);
+        weatherDetailIntent.putExtra("WIND_DATA",itemData.Wind);
+        weatherDetailIntent.putExtra("WEATHER_ID",itemData.WeatherId);
+        weatherDetailIntent.putExtra("DATE",itemData.WeatherDate);
+
+        weatherDetailIntent.putExtra("WIND_DIR", itemData.WindDir);
+
+        weatherDetailIntent.putExtra("DATE_STRING",itemData.Datestr);
+        weatherDetailIntent.putExtra("WEATHER_DESC",itemData.WeatherDescription);
+        weatherDetailIntent.putExtra("MAX_TEMP", itemData.MaxTemp);
+        weatherDetailIntent.putExtra("MIN_TEMP", itemData.MinTemp);
+
         startActivity(weatherDetailIntent);
     }
 
@@ -307,10 +322,8 @@ public class MainActivity extends AppCompatActivity implements
      * This is where we inflate and set up the menu for this Activity.
      *
      * @param menu The options menu in which you place your items.
-     *
      * @return You must return true for the menu to be displayed;
-     *         if you return false it will not be shown.
-     *
+     * if you return false it will not be shown.
      * @see #onPrepareOptionsMenu
      * @see #onOptionsItemSelected
      */
@@ -328,7 +341,6 @@ public class MainActivity extends AppCompatActivity implements
      * Callback invoked when a menu item was selected from this Activity's menu.
      *
      * @param item The menu item that was selected by the user
-     *
      * @return true if you handle the menu click here, false otherwise
      */
     @Override
@@ -340,12 +352,29 @@ public class MainActivity extends AppCompatActivity implements
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-        if (id == R.id.action_map) {
-            openPreferredLocationInMap();
-            return true;
-        }
+//        if (id == R.id.action_map) {
+//            openPreferredLocationInMap();
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void processFinish(WeatherApiCurrentResponse output) {
+
+    }
+
+    @Override
+    public void processForecastFinish(WeatherApiForecastResponse output) {
+
+    }
+
+    @Override
+    public void process10DayForecastFinish(WeatherApi10DayForecastResponse weatherApi10DayForecastResponse) {
+        //mRecycleViewData = getForecastData(weatherApi10DayForecastResponse);
+    }
+
+
 }
 

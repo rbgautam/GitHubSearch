@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 package com.forgeinnovations.android.climespot.utilities;
+
 import android.content.Context;
 import android.text.format.DateUtils;
 
 import com.example.android.sunshine.R;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -96,6 +100,30 @@ public final class SunshineDateUtils {
         return normalizedUtcMidnightMillis;
     }
 
+    public static String convertMillistoDate(String start_dt ){
+        // timestamp to Date
+
+
+
+        //start_dt = "2018-04-28";
+        Date d = new Date();
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            d = formatter.parse(start_dt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String dayOfTheWeek = (String) android.text.format.DateFormat.format("EEEE", d);//Thursday
+//        String stringMonth = (String) android.text.format.DateFormat.format("MMM", date); //Jun
+//        String intMonth = (String) android.text.format.DateFormat.format("MM", date); //06
+//        String year = (String) android.text.format.DateFormat.format("yyyy", date); //2013
+//        String day = (String) android.text.format.DateFormat.format("dd", date); //20
+//
+
+        return dayOfTheWeek;
+
+    }
     /**
      * This method returns the number of days since the epoch (January 01, 1970, 12:00 Midnight UTC)
      * in UTC time from the current date.
