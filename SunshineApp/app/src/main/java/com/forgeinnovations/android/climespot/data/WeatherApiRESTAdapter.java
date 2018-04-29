@@ -1,12 +1,24 @@
 package com.forgeinnovations.android.climespot.data;
 
-import com.forgeinnovations.android.climespot.datamodel.WeatherApiResponse;
+import android.util.Log;
+
+import com.forgeinnovations.android.climespot.datamodel.RecycleViewItem;
+import com.forgeinnovations.android.climespot.datamodel.current.WeatherApiCurrentResponse;
+import com.forgeinnovations.android.climespot.datamodel.fiveday.WeatherApiForecastResponse;
+import com.forgeinnovations.android.climespot.datamodel.tenday.Datum;
+import com.forgeinnovations.android.climespot.datamodel.tenday.WeatherApi10DayForecastResponse;
+import com.forgeinnovations.android.climespot.error.ErrorInterceptor;
 import com.forgeinnovations.android.climespot.utilities.UrlManager;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import retrofit2.http.GET;
@@ -19,7 +31,13 @@ public class WeatherApiRESTAdapter {
     public interface WeatherService{
 
         @GET(UrlManager.WEATHERAPI_CURRENT_DATA_PATH)
-        Call<WeatherApiResponse> getWaetherDataForCity(@Query("city") String city, @Query("country") String country,@Query("key") String key );
+        Call<WeatherApiCurrentResponse> getCurrentWeatherDataForCity(@Query("city") String city, @Query("country") String country, @Query("state") String state,@Query("units") String units, @Query("key") String key );
+
+        @GET(UrlManager.WEATHERAPI_5DAYFORECAST_DATA_PATH)
+        Call<WeatherApiForecastResponse> get5dayWeatherDataForCity(@Query("city") String city, @Query("country") String country, @Query("state") String state,@Query("units") String units, @Query("key") String key );
+
+        @GET(UrlManager.WEATHERAPI_10DAYFORECAST_DATA_PATH)
+        Call<WeatherApi10DayForecastResponse> get10dayWeatherDataForCity(@Query("city") String city, @Query("country") String country, @Query("state") String state,@Query("units") String units, @Query("key") String key );
 
     }
 
@@ -43,6 +61,153 @@ public class WeatherApiRESTAdapter {
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build();
 
-        this.WeatherService = retrofit.create(WeatherService.class);
+        this.weatherService = retrofit.create(WeatherService.class);
+    }
+
+
+    public interface AsyncWebResponse {
+        void processFinish(WeatherApiCurrentResponse output);
+        void processForecastFinish(WeatherApiForecastResponse output);
+        void process10DayForecastFinish(WeatherApi10DayForecastResponse output);
+    }
+
+    public AsyncWebResponse delegate = null;
+
+    public void get10DayWeatherData(final String city, final String country, final String state,final String units, final String apiKey){
+
+        Call<WeatherApi10DayForecastResponse> call = weatherService.get10dayWeatherDataForCity(city, country, state,units, apiKey);
+
+        Callback<WeatherApi10DayForecastResponse> callback = new Callback<WeatherApi10DayForecastResponse>() {
+            WeatherApi10DayForecastResponse forecastResponse = new WeatherApi10DayForecastResponse();
+
+            @Override
+            public void onResponse(Call<WeatherApi10DayForecastResponse> call, Response<WeatherApi10DayForecastResponse> response) {
+                int statusCode = response.code();
+                forecastResponse = response.body();
+                delegate.process10DayForecastFinish(forecastResponse);
+            }
+
+            @Override
+            public void onFailure(Call<WeatherApi10DayForecastResponse> call, Throwable t) {
+                Log.i("IOCall","call failed");
+                delegate.process10DayForecastFinish(forecastResponse);
+            }
+        };
+
+        call.enqueue(callback);
+
+    }
+
+
+    public List<RecycleViewItem> get10DayWeatherForRecycleView(final String city, final String country, final String state,final String units, final String apiKey){
+
+        List<RecycleViewItem> result = null;
+        Call<WeatherApi10DayForecastResponse> call = weatherService.get10dayWeatherDataForCity(city, country, state,units, apiKey);
+
+        Callback<WeatherApi10DayForecastResponse> callback = new Callback<WeatherApi10DayForecastResponse>() {
+            WeatherApi10DayForecastResponse forecastResponse = new WeatherApi10DayForecastResponse();
+
+            @Override
+            public void onResponse(Call<WeatherApi10DayForecastResponse> call, Response<WeatherApi10DayForecastResponse> response) {
+                int statusCode = response.code();
+                forecastResponse = response.body();
+                //result = getForecastData(forecastResponse);
+                delegate.process10DayForecastFinish(forecastResponse);
+            }
+
+            @Override
+            public void onFailure(Call<WeatherApi10DayForecastResponse> call, Throwable t) {
+                Log.i("IOCall","call failed");
+                delegate.process10DayForecastFinish(forecastResponse);
+            }
+        };
+        Response<WeatherApi10DayForecastResponse> responseBody = null;
+        //call.enqueue(callback);
+        try {
+            responseBody = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        result = getForecastData(responseBody.body());
+        return result;
+
+    }
+
+    private List<RecycleViewItem> getForecastData(WeatherApi10DayForecastResponse forecastResponse ) {
+        List<RecycleViewItem> result = new ArrayList<>();
+
+        for (Datum data : forecastResponse.getData()) {
+            RecycleViewItem recycleViewItem = new RecycleViewItem();
+            recycleViewItem.WeatherDate = data.getTs();
+            recycleViewItem.MaxTemp = data.getMaxTemp();
+            recycleViewItem.MinTemp = data.getMinTemp();
+            recycleViewItem.WeatherDescription = data.getWeather().getDescription();
+            recycleViewItem.Datestr = data.getValidDate();
+            recycleViewItem.Pressure = data.getPres();
+            recycleViewItem.Humidity = data.getPrecip();
+            recycleViewItem.Wind = data.getWindSpd();
+            recycleViewItem.WeatherId = 1;
+            result.add(recycleViewItem);
+
+        }
+
+
+        return result;
+    }
+
+    public void get5DayWeatherData(final String city, final String country, final String state,final String units, final String apiKey){
+
+        Call<WeatherApiForecastResponse> call = weatherService.get5dayWeatherDataForCity(city, country, state,units, apiKey);
+
+        Callback<WeatherApiForecastResponse> callback = new Callback<WeatherApiForecastResponse>() {
+            WeatherApiForecastResponse forecastResponse = new WeatherApiForecastResponse();
+
+            @Override
+            public void onResponse(Call<WeatherApiForecastResponse> call, Response<WeatherApiForecastResponse> response) {
+                int statusCode = response.code();
+                forecastResponse = response.body();
+                delegate.processForecastFinish(forecastResponse);
+            }
+
+            @Override
+            public void onFailure(Call<WeatherApiForecastResponse> call, Throwable t) {
+                Log.i("IOCall","call failed");
+                delegate.processForecastFinish(forecastResponse);
+            }
+        };
+
+        call.enqueue(callback);
+
+    }
+
+    public void getCurrentWeatherData(final String city, final String country, final String state,final String units  , final String apiKey){
+
+        Call<WeatherApiCurrentResponse> call = weatherService.getCurrentWeatherDataForCity(city,country,state,units,apiKey);
+
+        Callback<WeatherApiCurrentResponse> callback = new Callback<WeatherApiCurrentResponse>() {
+
+            WeatherApiCurrentResponse apiResponse = new WeatherApiCurrentResponse();
+
+            @Override
+            public void onResponse(Call<WeatherApiCurrentResponse> call, Response<WeatherApiCurrentResponse> response) {
+                Log.i("IOCall","onresponse");
+                int statusCode = response.code();
+                apiResponse = response.body();
+                urlString = response.raw().networkResponse().request().url().toString();
+                delegate.processFinish(apiResponse);
+
+            }
+
+            @Override
+            public void onFailure(Call<WeatherApiCurrentResponse> call, Throwable t) {
+                Log.i("IOCall","call failed");
+                delegate.processFinish(apiResponse);
+            }
+        };
+
+        call.enqueue(callback);
+
+
     }
 }

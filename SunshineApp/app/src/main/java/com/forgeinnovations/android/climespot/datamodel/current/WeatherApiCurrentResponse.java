@@ -1,4 +1,4 @@
-package com.forgeinnovations.android.climespot.datamodel;
+package com.forgeinnovations.android.climespot.datamodel.current;
 
 /**
  * Created by Rahul B Gautam on 4/23/18.
@@ -9,7 +9,7 @@ import com.squareup.moshi.Json;
 
 import java.util.List;
 
-public class WeatherApiResponse {
+public class WeatherApiCurrentResponse {
 
     @Json(name = "data")
     private List<Datum> data = null;

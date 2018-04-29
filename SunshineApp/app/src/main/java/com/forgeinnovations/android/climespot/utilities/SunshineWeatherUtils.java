@@ -43,6 +43,17 @@ public final class SunshineWeatherUtils {
     }
 
     /**
+     * This method will convert a temperature from Celsius to Fahrenheit.
+     *
+     * @param temperatureInFahrenheit Temperature in degrees Celsius(°C)
+     *
+     * @return Temperature in degrees Fahrenheit (°F)
+     */
+    private static double FahrenheitToCelsius(double temperatureInFahrenheit ) {
+        double temperatureInCelsius = ((temperatureInFahrenheit -32 ) *5) /9;
+        return temperatureInCelsius;
+    }
+    /**
      * Temperature data is stored in Celsius by our app. Depending on the user's preference,
      * the app may need to display the temperature in Fahrenheit. This method will perform that
      * temperature conversion if necessary. It will also format the temperature so that no
@@ -55,9 +66,13 @@ public final class SunshineWeatherUtils {
      * "21°"
      */
     public static String formatTemperature(Context context, double temperature) {
-        if (!SunshinePreferences.isMetric(context)) {
-            temperature = celsiusToFahrenheit(temperature);
+        if (SunshinePreferences.isMetric(context)) {
+            //temperature = celsiusToFahrenheit(temperature);
+            temperature = FahrenheitToCelsius(temperature);
         }
+//        else{
+//            temperature = FahrenheitToCelsius(temperature);
+//        }
 
         int temperatureFormatResourceId = R.string.format_temperature;
 

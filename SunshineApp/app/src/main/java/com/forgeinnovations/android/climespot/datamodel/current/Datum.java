@@ -1,4 +1,4 @@
-package com.forgeinnovations.android.climespot.datamodel;
+package com.forgeinnovations.android.climespot.datamodel.current;
 
 import com.squareup.moshi.Json;
 
@@ -13,7 +13,7 @@ public class Datum {
     @Json(name = "lon")
     private Double lon;
     @Json(name = "pres")
-    private Integer pres;
+    private Double pres;
     @Json(name = "timezone")
     private String timezone;
     @Json(name = "ob_time")
@@ -41,21 +41,21 @@ public class Datum {
     @Json(name = "station")
     private String station;
     @Json(name = "h_angle")
-    private Double hAngle;
+    private Integer hAngle;
     @Json(name = "dewpt")
     private Double dewpt;
     @Json(name = "uv")
-    private Double uv;
+    private Integer uv;
     @Json(name = "dni")
-    private Double dni;
+    private Integer dni;
     @Json(name = "wind_dir")
     private Integer windDir;
     @Json(name = "elev_angle")
     private Double elevAngle;
     @Json(name = "ghi")
-    private Double ghi;
+    private Integer ghi;
     @Json(name = "dhi")
-    private Double dhi;
+    private Integer dhi;
     @Json(name = "precip")
     private Object precip;
     @Json(name = "city_name")
@@ -103,11 +103,11 @@ public class Datum {
         this.lon = lon;
     }
 
-    public Integer getPres() {
+    public Double getPres() {
         return pres;
     }
 
-    public void setPres(Integer pres) {
+    public void setPres(Double pres) {
         this.pres = pres;
     }
 
@@ -215,11 +215,11 @@ public class Datum {
         this.station = station;
     }
 
-    public Double getHAngle() {
+    public Integer getHAngle() {
         return hAngle;
     }
 
-    public void setHAngle(Double hAngle) {
+    public void setHAngle(Integer hAngle) {
         this.hAngle = hAngle;
     }
 
@@ -231,19 +231,19 @@ public class Datum {
         this.dewpt = dewpt;
     }
 
-    public Double getUv() {
+    public Integer getUv() {
         return uv;
     }
 
-    public void setUv(Double uv) {
+    public void setUv(Integer uv) {
         this.uv = uv;
     }
 
-    public Double getDni() {
+    public Integer getDni() {
         return dni;
     }
 
-    public void setDni(Double dni) {
+    public void setDni(Integer dni) {
         this.dni = dni;
     }
 
@@ -263,19 +263,19 @@ public class Datum {
         this.elevAngle = elevAngle;
     }
 
-    public Double getGhi() {
+    public Integer getGhi() {
         return ghi;
     }
 
-    public void setGhi(Double ghi) {
+    public void setGhi(Integer ghi) {
         this.ghi = ghi;
     }
 
-    public Double getDhi() {
+    public Integer getDhi() {
         return dhi;
     }
 
-    public void setDhi(Double dhi) {
+    public void setDhi(Integer dhi) {
         this.dhi = dhi;
     }
 

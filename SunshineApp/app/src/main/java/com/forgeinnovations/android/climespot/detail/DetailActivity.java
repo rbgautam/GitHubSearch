@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import com.example.android.sunshine.R;
 import com.example.android.sunshine.databinding.ActivityDetailBinding;
 import com.forgeinnovations.android.climespot.data.WeatherContract;
+import com.forgeinnovations.android.climespot.datamodel.RecycleViewItem;
 import com.forgeinnovations.android.climespot.settings.SettingsActivity;
 import com.forgeinnovations.android.climespot.utilities.SunshineDateUtils;
 import com.forgeinnovations.android.climespot.utilities.SunshineWeatherUtils;
@@ -91,6 +92,7 @@ public class DetailActivity extends AppCompatActivity implements
     /* The URI that is used to access the chosen day's weather details */
     private Uri mUri;
 
+    private Intent mIntent;
 
     /*
      * This field is used for data binding. Normally, we would have to call findViewById many
@@ -108,21 +110,167 @@ public class DetailActivity extends AppCompatActivity implements
 
         mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
-        mUri = getIntent().getData();
-        if (mUri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
+//        mUri = getIntent().getData();
+//        if (mUri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
 
         /* This connects our Activity into the loader lifecycle. */
-        getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this);
+        //getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this);
+        mIntent = getIntent();
+        RecycleViewItem itemData = new RecycleViewItem();
+        if (mIntent != null) {
+            itemData.WeatherId = mIntent.getIntExtra("WEATHER_ID", 0);
+            itemData.Humidity = mIntent.getDoubleExtra("HUMIDITY_DATA", 0);
+            itemData.Wind = mIntent.getDoubleExtra("WIND_DATA", 0);
+            itemData.WindDir = mIntent.getIntExtra("WIND_DIR", 0);
+            itemData.Pressure = mIntent.getDoubleExtra("PRESSURE_DATA", 0);
+            itemData.Datestr = mIntent.getStringExtra("DATE_STRING");
+            itemData.WeatherDescription = mIntent.getStringExtra("WEATHER_DESC");
+            itemData.MaxTemp = mIntent.getDoubleExtra("MAX_TEMP", 0);
+            itemData.MinTemp = mIntent.getDoubleExtra("MIN_TEMP", 0);
+            LoadWeatherDetails(itemData);
+        }
+
+    }
+
+
+    private void LoadWeatherDetails(RecycleViewItem item) {
+        /****************
+         * Weather Icon *
+         ****************/
+        /* Read weather condition ID from the cursor (ID provided by Open Weather Map) */
+        int weatherId = item.WeatherId;
+        /* Use our utility method to determine the resource ID for the proper art */
+        int weatherImageId = SunshineWeatherUtils.getLargeArtResourceIdForWeatherCondition(weatherId);
+
+        /* Set the resource ID on the icon to display the art */
+        mDetailBinding.primaryInfo.weatherIcon.setImageResource(weatherImageId);
+
+        long dateInMillis = item.WeatherDate;
+        /* Get human readable string using our utility method */
+        //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
+        String dateString = SunshineDateUtils.convertMillistoDate(item.Datestr);
+
+        mDetailBinding.primaryInfo.date.setText(dateString);
+
+        /***********************
+         * Weather Description *
+         ***********************/
+        /* Use the weatherId to obtain the proper description */
+        String description = item.WeatherDescription;
+
+        /* Create the accessibility (a11y) String from the weather description */
+        String descriptionA11y = getString(R.string.a11y_forecast, description);
+
+        /* Set the text and content description (for accessibility purposes) */
+        mDetailBinding.primaryInfo.weatherDescription.setText(description);
+        mDetailBinding.primaryInfo.weatherDescription.setContentDescription(description);
+
+        /* Set the content description on the weather image (for accessibility purposes) */
+        mDetailBinding.primaryInfo.weatherIcon.setContentDescription(description);
+
+        /**************************
+         * High (max) temperature *
+         **************************/
+        /* Read high temperature from the cursor (in degrees celsius) */
+        double highInCelsius = item.MaxTemp;
+        /*
+         * If the user's preference for weather is fahrenheit, formatTemperature will convert
+         * the temperature. This method will also append either °C or °F to the temperature
+         * String.
+         */
+        String highString = SunshineWeatherUtils.formatTemperature(this, highInCelsius);
+
+        /* Create the accessibility (a11y) String from the weather description */
+        String highA11y = getString(R.string.a11y_high_temp, highString);
+
+        /* Set the text and content description (for accessibility purposes) */
+        mDetailBinding.primaryInfo.highTemperature.setText(highString);
+        mDetailBinding.primaryInfo.highTemperature.setContentDescription(highA11y);
+
+        /*************************
+         * Low (min) temperature *
+         *************************/
+        /* Read low temperature from the cursor (in degrees celsius) */
+        double lowInCelsius = item.MinTemp;
+        /*
+         * If the user's preference for weather is fahrenheit, formatTemperature will convert
+         * the temperature. This method will also append either °C or °F to the temperature
+         * String.
+         */
+        String lowString = SunshineWeatherUtils.formatTemperature(this, lowInCelsius);
+
+        String lowA11y = getString(R.string.a11y_low_temp, lowString);
+
+        /* Set the text and content description (for accessibility purposes) */
+        mDetailBinding.primaryInfo.lowTemperature.setText(lowString);
+        mDetailBinding.primaryInfo.lowTemperature.setContentDescription(lowA11y);
+
+        /************
+         * Humidity *
+         ************/
+        /* Read humidity from the cursor */
+        float humidity = Float.valueOf(item.Humidity.toString());
+
+        String humidityString = getString(R.string.format_humidity, humidity);
+        String humidityA11y = getString(R.string.a11y_humidity, humidityString);
+
+        /* Set the text and content description (for accessibility purposes) */
+        mDetailBinding.extraDetails.humidity.setText(humidityString);
+        mDetailBinding.extraDetails.humidity.setContentDescription(humidityA11y);
+
+        mDetailBinding.extraDetails.humidityLabel.setContentDescription(humidityA11y);
+
+        /****************************
+         * Wind speed and direction *
+         ****************************/
+        /* Read wind speed (in MPH) and direction (in compass degrees) from the cursor  */
+        float windSpeed = Float.valueOf(item.Wind.toString());
+        float windDirection = item.WindDir;
+        String windString = SunshineWeatherUtils.getFormattedWind(this, windSpeed, windDirection);
+
+        String windA11y = getString(R.string.a11y_wind, windString);
+
+        /* Set the text and content description (for accessibility purposes) */
+        mDetailBinding.extraDetails.windMeasurement.setText(windString);
+        mDetailBinding.extraDetails.windMeasurement.setContentDescription(windA11y);
+
+        mDetailBinding.extraDetails.windLabel.setContentDescription(windA11y);
+
+        /************
+         * Pressure *
+         ************/
+        /* Read pressure from the cursor */
+        float pressure = Float.valueOf(item.Pressure.toString());
+
+        /*
+         * Format the pressure text using string resources. The reason we directly access
+         * resources using getString rather than using a method from SunshineWeatherUtils as
+         * we have for other data displayed in this Activity is because there is no
+         * additional logic that needs to be considered in order to properly display the
+         * pressure.
+         */
+        String pressureString = getString(R.string.format_pressure, pressure);
+
+        String pressureA11y = getString(R.string.a11y_pressure, pressureString);
+
+        /* Set the text and content description (for accessibility purposes) */
+        mDetailBinding.extraDetails.pressure.setText(pressureString);
+        mDetailBinding.extraDetails.pressure.setContentDescription(pressureA11y);
+
+        mDetailBinding.extraDetails.pressureLabel.setContentDescription(pressureA11y);
+
+        /* Store the forecast summary String in our forecast summary field to share later */
+        mForecastSummary = String.format("%s - %s - %s/%s",
+                item.Datestr, description, highString, lowString);
+
     }
 
     /**
      * This is where we inflate and set up the menu for this Activity.
      *
      * @param menu The options menu in which you place your items.
-     *
      * @return You must return true for the menu to be displayed;
-     *         if you return false it will not be shown.
-     *
+     * if you return false it will not be shown.
      * @see android.app.Activity#onPrepareOptionsMenu(Menu)
      * @see #onOptionsItemSelected
      */
@@ -142,7 +290,6 @@ public class DetailActivity extends AppCompatActivity implements
      * DetailActivity's parent Activity in the AndroidManifest.
      *
      * @param item The menu item that was selected by the user
-     *
      * @return true if you handle the menu click here, false otherwise
      */
     @Override
@@ -185,9 +332,8 @@ public class DetailActivity extends AppCompatActivity implements
     /**
      * Creates and returns a CursorLoader that loads the data for our URI and stores it in a Cursor.
      *
-     * @param loaderId The loader ID for which we need to create a loader
+     * @param loaderId   The loader ID for which we need to create a loader
      * @param loaderArgs Any arguments supplied by the caller
-     *
      * @return A new Loader instance that is ready to start loading.
      */
     @Override
@@ -208,6 +354,8 @@ public class DetailActivity extends AppCompatActivity implements
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
     }
+
+
 
     /**
      * Runs on the main thread when a load is complete. If initLoader is called (we call it from
