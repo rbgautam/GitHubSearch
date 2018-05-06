@@ -12,10 +12,9 @@ public class WeatherApiRequest {
     public String apiKey;
 
 
-    public WeatherApiRequest(String city, String country, String state, String units, String apiKey) {
+    public WeatherApiRequest(String city, String country,  String units, String apiKey) {
         this.city = city;
         this.country = country;
-        this.state = state;
         this.units = units;
         this.apiKey = apiKey;
     }

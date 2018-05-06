@@ -92,7 +92,7 @@ public final class SunshinePreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         String keyForUnits = context.getString(R.string.pref_units_key);
-        String defaultUnits = context.getString(R.string.pref_units_metric);
+        String defaultUnits = context.getString(R.string.pref_units_imperial);
         String preferredUnits = sp.getString(keyForUnits, defaultUnits);
         String metric = context.getString(R.string.pref_units_metric);
 

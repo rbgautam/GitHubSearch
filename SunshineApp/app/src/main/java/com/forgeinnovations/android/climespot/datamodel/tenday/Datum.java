@@ -11,7 +11,7 @@ public class Datum {
     @Json(name = "wind_gust_spd")
     private Double windGustSpd;
     @Json(name = "rh")
-    private Integer rh;
+    private Double rh;
     @Json(name = "wind_spd")
     private Double windSpd;
     @Json(name = "pop")
@@ -89,11 +89,11 @@ public class Datum {
         this.windGustSpd = windGustSpd;
     }
 
-    public Integer getRh() {
+    public Double getRh() {
         return rh;
     }
 
-    public void setRh(Integer rh) {
+    public void setRh(Double rh) {
         this.rh = rh;
     }
 
