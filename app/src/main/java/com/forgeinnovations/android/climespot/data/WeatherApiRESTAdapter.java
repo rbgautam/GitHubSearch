@@ -31,13 +31,13 @@ public class WeatherApiRESTAdapter {
     public interface WeatherService{
 
         @GET(UrlManager.WEATHERAPI_CURRENT_DATA_PATH)
-        Call<WeatherApiCurrentResponse> getCurrentWeatherDataForCity(@Query("city") String city, @Query("country") String country, @Query("state") String state,@Query("units") String units, @Query("key") String key );
+        Call<WeatherApiCurrentResponse> getCurrentWeatherDataForCity(@Query("city") String city, @Query("country") String country, @Query("units") String units, @Query("key") String key );
 
         @GET(UrlManager.WEATHERAPI_5DAYFORECAST_DATA_PATH)
-        Call<WeatherApiForecastResponse> get5dayWeatherDataForCity(@Query("city") String city, @Query("country") String country, @Query("state") String state,@Query("units") String units, @Query("key") String key );
+        Call<WeatherApiForecastResponse> get5dayWeatherDataForCity(@Query("city") String city, @Query("country") String country, @Query("units") String units, @Query("key") String key );
 
         @GET(UrlManager.WEATHERAPI_10DAYFORECAST_DATA_PATH)
-        Call<WeatherApi10DayForecastResponse> get10dayWeatherDataForCity(@Query("city") String city, @Query("country") String country, @Query("state") String state,@Query("units") String units, @Query("key") String key );
+        Call<WeatherApi10DayForecastResponse> get10dayWeatherDataForCity(@Query("city") String city, @Query("country") String country,@Query("units") String units, @Query("key") String key );
 
     }
 
@@ -75,7 +75,7 @@ public class WeatherApiRESTAdapter {
 
     public void get10DayWeatherData(final String city, final String country, final String state,final String units, final String apiKey){
 
-        Call<WeatherApi10DayForecastResponse> call = weatherService.get10dayWeatherDataForCity(city, country, state,units, apiKey);
+        Call<WeatherApi10DayForecastResponse> call = weatherService.get10dayWeatherDataForCity(city, country, units, apiKey);
 
         Callback<WeatherApi10DayForecastResponse> callback = new Callback<WeatherApi10DayForecastResponse>() {
             WeatherApi10DayForecastResponse forecastResponse = new WeatherApi10DayForecastResponse();
@@ -102,7 +102,7 @@ public class WeatherApiRESTAdapter {
     public List<RecycleViewItem> get10DayWeatherForRecycleView(final String city, final String country, final String state,final String units, final String apiKey){
 
         List<RecycleViewItem> result = null;
-        Call<WeatherApi10DayForecastResponse> call = weatherService.get10dayWeatherDataForCity(city, country, state,units, apiKey);
+        Call<WeatherApi10DayForecastResponse> call = weatherService.get10dayWeatherDataForCity(city, country, units, apiKey);
 
         Callback<WeatherApi10DayForecastResponse> callback = new Callback<WeatherApi10DayForecastResponse>() {
             WeatherApi10DayForecastResponse forecastResponse = new WeatherApi10DayForecastResponse();
@@ -129,12 +129,12 @@ public class WeatherApiRESTAdapter {
             e.printStackTrace();
         }
 
-        result = getForecastData(responseBody.body());
+        result = getForecastData(responseBody.body(), city,state,country);
         return result;
 
     }
 
-    private List<RecycleViewItem> getForecastData(WeatherApi10DayForecastResponse forecastResponse ) {
+    private List<RecycleViewItem> getForecastData(WeatherApi10DayForecastResponse forecastResponse,String city, String state, String country ) {
         List<RecycleViewItem> result = new ArrayList<>();
 
         for (Datum data : forecastResponse.getData()) {
@@ -145,9 +145,15 @@ public class WeatherApiRESTAdapter {
             recycleViewItem.WeatherDescription = data.getWeather().getDescription();
             recycleViewItem.Datestr = data.getValidDate();
             recycleViewItem.Pressure = data.getPres();
-            recycleViewItem.Humidity = data.getPrecip();
+            recycleViewItem.Humidity = data.getRh();
             recycleViewItem.Wind = data.getWindSpd();
-            recycleViewItem.WeatherId = 1;
+            recycleViewItem.WeatherId = data.getWeather().getCode();
+            recycleViewItem.WeatherCode = data.getWeather().getCode();
+            recycleViewItem.WeatherIcon = data.getWeather().getIcon();
+
+            recycleViewItem.City = city;
+            recycleViewItem.State =state;
+            recycleViewItem.Country = country;
             result.add(recycleViewItem);
 
         }
@@ -158,7 +164,7 @@ public class WeatherApiRESTAdapter {
 
     public void get5DayWeatherData(final String city, final String country, final String state,final String units, final String apiKey){
 
-        Call<WeatherApiForecastResponse> call = weatherService.get5dayWeatherDataForCity(city, country, state,units, apiKey);
+        Call<WeatherApiForecastResponse> call = weatherService.get5dayWeatherDataForCity(city, country, units, apiKey);
 
         Callback<WeatherApiForecastResponse> callback = new Callback<WeatherApiForecastResponse>() {
             WeatherApiForecastResponse forecastResponse = new WeatherApiForecastResponse();
@@ -183,7 +189,7 @@ public class WeatherApiRESTAdapter {
 
     public void getCurrentWeatherData(final String city, final String country, final String state,final String units  , final String apiKey){
 
-        Call<WeatherApiCurrentResponse> call = weatherService.getCurrentWeatherDataForCity(city,country,state,units,apiKey);
+        Call<WeatherApiCurrentResponse> call = weatherService.getCurrentWeatherDataForCity(city,country,units,apiKey);
 
         Callback<WeatherApiCurrentResponse> callback = new Callback<WeatherApiCurrentResponse>() {
 

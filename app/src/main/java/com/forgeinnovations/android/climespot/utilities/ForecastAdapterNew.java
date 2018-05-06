@@ -115,6 +115,7 @@ public class ForecastAdapterNew extends RecyclerView.Adapter<ForecastAdapterNew.
     public void onBindViewHolder(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
         //mCursor.moveToPosition(position);
         RecycleViewItem itemData =  mWeatherData.get(position);
+
         /****************
          * Weather Icon *
          ****************/
@@ -126,13 +127,16 @@ public class ForecastAdapterNew extends RecyclerView.Adapter<ForecastAdapterNew.
         switch (viewType) {
 
             case VIEW_TYPE_TODAY:
-                weatherImageId = SunshineWeatherUtils
-                        .getLargeArtResourceIdForWeatherCondition(weatherId);
+                weatherImageId = SunshineWeatherUtils.getWeatherIcon(itemData.WeatherIcon);
+                /****************
+                 * City, State and Country *
+                 ****************/
+                String location =itemData.City + ", "+itemData.Country;
+                forecastAdapterViewHolder.locationText.setText(location);
                 break;
 
             case VIEW_TYPE_FUTURE_DAY:
-                weatherImageId = SunshineWeatherUtils
-                        .getSmallArtResourceIdForWeatherCondition(weatherId);
+                weatherImageId = SunshineWeatherUtils.getWeatherIcon(itemData.WeatherIcon);
                 break;
 
             default:
@@ -256,6 +260,7 @@ public class ForecastAdapterNew extends RecyclerView.Adapter<ForecastAdapterNew.
         final TextView descriptionView;
         final TextView highTempView;
         final TextView lowTempView;
+        final TextView locationText;
 
         ForecastAdapterViewHolder(View view) {
             super(view);
@@ -265,7 +270,7 @@ public class ForecastAdapterNew extends RecyclerView.Adapter<ForecastAdapterNew.
             descriptionView = (TextView) view.findViewById(R.id.weather_description);
             highTempView = (TextView) view.findViewById(R.id.high_temperature);
             lowTempView = (TextView) view.findViewById(R.id.low_temperature);
-
+            locationText = (TextView) view.findViewById(R.id.location);
             view.setOnClickListener(this);
         }
 

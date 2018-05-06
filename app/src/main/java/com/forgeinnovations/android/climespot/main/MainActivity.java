@@ -15,6 +15,7 @@
  */
 package com.forgeinnovations.android.climespot.main;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,7 +42,6 @@ import com.forgeinnovations.android.climespot.datamodel.fiveday.WeatherApiForeca
 import com.forgeinnovations.android.climespot.datamodel.tenday.WeatherApi10DayForecastResponse;
 import com.forgeinnovations.android.climespot.detail.DetailActivity;
 import com.forgeinnovations.android.climespot.settings.SettingsActivity;
-import com.forgeinnovations.android.climespot.sync.SunshineSyncUtils;
 import com.forgeinnovations.android.climespot.utilities.ForecastAdapterNew;
 import com.forgeinnovations.android.climespot.utilities.UrlManager;
 
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements
     private List<RecycleViewItem> mRecycleViewData;
     private WeatherApi10DayForecastResponse mApiResponse;
     private ProgressBar mLoadingIndicator;
-
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0f);
 
+        mContext = this;
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
@@ -162,9 +163,28 @@ public class MainActivity extends AppCompatActivity implements
          * created and (if the activity/fragment is currently started) starts the loader. Otherwise
          * the last created loader is re-used.
          */
-        getSupportLoaderManager().initLoader(ID_FORECAST_LOADER, null, this);
+        Bundle bundle = new Bundle();
 
-        SunshineSyncUtils.initialize(this);
+        String locationData = SunshinePreferences.getPreferredWeatherLocation(this);
+
+        if(locationData != null){
+            String[] data = locationData.split(",");
+
+
+            String city = data[0];
+            String country = data[1];
+
+           bundle.putString("WEATHER_CITY",city);
+           bundle.putString("WEATHER_COUNTRY",country);
+
+            getSupportLoaderManager().initLoader(ID_FORECAST_LOADER, bundle, this);
+
+
+        }
+
+
+        //Commmenting out the Job dispatcher for the time being
+        //SunshineSyncUtils.initialize(this);
 
     }
 
@@ -179,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements
      * open the Common Intents page
      */
     private void openPreferredLocationInMap() {
+
+
         double[] coords = SunshinePreferences.getLocationCoordinates(this);
         String posLat = Double.toString(coords[0]);
         String posLong = Double.toString(coords[1]);
@@ -204,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements
      * @return A new Loader instance that is ready to start loading.
      */
     @Override
-    public Loader<List<RecycleViewItem>> onCreateLoader(int loaderId, Bundle bundle) {
+    public Loader<List<RecycleViewItem>> onCreateLoader(int loaderId, final Bundle bundle) {
         return new android.support.v4.content.AsyncTaskLoader<List<RecycleViewItem>>(this) {
             /**
              * Subclasses must implement this to take care of loading their data,
@@ -220,7 +242,17 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public List<RecycleViewItem> loadInBackground() {
                 WeatherApiRESTAdapter mQueryAdapter = new WeatherApiRESTAdapter();
-                WeatherApiRequest newReq = new WeatherApiRequest("Chicago", "US", "IL", "I", UrlManager.WEATHERAPI_KEY);
+
+
+                String locationData = SunshinePreferences.getPreferredWeatherLocation(mContext);
+                String[] data = locationData.split(",");
+
+
+                String city = data[0];
+                String country = data[1];
+
+
+                WeatherApiRequest newReq = new WeatherApiRequest(city.trim(), country.trim(),  "I", UrlManager.WEATHERAPI_KEY);
                 mRecycleViewData = mQueryAdapter.get10DayWeatherForRecycleView(newReq.city, newReq.country, newReq.state, newReq.units, newReq.apiKey);
                 //List<RecycleViewItem> listViewDta = getForecastData();
                 return mRecycleViewData;

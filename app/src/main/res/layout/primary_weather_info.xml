@@ -34,6 +34,7 @@
          - This Guideline divides the screen into a left half and a right half and is used to    -
          - anchor the views to the middle of the screen.                                         -
          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
         <android.support.constraint.Guideline
             android:id="@+id/horizontal_middle"
             android:layout_width="wrap_content"
@@ -52,6 +53,17 @@
          - Android is 10. This - particular issue won't break the app, but you should note that  -
          - this attribute will be - ignored on devices that run an Android version less than 16. -
          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/date"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="Chicago, IL, USA" />
+
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
