@@ -31,6 +31,13 @@
       - that there is a gap between the bottom of the screen and the EdgeEffect. Set           -
       - clipToPadding to "false" again and observe how the gap is gone.                        -
       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <TextView
+        android:id="@+id/errorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_forecast"
         android:layout_width="match_parent"
