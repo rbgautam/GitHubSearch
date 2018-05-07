@@ -30,6 +30,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.sunshine.R;
 import com.forgeinnovations.android.climespot.data.SunshinePreferences;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements
     private List<RecycleViewItem> mRecycleViewData;
     private WeatherApi10DayForecastResponse mApiResponse;
     private ProgressBar mLoadingIndicator;
+    private TextView mErrorMessage;
     private Context mContext;
 
     @Override
@@ -99,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements
         getSupportActionBar().setElevation(0f);
 
         mContext = this;
+
+        mErrorMessage = (TextView) findViewById(R.id.errorText);
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
@@ -177,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements
            bundle.putString("WEATHER_CITY",city);
            bundle.putString("WEATHER_COUNTRY",country);
 
-            getSupportLoaderManager().initLoader(ID_FORECAST_LOADER, bundle, this);
+           getSupportLoaderManager().initLoader(ID_FORECAST_LOADER, bundle, this);
 
 
         }
@@ -275,6 +279,14 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onLoadFinished(Loader<List<RecycleViewItem>> loader, List<RecycleViewItem> data) {
+        if(data.size() == 0){
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            mErrorMessage.setText("Error: Please check location or retry again!");
+            mErrorMessage.setVisibility(View.VISIBLE);
+            return;
+        }
+
+
         mForecastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
@@ -332,6 +344,7 @@ public class MainActivity extends AppCompatActivity implements
     private void showWeatherDataView() {
         /* First, hide the loading indicator */
         mLoadingIndicator.setVisibility(View.INVISIBLE);
+        mErrorMessage.setVisibility(View.GONE);
         /* Finally, make sure the weather data is visible */
         mRecyclerView.setVisibility(View.VISIBLE);
     }

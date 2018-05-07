@@ -137,6 +137,9 @@ public class WeatherApiRESTAdapter {
     private List<RecycleViewItem> getForecastData(WeatherApi10DayForecastResponse forecastResponse,String city, String state, String country ) {
         List<RecycleViewItem> result = new ArrayList<>();
 
+        if(forecastResponse == null)
+            return result;
+
         for (Datum data : forecastResponse.getData()) {
             RecycleViewItem recycleViewItem = new RecycleViewItem();
             recycleViewItem.WeatherDate = data.getTs();
