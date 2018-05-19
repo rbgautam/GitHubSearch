@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.sunshine.R;
+import com.forgeinnovations.android.climespot.R;
 import com.forgeinnovations.android.climespot.datamodel.RecycleViewItem;
 
 import java.util.List;

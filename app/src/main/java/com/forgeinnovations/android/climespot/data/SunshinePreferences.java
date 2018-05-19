@@ -19,7 +19,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.example.android.sunshine.R;
+import com.forgeinnovations.android.climespot.R;
 
 public final class SunshinePreferences {
 

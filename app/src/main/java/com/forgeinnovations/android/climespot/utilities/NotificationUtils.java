@@ -14,7 +14,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 
 import com.forgeinnovations.android.climespot.detail.DetailActivity;
-import com.example.android.sunshine.R;
+import com.forgeinnovations.android.climespot.R;
 import com.forgeinnovations.android.climespot.data.SunshinePreferences;
 import com.forgeinnovations.android.climespot.data.WeatherContract;
 

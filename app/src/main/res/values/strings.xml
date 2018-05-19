@@ -62,7 +62,7 @@
         An error has occurred. Please try again by clicking REFRESH
     </string>
 
-    <string name="content_authority">com.example.android.sunshine</string>
+    <string name="content_authority">com.forgeinnovations.android.climespot</string>
 
 
     <string name="weather_location_city">WEATHER_CITY</string>
