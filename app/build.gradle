@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 25
     buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.forgeinnovations.android.climespot"
         minSdkVersion 14
-        targetSdkVersion 26
-        versionCode 2
-        versionName "1.1"
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -26,13 +26,13 @@ dependencies {
     // Instrumentation dependencies use androidTestCompile
     // (as opposed to testCompile for local unit tests run in the JVM)
 
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
 
-    compile 'com.android.support:recyclerview-v7:26.1.0'
-    compile 'com.android.support:preference-v7:26.1.0'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:preference-v7:25.3.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:cardview-v7:26.1.0'
+    compile 'com.android.support:cardview-v7:25.3.1'
 
     implementation 'com.firebase:firebase-jobdispatcher:0.5.0'
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
@@ -43,7 +43,7 @@ dependencies {
     api 'com.squareup.okhttp3:okhttp:3.9.1'
 
     androidTestImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support:support-annotations:26.1.0'
+    androidTestImplementation 'com.android.support:support-annotations:25.3.1'
     androidTestImplementation 'com.android.support.test:runner:0.5'
     androidTestImplementation 'com.android.support.test:rules:0.5'
     //compile 'com.android.databinding:adapters:3.1.1'
