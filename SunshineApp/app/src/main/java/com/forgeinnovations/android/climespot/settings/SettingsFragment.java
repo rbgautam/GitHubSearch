@@ -13,7 +13,7 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.widget.Toast;
 
-import com.example.android.sunshine.R;
+import com.forgeinnovations.android.climespot.R;
 import com.forgeinnovations.android.climespot.data.LocationValidatorTask;
 import com.forgeinnovations.android.climespot.datamodel.LocationItem;
 

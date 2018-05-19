@@ -29,8 +29,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.example.android.sunshine.R;
-import com.example.android.sunshine.databinding.ActivityDetailBinding;
+import com.forgeinnovations.android.climespot.R;
+import com.forgeinnovations.android.climespot.databinding.ActivityDetailBinding;
 import com.forgeinnovations.android.climespot.data.WeatherContract;
 import com.forgeinnovations.android.climespot.datamodel.RecycleViewItem;
 import com.forgeinnovations.android.climespot.settings.SettingsActivity;

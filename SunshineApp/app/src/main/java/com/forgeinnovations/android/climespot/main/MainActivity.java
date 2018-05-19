@@ -32,7 +32,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.android.sunshine.R;
+import com.forgeinnovations.android.climespot.R;
 import com.forgeinnovations.android.climespot.data.SunshinePreferences;
 import com.forgeinnovations.android.climespot.data.WeatherApiRESTAdapter;
 import com.forgeinnovations.android.climespot.data.WeatherContract;

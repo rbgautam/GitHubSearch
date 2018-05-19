@@ -18,7 +18,7 @@ package com.forgeinnovations.android.climespot.utilities;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.android.sunshine.R;
+import com.forgeinnovations.android.climespot.R;
 import com.forgeinnovations.android.climespot.data.SunshinePreferences;
 
 /**

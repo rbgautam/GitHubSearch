@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.example.android.sunshine.R;
+import com.forgeinnovations.android.climespot.R;
 
 /**
  * SettingsActivity is responsible for displaying the {@link SettingsFragment}. It is also
