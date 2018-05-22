@@ -17,13 +17,12 @@ import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.datamodel.Item;
 import com.squareup.picasso.Picasso;
 
-
 import java.util.List;
 
 /**
  * Created by Rahul B Gautam on 4/20/18.
  */
-public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAdapter.GitHubListAdapterViewHolder> {
+public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookmarkItemAdapter.GitHubBookmarkAdapterViewHolder> {
 
     private GitHubSeachResponse mGitHubData;
 
@@ -31,7 +30,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
     private final Context mContext;
 
 
-    public GitHubListItemAdapter(Context mContext) {
+    public GitHubBookmarkItemAdapter(Context mContext) {
         this.mContext = mContext;
 
     }
@@ -61,12 +60,12 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
      * @see #onBindViewHolder(ViewHolder, int)
      */
     @Override
-    public GitHubListAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public GitHubBookmarkAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        int layoutListItem = R.layout.github_repos_list_item;
+        int layoutListItem = R.layout.github_bookmark_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(layoutListItem,parent,false);
-        return new GitHubListAdapterViewHolder(view);
+        return new GitHubBookmarkAdapterViewHolder(view);
     }
 
     /**
@@ -90,7 +89,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(GitHubListAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(GitHubBookmarkAdapterViewHolder holder, int position) {
         //Log.i("OnBindViewholder",String.valueOf(position));
         if(position < getItemCount()) {
             //androidLog.i("OnBindViewholder",String.valueOf(position));
@@ -125,7 +124,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         return  totCount;
     }
 
-    public class GitHubListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class GitHubBookmarkAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private final TextView mReponameTextView;
         private final TextView mRepoDescTextView;
         private final TextView mWatcherCountTextView;
@@ -134,14 +133,14 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         private final ImageView mAvatarImageview;
 
 
-        public GitHubListAdapterViewHolder(View itemView) {
+        public GitHubBookmarkAdapterViewHolder(View itemView) {
             super(itemView);
-            mReponameTextView = (TextView) itemView.findViewById(R.id.repo_name);
-            mRepoDescTextView = (TextView) itemView.findViewById(R.id.repo_desc);
+            mReponameTextView = (TextView) itemView.findViewById(R.id.bm_repo_name);
+            mRepoDescTextView = (TextView) itemView.findViewById(R.id.bm_repo_desc);
 
-            mWatcherCountTextView = (TextView) itemView.findViewById(R.id.watchers_count);
-            mForksCountTextView = (TextView) itemView.findViewById(R.id.forks_count);
-            mStarsCountTextView = (TextView) itemView.findViewById(R.id.stars_count);
+            mWatcherCountTextView = (TextView) itemView.findViewById(R.id.bm_watchers_count);
+            mForksCountTextView = (TextView) itemView.findViewById(R.id.bm_forks_count);
+            mStarsCountTextView = (TextView) itemView.findViewById(R.id.bm_stars_count);
             mAvatarImageview = (ImageView) itemView.findViewById(R.id.avtar);
 
             itemView.setOnClickListener(this);

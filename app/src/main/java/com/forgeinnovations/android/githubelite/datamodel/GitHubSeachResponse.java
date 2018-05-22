@@ -13,6 +13,8 @@ public class GitHubSeachResponse {
     @Json(name = "items")
     private List<Item> items = null;
 
+
+
     public Integer getTotalCount() {
         return totalCount;
     }
@@ -39,6 +41,10 @@ public class GitHubSeachResponse {
 
     public void setItems(List<Item> items) {
         this.items = items;
+
     }
+
+
+
 
 }

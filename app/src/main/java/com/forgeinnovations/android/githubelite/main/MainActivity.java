@@ -32,6 +32,7 @@ import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private GitHubListItemAdapter mGitHubListItemAdapter;
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
+
+    private GitHubSearchOpenHelper mDbOpenHelper;
     //TODO:S
     //TODO: completed Add MVP pattern
     //TODO: completed : Add retofit to parse data
@@ -70,9 +73,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
-
+        mDbOpenHelper =  new GitHubSearchOpenHelper(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_github);
 
 
@@ -98,6 +102,13 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         mPresenter = new MainPresenter(this, new GitHubRestAdapter(),mGitHubListItemAdapter);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDbOpenHelper.getWritableDatabase();
+        mDbOpenHelper.close();
+        super.onDestroy();
     }
 
     @Override

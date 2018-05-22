@@ -17,13 +17,17 @@ package com.forgeinnovations.android.githubelite.utilities;
 
 import android.net.Uri;
 
+import com.forgeinnovations.android.githubelite.datamodel.Item;
 import com.forgeinnovations.android.githubelite.error.ErrorInterceptor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +50,6 @@ import static com.forgeinnovations.android.githubelite.utilities.URLManager.sort
 public class NetworkUtils {
 
 
-
     /**
      * Builds the URL used to query Github.
      *
@@ -55,19 +58,18 @@ public class NetworkUtils {
      */
     public static URL buildUrl(String githubSearchQuery) {
         // TODO (1) Fill in this method to build the proper Github query URL
-        Uri builtUri = Uri.parse(GITHUB_BASE_URL+GITHUB_API_URL).buildUpon()
-                .appendQueryParameter(PARAM_QUERY,githubSearchQuery)
-                .appendQueryParameter(PARAM_SORT,sortBy)
+        Uri builtUri = Uri.parse(GITHUB_BASE_URL + GITHUB_API_URL).buildUpon()
+                .appendQueryParameter(PARAM_QUERY, githubSearchQuery)
+                .appendQueryParameter(PARAM_SORT, sortBy)
                 .build();
         return getURLforUriQuery(builtUri);
     }
 
     private static URL getURLforUriQuery(Uri builtUri) {
         URL queryUrl = null;
-        try{
+        try {
             queryUrl = new URL(builtUri.toString());
-        }
-        catch(MalformedURLException e){
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return queryUrl;
@@ -103,8 +105,8 @@ public class NetworkUtils {
     /**
      * Using OkHttp client to download query data
      */
-    private static String getResponseFromUrl(String url){
-        String downloadData =  new String();
+    private static String getResponseFromUrl(String url) {
+        String downloadData = new String();
 
         OkHttpClient client = new OkHttpClient();
         try {
@@ -113,8 +115,7 @@ public class NetworkUtils {
                     .build();
             Response response = client.newCall(request).execute();
             downloadData = response.body().string();
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
         return downloadData;
@@ -122,7 +123,7 @@ public class NetworkUtils {
     }
 
 
-    public static Retrofit provideRetrofit(){
+    public static Retrofit provideRetrofit() {
         OkHttpClient client =
                 new OkHttpClient.Builder()
                         .addInterceptor(
@@ -140,6 +141,40 @@ public class NetworkUtils {
                 .addConverterFactory(MoshiConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
+    }
+
+
+    public static Item ConvertFromJSON(String data) {
+        Gson gson = new Gson();
+        Item pojo = new Item();
+
+        try {
+
+            pojo = gson.fromJson(data, Item.class);
+
+
+        } catch (Exception ex) {
+
+
+        }
+        return pojo;
+
+    }
+
+
+    public static String ConvertToJSON(Item data) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create(); //new Gson(); // Gson
+        String json = new String();
+        try {
+
+            json = URLEncoder.encode(gson.toJson(data), "UTF-8");
+
+        } catch (Exception ex) {
+
+
+        }
+        return json;
+
     }
 
 }

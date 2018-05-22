@@ -11,6 +11,11 @@ import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubSearchQuery;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.Item;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Rahul B Gautam on 4/18/18.
@@ -24,6 +29,7 @@ public class MainPresenter implements MainPresenterContract {
     private GitHubRestAdapter mGitHubRestAdapter;
     private GitHubListItemAdapter mGitHubListItemAdapter;
 
+    private Map<Integer, Item> itemMap = new HashMap<Integer, Item>();
 
     public MainPresenter(MainView mMainView, GitHubRestAdapter mGitHubRestAdapter, GitHubListItemAdapter gitHubListItemAdapter) {
         this.mMainView = mMainView;
@@ -137,5 +143,24 @@ public class MainPresenter implements MainPresenterContract {
         }
 
     }
+
+    @Override
+    public void setItemMap(List<Item> items) {
+        itemMap.clear();
+        for (Item item:items) {
+            itemMap.put(item.getId(),item);
+        }
+    }
+
+    @Override
+    public Item getItemById(Integer id){
+
+        if(itemMap.containsKey(id))
+            return itemMap.get(id);
+        else
+            return new Item();
+
+    }
+
 
 }

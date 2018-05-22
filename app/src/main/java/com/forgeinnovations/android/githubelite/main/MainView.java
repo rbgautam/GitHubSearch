@@ -44,4 +44,6 @@ public interface MainView {
     public String getSearchStringEditText();
 
     public void setUrlDisplayTextView(String text);
+
+
 }
