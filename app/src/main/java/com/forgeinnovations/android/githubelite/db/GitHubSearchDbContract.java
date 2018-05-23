@@ -14,8 +14,8 @@ public final class GitHubSearchDbContract {
         public static final String COLUMN_BOOKMARK_DATA = "bookmark_data";
         public static final String COLUMN_KEYWORD = "keyword";
 
-        public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + _ID + "INTEGER PRIMARY KEY ," +
-        COLUMN_GITHUB_ID + "INTEGER UNIQUE NOT NULL, "+ COLUMN_BOOKMARK_DATA + " TEXT NOT NULL " +COLUMN_KEYWORD +" TEXT NOT NULL " + ")";
+        public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + _ID + " INTEGER PRIMARY KEY ," +
+        COLUMN_GITHUB_ID + " INTEGER UNIQUE NOT NULL, "+ COLUMN_BOOKMARK_DATA + " TEXT NOT NULL ," +COLUMN_KEYWORD +" TEXT NOT NULL " + ")";
 
 
     }

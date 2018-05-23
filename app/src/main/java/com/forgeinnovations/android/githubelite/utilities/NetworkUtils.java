@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -167,7 +166,7 @@ public class NetworkUtils {
         String json = new String();
         try {
 
-            json = URLEncoder.encode(gson.toJson(data), "UTF-8");
+            json = gson.toJson(data); //URLEncoder.encode(gson.toJson(data), "UTF-8");
 
         } catch (Exception ex) {
 

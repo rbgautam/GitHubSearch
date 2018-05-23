@@ -19,7 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".bookmark.BookmarkActivity"></activity>
+        <activity android:name=".bookmark.BookmarkActivity" />
+        <activity android:name=".trend.TrendActivity"></activity>
     </application>
 
 </manifest>

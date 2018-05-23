@@ -7,19 +7,49 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.CursorAdapter;
 
+import com.forgeinnovations.android.githubelite.R;
+import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.db.DataManager;
+import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 
 public class BookmarkActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<GitHubSeachResponse> {
 
     public static final int LOADER_ID = 890; // random number
+    private BookmarkPresenter mPresenter;
+    private GitHubBookmarkItemAdapter mGitHubBookmarkItemAdapter;
+    private GitHubSearchOpenHelper mDbHelper;
+    private RecyclerView mBookmarkRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bookmark);
+        mDbHelper =  new GitHubSearchOpenHelper(this);
+        mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(this);
+        mBookmarkRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_bookmark);
+        LinearLayoutManager linearLayoutManager =  new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
 
+        mBookmarkRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mBookmarkRecyclerView.setAdapter(mGitHubBookmarkItemAdapter);
+
+        mPresenter = new BookmarkPresenter(this, mGitHubBookmarkItemAdapter);
+
+        mPresenter.inflateMenuItems(this);
         getLoaderManager().initLoader(LOADER_ID,null,this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mDbHelper.close();
     }
 
     /**
@@ -47,7 +77,9 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
 
             @Override
             public GitHubSeachResponse loadInBackground() {
-                return null;
+
+                return DataManager.loadFromDatabase(mDbHelper);
+
             }
         };
     }
@@ -91,7 +123,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
      */
     @Override
     public void onLoadFinished(Loader<GitHubSeachResponse> loader, GitHubSeachResponse data) {
-
+        mGitHubBookmarkItemAdapter.setGitHubData(data);
     }
 
     /**
@@ -104,5 +136,21 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
     @Override
     public void onLoaderReset(Loader<GitHubSeachResponse> loader) {
 
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mPresenter.onMenuItemClicked(item);
+
+
+        return super.onOptionsItemSelected(item);
     }
 }

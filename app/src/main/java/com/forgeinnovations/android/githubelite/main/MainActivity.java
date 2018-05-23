@@ -15,7 +15,6 @@
  */
 package com.forgeinnovations.android.githubelite.main;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private int mPosition = RecyclerView.NO_POSITION;
 
     private GitHubSearchOpenHelper mDbOpenHelper;
+    private ImageButton mSearchButton;
     //TODO:S
     //TODO: completed Add MVP pattern
     //TODO: completed : Add retofit to parse data
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
 
+        mSearchButton = (ImageButton) findViewById(R.id.button_search);
+
         mUrlDisplayTextView = (TextView) findViewById(R.id.tv_url_display);
         //mSearchResultsTextView = (TextView) findViewById(R.id.tv_github_search_results_json);
         // TODO (13) Get a reference to the error TextView using findViewById
@@ -99,14 +102,25 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         mRecyclerView.setAdapter(mGitHubListItemAdapter);
 
+        mSearchButton.setOnClickListener(searchOnClickListener);
 
         mPresenter = new MainPresenter(this, new GitHubRestAdapter(),mGitHubListItemAdapter);
 
+
+
     }
+
+    private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            makeGithubSearchQuery();
+        }
+    };
+
 
     @Override
     protected void onDestroy() {
-        mDbOpenHelper.getWritableDatabase();
+        //mDbOpenHelper.getWritableDatabase();
         mDbOpenHelper.close();
         super.onDestroy();
     }
@@ -220,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         mPresenter.onMenuItemClicked(item);
-        Context context = getApplicationContext();
+
         mPresenter.hideKeyboard(MainActivity.this);
         return super.onOptionsItemSelected(item);
     }

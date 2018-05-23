@@ -16,5 +16,7 @@
 <resources>
     <string name="app_name">GitHub Elite</string>
     <string name="search">Search</string>
+    <string name="bookmark">Bookmarks</string>
     <string name="error_message">An error occured, please retry!!</string>
+    <string name="bookmark_message">Bookmark added</string>
 </resources>

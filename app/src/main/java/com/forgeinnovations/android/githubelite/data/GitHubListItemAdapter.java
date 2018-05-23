@@ -3,20 +3,25 @@ package com.forgeinnovations.android.githubelite.data;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.db.DataManager;
+import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
+import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
-
 
 import java.util.List;
 
@@ -27,17 +32,23 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
 
     private GitHubSeachResponse mGitHubData;
 
+    private String mKeyWord;
+
+    private GitHubSearchOpenHelper mDbOpenHelper;
     /* The context we use to utility methods, app resources and layout inflaters */
     private final Context mContext;
 
 
     public GitHubListItemAdapter(Context mContext) {
         this.mContext = mContext;
+        this.mDbOpenHelper = new GitHubSearchOpenHelper(mContext);
+
 
     }
 
-    public void setGitHubData(GitHubSeachResponse gitHubSeachResponse){
+    public void setGitHubData(GitHubSeachResponse gitHubSeachResponse, String keyword){
         mGitHubData = gitHubSeachResponse;
+        mKeyWord = keyword;
         notifyDataSetChanged();
     }
     /**
@@ -66,6 +77,9 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         int layoutListItem = R.layout.github_repos_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(layoutListItem,parent,false);
+
+
+
         return new GitHubListAdapterViewHolder(view);
     }
 
@@ -125,13 +139,16 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         return  totCount;
     }
 
-    public class GitHubListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class GitHubListAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener{
         private final TextView mReponameTextView;
         private final TextView mRepoDescTextView;
         private final TextView mWatcherCountTextView;
         private final TextView mForksCountTextView;
         private final TextView mStarsCountTextView;
         private final ImageView mAvatarImageview;
+
+        private final LinearLayout mBookmarkContainer;
+
 
 
         public GitHubListAdapterViewHolder(View itemView) {
@@ -143,26 +160,72 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             mForksCountTextView = (TextView) itemView.findViewById(R.id.forks_count);
             mStarsCountTextView = (TextView) itemView.findViewById(R.id.stars_count);
             mAvatarImageview = (ImageView) itemView.findViewById(R.id.avtar);
+            mBookmarkContainer = (LinearLayout) itemView.findViewById(R.id.addBookmark);
+
+            mBookmarkContainer.setOnClickListener(bookmarkOnClickListener);
 
             itemView.setOnClickListener(this);
         }
 
+        private View.OnClickListener bookmarkOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddBookmark(v);
+            }
+        };
 
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             //String weatherForDay = mWeatherData[adapterPosition];
-            Item item = mGitHubData.getItems().get(adapterPosition);
+            final Item item = mGitHubData.getItems().get(adapterPosition);
             Log.i("onclick",item.getHtmlUrl());
-            Item favItem = item;
+            final Item favItem = item;
 
-            //TODO: Convert Item to string and save to db
-            //After spinning off an AsysncTask
+//            AsyncTask<Void,Void,Void> newTask = new AsyncTask<Void, Void, Void>() {
+//                @Override
+//                protected Void doInBackground(Void... voids) {
+//                    //TODO: Convert Item to string and save to db
+//                    String dataJSON = NetworkUtils.ConvertToJSON(favItem);
+//
+//                    DataManager dm = DataManager.getSingletonInstance();
+//                    dm.saveBookmark(mDbOpenHelper,dataJSON,item.getId().toString(),mKeyWord);
+//                    //After spinning off an AsysncTask
+//                    return null;
+//                }
+//            };
+//
+//            newTask.execute();
+
+
             openWebPage(item.getHtmlUrl(),view);
 
 
         }
 
+        public void AddBookmark(View view){
+            int adapterPosition = getAdapterPosition();
+            //String weatherForDay = mWeatherData[adapterPosition];
+            final Item item = mGitHubData.getItems().get(adapterPosition);
+            Log.i("onclick",item.getHtmlUrl());
+            final Item favItem = item;
+
+            AsyncTask<Void,Void,Void> newTask = new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    //TODO: Convert Item to string and save to db
+                    String dataJSON = NetworkUtils.ConvertToJSON(favItem);
+
+                    DataManager dm = DataManager.getSingletonInstance();
+                    dm.saveBookmark(mDbOpenHelper,dataJSON,item.getId().toString(),mKeyWord);
+                    //After spinning off an AsysncTask
+                    return null;
+                }
+            };
+
+            newTask.execute();
+
+        }
 
     }
 

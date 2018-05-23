@@ -2,11 +2,13 @@ package com.forgeinnovations.android.githubelite.main;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 
 import com.forgeinnovations.android.githubelite.R;
+import com.forgeinnovations.android.githubelite.bookmark.BookmarkActivity;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubSearchQuery;
@@ -45,7 +47,7 @@ public class MainPresenter implements MainPresenterContract {
 
         if (!searchStr.isEmpty()) {
 
-            GitHubSearchQuery repoAsychQuery = new GitHubSearchQuery(mGitHubRestAdapter,this);
+            GitHubSearchQuery repoAsychQuery = new GitHubSearchQuery(mGitHubRestAdapter, this);
 
             repoAsychQuery.execute(searchStr);
 
@@ -63,11 +65,10 @@ public class MainPresenter implements MainPresenterContract {
         StringBuilder strBuilder = new StringBuilder();
 
         mMainView.setUrlDisplayTextView(mGitHubRestAdapter.urlString);
+        String keyword = mMainView.getSearchStringEditText();
+        try {
 
-        try
-        {
-
-            mGitHubListItemAdapter.setGitHubData(githubSearchResults);
+            mGitHubListItemAdapter.setGitHubData(githubSearchResults, keyword);
 //            for (Item item : githubSearchResults) {
 //                String formattedLink = "\n" + item.getDescription() + "\n" + item.getHtmlUrl() + "\n";
 //                strBuilder.append(formattedLink);
@@ -115,14 +116,25 @@ public class MainPresenter implements MainPresenterContract {
     public boolean onMenuItemClicked(MenuItem item) {
 
         int itemThatWasClickedId = item.getItemId();
-        if (itemThatWasClickedId == R.id.action_search) {
-            // TODO (4) Remove the Toast message when the search menu item is clicked
-            // TODO (5) Call makeGithubSearchQuery when the search menu item is clicked
 
-            makeGithubSearchQuery(mMainView.getSearchStringEditText());
-            return true;
+        switch (itemThatWasClickedId) {
+
+            case R.id.action_search:
+                makeGithubSearchQuery(mMainView.getSearchStringEditText());
+                break;
+            case R.id.action_bookmark:
+                showBookmarks();
+                break;
+
         }
-        return false;
+
+        return true;
+    }
+
+    private void showBookmarks() {
+        Context context = (Context) mMainView;
+        Intent intent =  new Intent(context, BookmarkActivity.class);
+        context.startActivity(intent);
     }
 
 
@@ -130,16 +142,15 @@ public class MainPresenter implements MainPresenterContract {
      * Hide the soft keyboard
      */
     @Override
-    public void hideKeyboard(Activity activity){
+    public void hideKeyboard(Activity activity) {
 
 
-        InputMethodManager inputManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         try {
 
             inputManager.hideSoftInputFromWindow((null == activity.getCurrentFocus()) ? null : activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-        catch (Exception ex){
-            Log.e("Mainactivity","Cannot close keyboard");
+        } catch (Exception ex) {
+            Log.e("Mainactivity", "Cannot close keyboard");
         }
 
     }
@@ -147,15 +158,15 @@ public class MainPresenter implements MainPresenterContract {
     @Override
     public void setItemMap(List<Item> items) {
         itemMap.clear();
-        for (Item item:items) {
-            itemMap.put(item.getId(),item);
+        for (Item item : items) {
+            itemMap.put(item.getId(), item);
         }
     }
 
     @Override
-    public Item getItemById(Integer id){
+    public Item getItemById(Integer id) {
 
-        if(itemMap.containsKey(id))
+        if (itemMap.containsKey(id))
             return itemMap.get(id);
         else
             return new Item();

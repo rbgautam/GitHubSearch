@@ -24,14 +24,33 @@
             android:layout_toLeftOf="@+id/avtar"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/repo_name"
+            <LinearLayout
+                android:id="@+id/addBookmark"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="2dp"
-                android:text=""
-                android:textColor="?android:attr/textColorPrimary"
-                android:textStyle="bold" />
+
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/bookmarkImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:paddingRight="5dp"
+                    android:src="@drawable/ic_action_bookmark" />
+
+                <TextView
+                    android:id="@+id/repo_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="2dp"
+                    android:text=""
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/repo_desc"
@@ -69,6 +88,7 @@
                         android:layout_marginLeft="5dp"
                         android:text=""
                         android:textColor="?android:attr/textColorPrimary" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -117,8 +137,8 @@
 
         <ImageView
             android:id="@+id/avtar"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="4dp"
