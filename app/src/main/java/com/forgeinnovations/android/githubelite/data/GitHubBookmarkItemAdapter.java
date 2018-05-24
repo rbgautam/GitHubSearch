@@ -3,6 +3,8 @@ package com.forgeinnovations.android.githubelite.data;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,8 +15,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.forgeinnovations.android.githubelite.R;
+import com.forgeinnovations.android.githubelite.bookmark.BookmarkActivity;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.db.DataManager;
+import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
+import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -29,10 +35,12 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
     /* The context we use to utility methods, app resources and layout inflaters */
     private final Context mContext;
 
+    private GitHubSearchOpenHelper mDbOpenHelper;
 
-    public GitHubBookmarkItemAdapter(Context mContext) {
+
+    public GitHubBookmarkItemAdapter(Context mContext, GitHubSearchOpenHelper dbHelper) {
         this.mContext = mContext;
-
+        this.mDbOpenHelper = dbHelper;
     }
 
     public void setGitHubData(GitHubSeachResponse gitHubSeachResponse){
@@ -131,6 +139,7 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
         private final TextView mForksCountTextView;
         private final TextView mStarsCountTextView;
         private final ImageView mAvatarImageview;
+        private final ImageView mDeleteBookmark;
 
 
         public GitHubBookmarkAdapterViewHolder(View itemView) {
@@ -142,8 +151,63 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
             mForksCountTextView = (TextView) itemView.findViewById(R.id.bm_forks_count);
             mStarsCountTextView = (TextView) itemView.findViewById(R.id.bm_stars_count);
             mAvatarImageview = (ImageView) itemView.findViewById(R.id.avtar);
+            mDeleteBookmark = (ImageView) itemView.findViewById(R.id.removeBookmark);
+
+            mDeleteBookmark.setOnClickListener(deleteBookmarkOnclickListener);
 
             itemView.setOnClickListener(this);
+        }
+
+        private View.OnClickListener deleteBookmarkOnclickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DeleteBookmark(v);
+            }
+        };
+
+        private void DeleteBookmark(View v) {
+
+            final int adapterPosition = getAdapterPosition();
+            //String weatherForDay = mWeatherData[adapterPosition];
+            final Item item = mGitHubData.getItems().get(adapterPosition);
+            Log.i("onclick",item.getHtmlUrl());
+            final Item favItem = item;
+
+            AsyncTask<Void,Void,Void> newTask = new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    //TODO: Convert Item to string and save to db
+                    String dataJSON = NetworkUtils.ConvertToJSON(favItem);
+
+                    DataManager dm = DataManager.getSingletonInstance();
+                    dm.deleteBookmark(mDbOpenHelper,item.getId().toString());
+                    //After spinning off an AsysncTask
+                    return null;
+                }
+
+                /**
+                 * <p>Runs on the UI thread after {@link #doInBackground}. The
+                 * specified result is the value returned by {@link #doInBackground}.</p>
+                 * <p>
+                 * <p>This method won't be invoked if the task was cancelled.</p>
+                 *
+                 * @param aVoid The result of the operation computed by {@link #doInBackground}.
+                 * @see #onPreExecute
+                 * @see #doInBackground
+                 * @see #onCancelled(Object)
+                 */
+                @Override
+                protected void onPostExecute(Void aVoid) {
+
+                    mGitHubData.getItems().remove(adapterPosition);
+                    notifyItemRemoved(adapterPosition);
+                    notifyDataSetChanged();
+                    super.onPostExecute(aVoid);
+                }
+            };
+
+            newTask.execute();
+
         }
 
 

@@ -23,6 +23,7 @@ import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,6 +36,8 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
     private String mKeyWord;
 
     private GitHubSearchOpenHelper mDbOpenHelper;
+
+    private List<Integer> mBookmarkList =  new ArrayList<Integer>();
     /* The context we use to utility methods, app resources and layout inflaters */
     private final Context mContext;
 
@@ -43,7 +46,23 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         this.mContext = mContext;
         this.mDbOpenHelper = new GitHubSearchOpenHelper(mContext);
 
+        getBookmarks();
 
+    }
+
+    private void getBookmarks() {
+        AsyncTask<Void,Void,List<Integer>> asyncTask = new AsyncTask<Void, Void, List<Integer>>() {
+            @Override
+            protected List<Integer> doInBackground(Void... voids) {
+                DataManager dm = DataManager.getSingletonInstance();
+                mBookmarkList = dm.getBookmarks(mDbOpenHelper);
+                return mBookmarkList;
+            }
+
+
+        };
+
+        asyncTask.execute();
     }
 
     public void setGitHubData(GitHubSeachResponse gitHubSeachResponse, String keyword){
@@ -120,6 +139,9 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             holder.mForksCountTextView.setText(String.valueOf(item.getForksCount()));
             holder.mStarsCountTextView.setText(String.valueOf(item.getStargazersCount()));
 
+            if(mBookmarkList.contains(item.getId()))
+                holder.mBookmarkIcon.setImageResource(R.drawable.ic_action_bookmarkadded);
+
             Picasso.get().load(item.getOwner().getAvatarUrl()).into(holder.mAvatarImageview);
         }
 
@@ -149,6 +171,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
 
         private final LinearLayout mBookmarkContainer;
 
+        private final ImageView mBookmarkIcon;
 
 
         public GitHubListAdapterViewHolder(View itemView) {
@@ -161,6 +184,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             mStarsCountTextView = (TextView) itemView.findViewById(R.id.stars_count);
             mAvatarImageview = (ImageView) itemView.findViewById(R.id.avtar);
             mBookmarkContainer = (LinearLayout) itemView.findViewById(R.id.addBookmark);
+            mBookmarkIcon = (ImageView) itemView.findViewById(R.id.bookmarkImage);
 
             mBookmarkContainer.setOnClickListener(bookmarkOnClickListener);
 

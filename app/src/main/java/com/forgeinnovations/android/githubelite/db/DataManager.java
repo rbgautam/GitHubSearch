@@ -34,7 +34,7 @@ public class DataManager {
 
         SQLiteDatabase sqlDb  = dbHelper.getReadableDatabase();
         final String[] bookmarkColumns = new String[] {GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID, GitHubSearchDbContract.BookmarkEntry.COLUMN_BOOKMARK_DATA, GitHubSearchDbContract.BookmarkEntry.COLUMN_KEYWORD};
-        Cursor bookmarkCursor = sqlDb.query(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME, bookmarkColumns, null, null, null, null, null);
+        Cursor bookmarkCursor = sqlDb.query(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME, bookmarkColumns, null, null, null, null, GitHubSearchDbContract.BookmarkEntry._ID + " desc");
 
         return loadBookmarksFromDb(bookmarkCursor);
 
@@ -92,4 +92,42 @@ public class DataManager {
 
     }
 
+    public List<Integer> getBookmarks(GitHubSearchOpenHelper dbHelper){
+
+        DataManager dm = getSingletonInstance();
+        List<Integer> itemList = new ArrayList<Integer>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        try {
+            Cursor cursor = db.query(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME, new String[]{GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID}, null, null, null, null, null);
+
+            while (cursor.moveToNext()){
+                int index = cursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID);
+                Integer item = cursor.getInt(index);
+                itemList.add(item);
+            }
+
+        }
+        catch (Exception ex){
+
+        }
+        return itemList;
+    }
+
+    public void deleteBookmark(GitHubSearchOpenHelper dbHelper, String id) {
+
+        DataManager dm = getSingletonInstance();
+
+        SQLiteDatabase sqlDb = dbHelper.getWritableDatabase();
+
+        try{
+
+            String whereClause =  GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID +  "=?";
+
+            sqlDb.delete(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME,whereClause,new String[]{id});
+        }
+        catch (Exception ex){
+
+
+        }
+    }
 }

@@ -32,18 +32,29 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bookmark);
         mDbHelper =  new GitHubSearchOpenHelper(this);
-        mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(this);
+        mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(this,mDbHelper);
         mBookmarkRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_bookmark);
         LinearLayoutManager linearLayoutManager =  new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+
+
 
         mBookmarkRecyclerView.setLayoutManager(linearLayoutManager);
 
         mBookmarkRecyclerView.setAdapter(mGitHubBookmarkItemAdapter);
 
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+
+
         mPresenter = new BookmarkPresenter(this, mGitHubBookmarkItemAdapter);
 
         mPresenter.inflateMenuItems(this);
-        getLoaderManager().initLoader(LOADER_ID,null,this);
+        LoaderManager loaderManager = getLoaderManager();
+
+        loaderManager.initLoader(LOADER_ID,null,this);
     }
 
     @Override
@@ -51,6 +62,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
         super.onDestroy();
         mDbHelper.close();
     }
+
 
     /**
      * Instantiate and return a new Loader for the given ID.

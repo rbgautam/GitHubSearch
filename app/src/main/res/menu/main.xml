@@ -16,17 +16,23 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Search Widget -->
+    <item android:id="@+id/action_search_widget"
+        android:icon="@drawable/ic_search_icon"
+        android:title="@string/action_search"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.SearchView"/>
     <item
         android:id="@+id/action_search"
         android:orderInCategory="1"
-        app:showAsAction="never|withText"
+        app:showAsAction="ifRoom|withText"
         android:icon="@drawable/ic_search_icon"
         android:tooltipText="@string/search"
         android:title="@string/search"/>
     <item
         android:id="@+id/action_bookmark"
-        android:orderInCategory="1"
-        app:showAsAction="never|withText"
+        android:orderInCategory="2"
+        app:showAsAction="ifRoom|withText"
         android:icon="@drawable/ic_menu_bookmark"
         android:tooltipText="@string/bookmark"
         android:title="@string/bookmark"/>

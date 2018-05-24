@@ -16,6 +16,7 @@
 package com.forgeinnovations.android.githubelite.main;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -77,9 +78,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         setContentView(R.layout.activity_main);
 
-        mDbOpenHelper =  new GitHubSearchOpenHelper(this);
+        mDbOpenHelper = new GitHubSearchOpenHelper(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_github);
-
 
 
         mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         // TODO (25) Get a reference to the ProgressBar using findViewById
         mDownloadRequestProgressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        LinearLayoutManager linearLayoutManager =  new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
@@ -104,7 +104,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         mSearchButton.setOnClickListener(searchOnClickListener);
 
-        mPresenter = new MainPresenter(this, new GitHubRestAdapter(),mGitHubListItemAdapter);
+        mPresenter = new MainPresenter(this, new GitHubRestAdapter(), mGitHubListItemAdapter);
+
+        ActionBar actionBar = getSupportActionBar();
+
 
 
 
@@ -133,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     public void hideResultsTextView() {
         mRecyclerView.setVisibility(View.INVISIBLE);
-        Toast.makeText(this,R.string.error_message,Toast.LENGTH_LONG);
+        Toast.makeText(this, R.string.error_message, Toast.LENGTH_LONG);
         showErrorMessageTextView();
 
     }
@@ -221,8 +224,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         hideResultsTextView();
 
     }
-
-
 
 
     @Override
