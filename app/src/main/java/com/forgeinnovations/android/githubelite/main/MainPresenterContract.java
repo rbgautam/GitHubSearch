@@ -21,7 +21,7 @@ public interface MainPresenterContract {
      * Returns the data to be displayed on the results textView
      * @param githubSearchResults
      */
-    public void showJsonDataView(GitHubSeachResponse githubSearchResults);
+    public void showJsonDataView(GitHubSeachResponse githubSearchResults, String keyword);
 
     /**
      * Makes the progressbar VISIBLE

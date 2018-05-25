@@ -33,7 +33,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
 
     private GitHubSeachResponse mGitHubData;
 
-    private String mKeyWord;
+    public String mKeyWord;
 
     private GitHubSearchOpenHelper mDbOpenHelper;
 
@@ -194,6 +194,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         private View.OnClickListener bookmarkOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String temp = mKeyWord;
                 AddBookmark(v);
             }
         };
@@ -205,21 +206,6 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             final Item item = mGitHubData.getItems().get(adapterPosition);
             Log.i("onclick",item.getHtmlUrl());
             final Item favItem = item;
-
-//            AsyncTask<Void,Void,Void> newTask = new AsyncTask<Void, Void, Void>() {
-//                @Override
-//                protected Void doInBackground(Void... voids) {
-//                    //TODO: Convert Item to string and save to db
-//                    String dataJSON = NetworkUtils.ConvertToJSON(favItem);
-//
-//                    DataManager dm = DataManager.getSingletonInstance();
-//                    dm.saveBookmark(mDbOpenHelper,dataJSON,item.getId().toString(),mKeyWord);
-//                    //After spinning off an AsysncTask
-//                    return null;
-//                }
-//            };
-//
-//            newTask.execute();
 
 
             openWebPage(item.getHtmlUrl(),view);
@@ -234,16 +220,34 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             Log.i("onclick",item.getHtmlUrl());
             final Item favItem = item;
 
-            AsyncTask<Void,Void,Void> newTask = new AsyncTask<Void, Void, Void>() {
+            AsyncTask<Void,Void,Long> newTask = new AsyncTask<Void, Void, Long>() {
                 @Override
-                protected Void doInBackground(Void... voids) {
+                protected Long doInBackground(Void... voids) {
                     //TODO: Convert Item to string and save to db
                     String dataJSON = NetworkUtils.ConvertToJSON(favItem);
 
                     DataManager dm = DataManager.getSingletonInstance();
-                    dm.saveBookmark(mDbOpenHelper,dataJSON,item.getId().toString(),mKeyWord);
+                    long result = dm.saveBookmark(mDbOpenHelper,dataJSON,item.getId().toString(),mKeyWord);
                     //After spinning off an AsysncTask
-                    return null;
+                    return result;
+                }
+
+                /**
+                 * <p>Runs on the UI thread after {@link #doInBackground}. The
+                 * specified result is the value returned by {@link #doInBackground}.</p>
+                 * <p>
+                 * <p>This method won't be invoked if the task was cancelled.</p>
+                 *
+                 * @param result The result of the operation computed by {@link #doInBackground}.
+                 * @see #onPreExecute
+                 * @see #doInBackground
+                 * @see #onCancelled(Object)
+                 */
+                @Override
+                protected void onPostExecute(Long result) {
+                    super.onPostExecute(result);
+                    if(result > -1)
+                        mBookmarkIcon.setImageResource(R.drawable.ic_action_bookmarkadded);
                 }
             };
 

@@ -8,8 +8,8 @@ android {
         applicationId "com.forgeinnovations.android.githubelite"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 5
-        versionName "1.4"
+        versionCode 6
+        versionName "1.6"
     }
 
 
@@ -29,4 +29,5 @@ dependencies {
     api 'com.squareup.retrofit2:converter-moshi:2.4.0'
     api 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
     api 'com.squareup.okhttp3:okhttp:3.9.1'
+    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
 }

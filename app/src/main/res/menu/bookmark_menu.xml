@@ -16,19 +16,27 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!-- Search Widget -->
-    <item android:id="@+id/action_search_widget"
-        android:icon="@drawable/ic_search_icon"
-        android:orderInCategory="1"
-        android:title="@string/action_search"
-        app:showAsAction="always"
-        app:actionViewClass="android.widget.SearchView"/>
+
 
     <item
-        android:id="@+id/action_bookmark"
-        android:orderInCategory="2"
+        android:id="@+id/action_search"
+        android:orderInCategory="1"
         app:showAsAction="ifRoom|withText"
-        android:icon="@drawable/ic_menu_bookmark"
-        android:tooltipText="@string/bookmark"
-        android:title="@string/bookmark"/>
+        android:icon="@drawable/ic_search_icon"
+        android:tooltipText="@string/search"
+        android:title="@string/search"/>
+
+    <item
+        android:id="@+id/menu_item_share"
+        app:showAsAction="ifRoom"
+        android:title="Share"
+        android:icon="@drawable/ic_menu_share"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+    <!--<item-->
+        <!--android:id="@+id/action_share"-->
+        <!--android:orderInCategory="1"-->
+        <!--app:showAsAction="ifRoom|withText"-->
+        <!--android:icon="@drawable/ic_menu_share"-->
+        <!--android:tooltipText="@string/share"-->
+        <!--android:title="@string/share"/>-->
 </menu>

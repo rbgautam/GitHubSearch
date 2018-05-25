@@ -69,8 +69,9 @@ public class DataManager {
         return result;
     }
 
-    public static void saveBookmark(GitHubSearchOpenHelper dbHelper,String data, String key, String keyword){
+    public static long saveBookmark(GitHubSearchOpenHelper dbHelper,String data, String key, String keyword){
 
+        long result = 0 ;
         DataManager dm = getSingletonInstance();
 
         SQLiteDatabase sqlDb  = dbHelper.getWritableDatabase();
@@ -80,7 +81,7 @@ public class DataManager {
         initialValues.put(GitHubSearchDbContract.BookmarkEntry.COLUMN_KEYWORD,keyword);
 
         try {
-            sqlDb.insertWithOnConflict  (GitHubSearchDbContract.BookmarkEntry.TABLE_NAME,null,initialValues,SQLiteDatabase.CONFLICT_IGNORE);
+            result = sqlDb.insertWithOnConflict  (GitHubSearchDbContract.BookmarkEntry.TABLE_NAME,null,initialValues,SQLiteDatabase.CONFLICT_IGNORE);
         }
         catch (Exception ex){
 
@@ -88,6 +89,7 @@ public class DataManager {
 
         sqlDb.close();
 
+        return result;
 
 
     }

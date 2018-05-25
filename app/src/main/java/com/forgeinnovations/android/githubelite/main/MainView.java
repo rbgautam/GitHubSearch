@@ -43,6 +43,12 @@ public interface MainView {
      */
     public String getSearchStringEditText();
 
+    /**
+     * @return text from edittext
+     */
+    public void setSearchStringEditText(String queryStr);
+
+
     public void setUrlDisplayTextView(String text);
 
 

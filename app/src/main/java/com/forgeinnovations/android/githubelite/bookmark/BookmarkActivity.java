@@ -3,12 +3,17 @@ package com.forgeinnovations.android.githubelite.bookmark;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CursorAdapter;
@@ -16,8 +21,11 @@ import android.widget.CursorAdapter;
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.Item;
 import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
+
+import java.util.List;
 
 public class BookmarkActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<GitHubSeachResponse> {
 
@@ -26,6 +34,8 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
     private GitHubBookmarkItemAdapter mGitHubBookmarkItemAdapter;
     private GitHubSearchOpenHelper mDbHelper;
     private RecyclerView mBookmarkRecyclerView;
+    private ShareActionProvider mShareActionProvider;
+    private String mGithubShareData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +65,8 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
         LoaderManager loaderManager = getLoaderManager();
 
         loaderManager.initLoader(LOADER_ID,null,this);
+
+
     }
 
     @Override
@@ -136,6 +148,64 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
     @Override
     public void onLoadFinished(Loader<GitHubSeachResponse> loader, GitHubSeachResponse data) {
         mGitHubBookmarkItemAdapter.setGitHubData(data);
+
+        if(data.getItems().size() == 0)
+            return;
+
+        final List<Item> bookmarkData = data.getItems();
+        AsyncTask<Void,Void,Void> asyncDataCreation =  new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mGithubShareData = CreateShareDate(bookmarkData);
+                return null;
+            }
+
+            /**
+             * <p>Runs on the UI thread after {@link #doInBackground}. The
+             * specified result is the value returned by {@link #doInBackground}.</p>
+             * <p>
+             * <p>This method won't be invoked if the task was cancelled.</p>
+             *
+             * @param aVoid The result of the operation computed by {@link #doInBackground}.
+             * @see #onPreExecute
+             * @see #doInBackground
+             * @see #onCancelled(Object)
+             */
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                mShareActionProvider.setShareIntent(createShareDataIntent());
+            }
+        };
+
+        asyncDataCreation.execute();
+
+
+    }
+
+    private String CreateShareDate(List<Item> bookmarkData) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+
+//        String name = mGitHubData.getItems().get(position).getName();
+//        String description = mGitHubData.getItems().get(position).getDescription();
+//
+//        holder.mReponameTextView.setText(name);
+//        holder.mRepoDescTextView.setText(description);
+//
+//        holder.mWatcherCountTextView.setText(String.valueOf(item.getWatchersCount()));
+//        holder.mForksCountTextView.setText(String.valueOf(item.getForksCount()));
+//        holder.mStarsCountTextView.setText(String.valueOf(item.getStargazersCount()));
+
+        stringBuilder.append("<html><body>");
+        for(Item item: bookmarkData){
+            String formattedString = String.format("%s<br/>%s<br/> Stars Count =%s, Watcher Count =%s,Forks Count =%s <br/>%s<br/>",item.getName(),item.getDescription(),item.getStargazersCount(), item.getWatchersCount(),item.getForksCount(), item.getHtmlUrl());
+            stringBuilder.append(formattedString);
+            stringBuilder.append("<hr/>");
+        }
+
+        stringBuilder.append("</body></html>");
+        return stringBuilder.toString();
     }
 
     /**
@@ -153,10 +223,27 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.bookmark_menu, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+
+        // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        //mGithubShareData = "test data";
+
         return true;
     }
 
+
+    private Intent createShareDataIntent() {
+        Intent shareIntent = ShareCompat.IntentBuilder.from(this)
+                .setType("text/html")
+                .setHtmlText(mGithubShareData)
+                .getIntent();
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        return shareIntent;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -164,5 +251,12 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // Call to update the share intent
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
     }
 }

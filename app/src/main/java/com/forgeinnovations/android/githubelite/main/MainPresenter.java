@@ -32,7 +32,7 @@ public class MainPresenter implements MainPresenterContract {
     private GitHubListItemAdapter mGitHubListItemAdapter;
 
     private Map<Integer, Item> itemMap = new HashMap<Integer, Item>();
-
+    public String mKeyword;
     public MainPresenter(MainView mMainView, GitHubRestAdapter mGitHubRestAdapter, GitHubListItemAdapter gitHubListItemAdapter) {
         this.mMainView = mMainView;
         this.mGitHubRestAdapter = mGitHubRestAdapter;
@@ -48,7 +48,7 @@ public class MainPresenter implements MainPresenterContract {
         if (!searchStr.isEmpty()) {
 
             GitHubSearchQuery repoAsychQuery = new GitHubSearchQuery(mGitHubRestAdapter, this);
-
+            this.mKeyword = searchStr;
             repoAsychQuery.execute(searchStr);
 
         }
@@ -61,11 +61,11 @@ public class MainPresenter implements MainPresenterContract {
      * @param githubSearchResults
      */
     @Override
-    public void showJsonDataView(GitHubSeachResponse githubSearchResults) {
+    public void showJsonDataView(GitHubSeachResponse githubSearchResults, String keyword) {
         StringBuilder strBuilder = new StringBuilder();
 
         mMainView.setUrlDisplayTextView(mGitHubRestAdapter.urlString);
-        String keyword = mMainView.getSearchStringEditText();
+
         try {
 
             mGitHubListItemAdapter.setGitHubData(githubSearchResults, keyword);
@@ -119,9 +119,9 @@ public class MainPresenter implements MainPresenterContract {
 
         switch (itemThatWasClickedId) {
 
-            case R.id.action_search:
-                makeGithubSearchQuery(mMainView.getSearchStringEditText());
-                break;
+//            case R.id.action_search:
+//                makeGithubSearchQuery(mMainView.getSearchStringEditText());
+//                break;
             case R.id.action_bookmark:
                 showBookmarks();
                 break;

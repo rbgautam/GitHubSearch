@@ -32,6 +32,7 @@ public class GitHubSearchQuery extends AsyncTask<String, Void, GitHubSeachRespon
         mQueryAdapter.delegate = this;
 
         mQueryAdapter.getGitHubData(strings[0]);
+        mMainPresenter.mKeyword = strings[0];
         return mGitHubSeachResponse;
 
     }
@@ -48,9 +49,9 @@ public class GitHubSearchQuery extends AsyncTask<String, Void, GitHubSeachRespon
         // TODO (27) As soon as the loading is complete, hide the loading indicator
         mMainPresenter.hideProgress();
         if (githubSearchResults.getItems() != null ) {
-
+            String keyword = mMainPresenter.mKeyword;
             // TODO (17) Call showJsonDataView if we have valid, non-null results
-            mMainPresenter.showJsonDataView(githubSearchResults);
+            mMainPresenter.showJsonDataView(githubSearchResults,keyword);
 
         } else {
             mMainPresenter.showErrorMessage();
