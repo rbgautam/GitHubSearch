@@ -19,9 +19,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     api 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:recyclerview-v7:26.1.0'
-    compile 'com.android.support.constraint:constraint-layout:1.1.0'
-    compile 'com.android.support:cardview-v7:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:cardview-v7:26.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
     api 'com.google.code.gson:gson:2.6.2'
@@ -29,5 +29,16 @@ dependencies {
     api 'com.squareup.retrofit2:converter-moshi:2.4.0'
     api 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
     api 'com.squareup.okhttp3:okhttp:3.9.1'
-    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
+    implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
+
+    // Required for local unit tests (JUnit 4 framework)
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:3.0'
+
+    // Required for instrumented tests
+    androidTestImplementation 'com.android.support:support-annotations:24.0.0'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+
+
+
 }
