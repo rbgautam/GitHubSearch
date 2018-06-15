@@ -24,6 +24,7 @@
     <string name="share">Share</string>
     <string name="next">Next</string>
     <string name="close">Close</string>
+    <string name="Intro_message_text">Test value for Tab top</string>
 
 
 </resources>

@@ -40,7 +40,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bookmark);
+        setContentView(R.layout.pager_bookmark);
         mDbHelper =  new GitHubSearchOpenHelper(this);
         mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(this,mDbHelper);
         mBookmarkRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_bookmark);

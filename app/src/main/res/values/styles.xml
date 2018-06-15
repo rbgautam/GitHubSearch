@@ -30,4 +30,18 @@
     <style name="CustomText2" parent="TextAppearance.ShowcaseView.Detail.Light">
         <item name="android:textColor">#8affffff</item>
     </style>
+
+    <style name="Widget" />
+
+    <style name="Widget.SampleMessage">
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="android:lineSpacingMultiplier">1.1</item>
+    </style>
+
+    <style name="Widget.SampleMessageTile">
+        <item name="android:background">@android:color/background_light</item>
+        <item name="android:shadowColor">#7F000000</item>
+        <item name="android:shadowDy">-3.5</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
 </resources>
