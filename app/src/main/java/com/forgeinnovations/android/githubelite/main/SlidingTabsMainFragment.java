@@ -2,13 +2,20 @@ package com.forgeinnovations.android.githubelite.main;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,18 +23,25 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.forgeinnovations.android.githubelite.R;
+import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
+import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.view.SlidingTabLayout;
 import com.github.amlcurran.showcaseview.ShowcaseView;
+
+import java.util.List;
 
 /**
  * Created by Rahul B Gautam on 6/9/18.
@@ -58,7 +72,16 @@ public class SlidingTabsMainFragment extends Fragment {
     private int mPosition = RecyclerView.NO_POSITION;
 
     private GitHubSearchOpenHelper mDbOpenHelper;
-    private ImageButton mSearchButton;
+
+    //members for bookmark tab
+    public static final int LOADER_ID = 890; // random number
+    private BookmarkPresenter mBookmarkPresenter;
+    private GitHubBookmarkItemAdapter mGitHubBookmarkItemAdapter;
+    private GitHubSearchOpenHelper mBookmarkDbHelper;
+    private RecyclerView mBookmarkRecyclerView;
+    private ShareActionProvider mShareActionProvider;
+    private String mGithubShareData;
+
 
     /**
      * Called when the fragment is no longer in use.  This is called
@@ -67,6 +90,7 @@ public class SlidingTabsMainFragment extends Fragment {
     @Override
     public void onDestroy() {
         mDbOpenHelper.close();
+        mBookmarkDbHelper.close();
         super.onDestroy();
     }
 
@@ -183,6 +207,39 @@ public class SlidingTabsMainFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+
+//        @Override
+//        public boolean onCreateOptionsMenu(Menu menu) {
+//            getMenuInflater().inflate(R.menu.bookmark_menu, menu);
+//
+//            // Locate MenuItem with ShareActionProvider
+//            MenuItem item = menu.findItem(R.id.menu_item_share);
+//
+//            // Fetch and store ShareActionProvider
+//            mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+//            //mGithubShareData = "test data";
+//
+//            return true;
+//        }
+
+
+//    private Intent createShareDataIntent() {
+//        Intent shareIntent = ShareCompat.IntentBuilder.from(get)
+//                .setType("text/html")
+//                .setHtmlText(mGithubShareData)
+//                .getIntent();
+//        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+//        return shareIntent;
+//    }
+
+
+    // Call to update the share intent
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
+    }
+
     /**
      * This hook is called whenever an item in your options menu is selected.
      * The default implementation simply returns false to have the normal
@@ -241,7 +298,7 @@ public class SlidingTabsMainFragment extends Fragment {
      * this class is the {@link #getPageTitle(int)} method which controls what is displayed in the
      * {@link SlidingTabLayout}.
      */
-    class SamplePagerAdapter extends PagerAdapter implements MainView {
+    class SamplePagerAdapter extends PagerAdapter implements MainView, LoaderManager.LoaderCallbacks<GitHubSeachResponse> {
 
         /**
          * @return the number of pages to display
@@ -315,7 +372,7 @@ public class SlidingTabsMainFragment extends Fragment {
                         container, false);
 
                 mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_github);
-                mRecyclerView.setAdapter(mGitHubListItemAdapter);
+
 
                 // Add the newly created View to the ViewPager
                 container.addView(view);
@@ -348,11 +405,157 @@ public class SlidingTabsMainFragment extends Fragment {
                 mPresenter = new MainPresenter(this, new GitHubRestAdapter(), mGitHubListItemAdapter);
 
             }
+
+            if (position == 2) {
+
+                // Inflate a new layout from our resources
+                view = getActivity().getLayoutInflater().inflate(R.layout.pager_bookmark,
+                        container, false);
+
+
+                mBookmarkRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_bookmark);
+
+                mBookmarkDbHelper = new GitHubSearchOpenHelper(getContext());
+                mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(getContext(), mBookmarkDbHelper);
+                mBookmarkRecyclerView.setAdapter(mGitHubBookmarkItemAdapter);
+
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+
+
+                mBookmarkRecyclerView.setLayoutManager(linearLayoutManager);
+
+
+
+                // Add the newly created View to the ViewPager
+                container.addView(view);
+
+//                android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+//
+//                actionBar.setDisplayHomeAsUpEnabled(true);
+
+
+//                mBookmarkPresenter = new BookmarkPresenter(this, mGitHubBookmarkItemAdapter);
+
+//                mBookmarkPresenter.inflateMenuItems(this);
+                LoaderManager loaderManager;
+                loaderManager = getLoaderManager();
+
+                loaderManager.initLoader(LOADER_ID, null, this);
+
+            }
             Log.i(LOG_TAG, "instantiateItem() [position: " + position + "]");
 
             // Return the View
             return view;
         }
+
+
+        /**
+         * Instantiate and return a new Loader for the given ID.
+         *
+         * @param id   The ID whose loader is to be created.
+         * @param args Any arguments supplied by the caller.
+         * @return Return a new Loader instance that is ready to start loading.
+         */
+        @Override
+        public android.support.v4.content.Loader<GitHubSeachResponse> onCreateLoader(int id, Bundle args) {
+            return new AsyncTaskLoader<GitHubSeachResponse>(getContext()) {
+
+
+                /**
+                 * Subclasses must implement this to take care of loading their data,
+                 * as per {@link #startLoading()}.  This is not called by clients directly,
+                 * but as a result of a call to {@link #startLoading()}.
+                 */
+                @Override
+                protected void onStartLoading() {
+                    super.onStartLoading();
+                    forceLoad();
+                }
+
+                @Override
+                public GitHubSeachResponse loadInBackground() {
+
+                    return DataManager.loadFromDatabase(mBookmarkDbHelper);
+
+                }
+            };
+        }
+
+        /**
+         * Called when a previously created loader has finished its load.  Note
+         * that normally an application is <em>not</em> allowed to commit fragment
+         * transactions while in this call, since it can happen after an
+         * activity's state is saved.  See {@link FragmentManager#beginTransaction()
+         * FragmentManager.openTransaction()} for further discussion on this.
+         * <p>
+         * <p>This function is guaranteed to be called prior to the release of
+         * the last data that was supplied for this Loader.  At this point
+         * you should remove all use of the old data (since it will be released
+         * soon), but should not do your own release of the data since its Loader
+         * owns it and will take care of that.  The Loader will take care of
+         * management of its data so you don't have to.  In particular:
+         * <p>
+         * <ul>
+         * <li> <p>The Loader will monitor for changes to the data, and report
+         * them to you through new calls here.  You should not monitor the
+         * data yourself.  For example, if the data is a {@link Cursor}
+         * and you place it in a {@link CursorAdapter}, use
+         * the {@link CursorAdapter#CursorAdapter(Context, * Cursor, int)} constructor <em>without</em> passing
+         * in either {@link CursorAdapter#FLAG_AUTO_REQUERY}
+         * or {@link CursorAdapter#FLAG_REGISTER_CONTENT_OBSERVER}
+         * (that is, use 0 for the flags argument).  This prevents the CursorAdapter
+         * from doing its own observing of the Cursor, which is not needed since
+         * when a change happens you will get a new Cursor throw another call
+         * here.
+         * <li> The Loader will release the data once it knows the application
+         * is no longer using it.  For example, if the data is
+         * a {@link Cursor} from a {@link CursorLoader},
+         * you should not call close() on it yourself.  If the Cursor is being placed in a
+         * {@link CursorAdapter}, you should use the
+         * {@link CursorAdapter#swapCursor(Cursor)}
+         * method so that the old Cursor is not closed.
+         * </ul>
+         *
+         * @param loader The Loader that has finished.
+         * @param data   The data generated by the Loader.
+         */
+        @Override
+        public void onLoadFinished(android.support.v4.content.Loader<GitHubSeachResponse> loader, GitHubSeachResponse data) {
+            mGitHubBookmarkItemAdapter.setGitHubData(data);
+        }
+
+        /**
+         * Called when a previously created loader is being reset, and thus
+         * making its data unavailable.  The application should at this point
+         * remove any references it has to the Loader's data.
+         *
+         * @param loader The Loader that is being reset.
+         */
+        @Override
+        public void onLoaderReset(android.support.v4.content.Loader<GitHubSeachResponse> loader) {
+
+        }
+
+
+
+        private String CreateShareDate(List<Item> bookmarkData) {
+            StringBuilder stringBuilder = new StringBuilder();
+
+
+            stringBuilder.append("<html><body>");
+            for (Item item : bookmarkData) {
+                String formattedString = String.format("%s<br/>%s<br/> Stars Count =%s, Watcher Count =%s,Forks Count =%s <br/>%s<br/>", item.getName(), item.getDescription(), item.getStargazersCount(), item.getWatchersCount(), item.getForksCount(), item.getHtmlUrl());
+                stringBuilder.append(formattedString);
+                stringBuilder.append("<hr/>");
+            }
+
+            stringBuilder.append("</body></html>");
+            return stringBuilder.toString();
+        }
+
+
+
 
         /**
          * Destroy the item from the {@link ViewPager}. In our case this is simply removing the
@@ -362,6 +565,7 @@ public class SlidingTabsMainFragment extends Fragment {
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
             mDbOpenHelper.close();
+            mBookmarkDbHelper.close();
             Log.i(LOG_TAG, "destroyItem() [position: " + position + "]");
         }
 

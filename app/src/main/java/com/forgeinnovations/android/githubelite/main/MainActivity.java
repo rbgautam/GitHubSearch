@@ -90,18 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
             mPresenter.makeGithubSearchQuery(query);
 
-//            //First time help
-//
-//            showcaseView = new ShowcaseView.Builder(this)
-//                    .setTarget(Target.NONE)
-//                    .setContentTitle("Get Started")
-//                    .setContentText("View all-time greatest repositories\nClick on the search icon and type your keyword")
-//                    .setOnClickListener(this)
-//                    .build();
-//
-//
-//            setAlpha(0.2f, mRecyclerView);
-//            showcaseView.setButtonText(getString(R.string.next));
 
         }
 

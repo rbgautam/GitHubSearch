@@ -30,9 +30,9 @@ import java.util.List;
 public class BookmarkActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<GitHubSeachResponse> {
 
     public static final int LOADER_ID = 890; // random number
-    private BookmarkPresenter mPresenter;
+    private BookmarkPresenter mBookmarkPresenter;
     private GitHubBookmarkItemAdapter mGitHubBookmarkItemAdapter;
-    private GitHubSearchOpenHelper mDbHelper;
+    private GitHubSearchOpenHelper mBookmarkDbHelper;
     private RecyclerView mBookmarkRecyclerView;
     private ShareActionProvider mShareActionProvider;
     private String mGithubShareData;
@@ -41,8 +41,8 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pager_bookmark);
-        mDbHelper =  new GitHubSearchOpenHelper(this);
-        mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(this,mDbHelper);
+        mBookmarkDbHelper =  new GitHubSearchOpenHelper(this);
+        mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(this, mBookmarkDbHelper);
         mBookmarkRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_bookmark);
         LinearLayoutManager linearLayoutManager =  new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
 
@@ -59,9 +59,9 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
 
 
 
-        mPresenter = new BookmarkPresenter(this, mGitHubBookmarkItemAdapter);
+        mBookmarkPresenter = new BookmarkPresenter(this, mGitHubBookmarkItemAdapter);
 
-        mPresenter.inflateMenuItems(this);
+        mBookmarkPresenter.inflateMenuItems(this);
         LoaderManager loaderManager = getLoaderManager();
 
         loaderManager.initLoader(LOADER_ID,null,this);
@@ -72,7 +72,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mDbHelper.close();
+        mBookmarkDbHelper.close();
     }
 
 
@@ -102,7 +102,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
             @Override
             public GitHubSeachResponse loadInBackground() {
 
-                return DataManager.loadFromDatabase(mDbHelper);
+                return DataManager.loadFromDatabase(mBookmarkDbHelper);
 
             }
         };
@@ -187,16 +187,6 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
         StringBuilder stringBuilder = new StringBuilder();
 
 
-//        String name = mGitHubData.getItems().get(position).getName();
-//        String description = mGitHubData.getItems().get(position).getDescription();
-//
-//        holder.mReponameTextView.setText(name);
-//        holder.mRepoDescTextView.setText(description);
-//
-//        holder.mWatcherCountTextView.setText(String.valueOf(item.getWatchersCount()));
-//        holder.mForksCountTextView.setText(String.valueOf(item.getForksCount()));
-//        holder.mStarsCountTextView.setText(String.valueOf(item.getStargazersCount()));
-
         stringBuilder.append("<html><body>");
         for(Item item: bookmarkData){
             String formattedString = String.format("%s<br/>%s<br/> Stars Count =%s, Watcher Count =%s,Forks Count =%s <br/>%s<br/>",item.getName(),item.getDescription(),item.getStargazersCount(), item.getWatchersCount(),item.getForksCount(), item.getHtmlUrl());
@@ -247,7 +237,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mPresenter.onMenuItemClicked(item);
+        mBookmarkPresenter.onMenuItemClicked(item);
 
 
         return super.onOptionsItemSelected(item);
