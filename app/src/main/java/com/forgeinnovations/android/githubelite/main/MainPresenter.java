@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 
-import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.bookmark.BookmarkActivity;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
@@ -122,9 +121,9 @@ public class MainPresenter implements MainPresenterContract {
 //            case R.id.action_search:
 //                makeGithubSearchQuery(mMainView.getSearchStringEditText());
 //                break;
-            case R.id.action_bookmark:
-                showBookmarks();
-                break;
+//            case R.id.action_bookmark:
+//                showBookmarks();
+//                break;
 
         }
 

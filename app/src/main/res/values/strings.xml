@@ -25,6 +25,10 @@
     <string name="next">Next</string>
     <string name="close">Close</string>
     <string name="Intro_message_text">Test value for Tab top</string>
+    <string name="searchTabTopText">Click on The lens icon and type Keyword in Search bar</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

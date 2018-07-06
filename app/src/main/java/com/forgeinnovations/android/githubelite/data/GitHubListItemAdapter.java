@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAdapter.GitHubListAdapterViewHolder> {
 
-    private GitHubSeachResponse mGitHubData;
+    public GitHubSeachResponse mGitHubData;
 
     public String mKeyWord;
 
@@ -66,9 +66,10 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
     }
 
     public void setGitHubData(GitHubSeachResponse gitHubSeachResponse, String keyword){
-        mGitHubData = gitHubSeachResponse;
-        mKeyWord = keyword;
-        notifyDataSetChanged();
+        this.mGitHubData = gitHubSeachResponse;
+        this.mKeyWord = keyword;
+//        notifyDataSetChanged();
+        notifyItemRangeChanged(0,getItemCount()-1);
     }
     /**
      * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
@@ -156,7 +157,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
     public int getItemCount() {
         if(mGitHubData == null)
             return 0;
-        int totCount = mGitHubData.getSearchCount();
+        int totCount = this.mGitHubData.getSearchCount();
 
         return  totCount;
     }

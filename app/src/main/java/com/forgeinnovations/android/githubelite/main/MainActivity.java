@@ -17,18 +17,25 @@ package com.forgeinnovations.android.githubelite.main;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
+import com.forgeinnovations.android.githubelite.tabs.BookmarkTab;
+import com.forgeinnovations.android.githubelite.tabs.SearchTab;
+import com.forgeinnovations.android.githubelite.tabs.Tab3Fragment;
+import com.forgeinnovations.android.githubelite.view.SamplePagerAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchTab.OnFragmentInteractionListener,BookmarkTab.OnFragmentInteractionListener,Tab3Fragment.OnFragmentInteractionListener {
 
 
     private MainPresenter mPresenter;
@@ -53,21 +60,44 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //mPresenter = new MainPresenter(this, new GitHubRestAdapter(), mGitHubListItemAdapter);
-        if (savedInstanceState == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            SlidingTabsMainFragment fragment = new SlidingTabsMainFragment();
-            transaction.replace(R.id.main_content_fragment, fragment);
-            transaction.commit();
-        }
+//        if (savedInstanceState == null) {
+//            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//            SlidingTabsMainFragment fragment = new SlidingTabsMainFragment();
+//            transaction.replace(R.id.act, fragment);
+//            transaction.commit();
+//        }
 
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout.addTab(tabLayout.newTab().setText("Search"));
+        tabLayout.addTab(tabLayout.newTab().setText("Bookmarks"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-//        mGitHubListItemAdapter = new GitHubListItemAdapter(this);
-//        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_github);
-//        mRecyclerView.setAdapter(mGitHubListItemAdapter);
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        final SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(),tabLayout.getTabCount(),this);
+        viewPager.setAdapter(adapter);
 
-        //createSearchQueryListener
+        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         handleIntent(getIntent());
 
@@ -129,9 +159,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-
-
-
-
+    }
 }

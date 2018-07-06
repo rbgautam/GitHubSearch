@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.forgeinnovations.android.githubelite.R;
-import com.forgeinnovations.android.githubelite.bookmark.BookmarkActivity;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.datamodel.Item;
 import com.forgeinnovations.android.githubelite.db.DataManager;
