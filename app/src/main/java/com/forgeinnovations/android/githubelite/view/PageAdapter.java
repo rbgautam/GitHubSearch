@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.forgeinnovations.android.githubelite.tabs.BookmarkTab;
 import com.forgeinnovations.android.githubelite.tabs.SearchTab;
 
 /**
@@ -32,6 +33,9 @@ public class PageAdapter extends FragmentStatePagerAdapter {
             case 0:
                 SearchTab searchTab= new SearchTab();
                 return searchTab;
+            case 1:
+                BookmarkTab boomarkTab= new BookmarkTab();
+                return boomarkTab;
             default:
                 return null;
         }

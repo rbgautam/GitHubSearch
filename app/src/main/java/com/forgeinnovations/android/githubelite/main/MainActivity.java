@@ -33,7 +33,7 @@ import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.tabs.BookmarkTab;
 import com.forgeinnovations.android.githubelite.tabs.SearchTab;
 import com.forgeinnovations.android.githubelite.tabs.Tab3Fragment;
-import com.forgeinnovations.android.githubelite.view.SamplePagerAdapter;
+import com.forgeinnovations.android.githubelite.view.PageAdapter;
 
 public class MainActivity extends AppCompatActivity implements SearchTab.OnFragmentInteractionListener,BookmarkTab.OnFragmentInteractionListener,Tab3Fragment.OnFragmentInteractionListener {
 
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.OnFragm
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final SamplePagerAdapter adapter = new SamplePagerAdapter(getSupportFragmentManager(),tabLayout.getTabCount(),this);
+        final PageAdapter adapter = new PageAdapter(getSupportFragmentManager(),tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
 
         viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
