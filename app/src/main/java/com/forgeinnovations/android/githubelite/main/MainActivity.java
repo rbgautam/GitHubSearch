@@ -63,13 +63,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.OnFragm
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //mPresenter = new MainPresenter(this, new GitHubRestAdapter(), mGitHubListItemAdapter);
-//        if (savedInstanceState == null) {
-//            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//            SlidingTabsMainFragment fragment = new SlidingTabsMainFragment();
-//            transaction.replace(R.id.act, fragment);
-//            transaction.commit();
-//        }
+
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
         tabLayout.addTab(tabLayout.newTab().setText("Search"));
@@ -161,6 +155,8 @@ public class MainActivity extends AppCompatActivity implements SearchTab.OnFragm
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        String temp = uri.toString();
     }
+
+
 }

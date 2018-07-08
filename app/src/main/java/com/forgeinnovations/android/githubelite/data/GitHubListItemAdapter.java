@@ -125,7 +125,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
      */
     @Override
     public void onBindViewHolder(GitHubListAdapterViewHolder holder, int position) {
-        //Log.i("OnBindViewholder",String.valueOf(position));
+       // Log.i("OnBindViewholder",String.valueOf(position));
         if(position < getItemCount()) {
             //androidLog.i("OnBindViewholder",String.valueOf(position));
 
@@ -162,6 +162,21 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         return  totCount;
     }
 
+    public interface AddBookmarkListener {
+
+        void onAddBookmark();
+    }
+
+    private AddBookmarkListener onAddBookmarkListener;
+
+    public void setAddBookmarkListener(AddBookmarkListener onAddBookmarkListener){
+        this.onAddBookmarkListener = onAddBookmarkListener;
+    }
+
+    public AddBookmarkListener getAddBookmarkListener(){
+        return onAddBookmarkListener;
+    }
+
     public class GitHubListAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener{
         private final TextView mReponameTextView;
         private final TextView mRepoDescTextView;
@@ -173,6 +188,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
         private final LinearLayout mBookmarkContainer;
 
         private final ImageView mBookmarkIcon;
+
 
 
         public GitHubListAdapterViewHolder(View itemView) {
@@ -197,26 +213,29 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             public void onClick(View v) {
                 String temp = mKeyWord;
                 AddBookmark(v);
+                onAddBookmarkListener.onAddBookmark();
+
             }
         };
 
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            //String weatherForDay = mWeatherData[adapterPosition];
-            final Item item = mGitHubData.getItems().get(adapterPosition);
-            Log.i("onclick",item.getHtmlUrl());
-            final Item favItem = item;
+            if(mGitHubData.getItems().size() > 0) {
+                final Item item = mGitHubData.getItems().get(adapterPosition);
+                Log.i("onclick", item.getHtmlUrl());
+                final Item favItem = item;
 
 
-            openWebPage(item.getHtmlUrl(),view);
-
+                openWebPage(item.getHtmlUrl(), view);
+            }
 
         }
 
         public void AddBookmark(View view){
             int adapterPosition = getAdapterPosition();
-            //String weatherForDay = mWeatherData[adapterPosition];
+            if(mGitHubData.getItems().size() == 0)
+                return;
             final Item item = mGitHubData.getItems().get(adapterPosition);
             Log.i("onclick",item.getHtmlUrl());
             final Item favItem = item;

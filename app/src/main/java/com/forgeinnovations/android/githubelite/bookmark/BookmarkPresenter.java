@@ -33,11 +33,11 @@ public class BookmarkPresenter implements BookmarkContract {
 
         switch (itemThatWasClickedId) {
 
-            case R.id.action_search:
-                //Intent intent = new Intent(mParentContext, MainActivity.class);
-                //mParentContext.startActivity(intent);
-                break;
-            case R.id.action_bookmark:
+//            case R.id.action_search:
+//                //Intent intent = new Intent(mParentContext, MainActivity.class);
+//                //mParentContext.startActivity(intent);
+//                break;
+            case R.id.menu_item_share:
                 shareBookmarks();
                 break;
 

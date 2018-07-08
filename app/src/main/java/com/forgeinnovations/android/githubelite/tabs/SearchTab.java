@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
@@ -25,6 +28,8 @@ import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
 import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.main.MainPresenter;
 import com.forgeinnovations.android.githubelite.main.MainView;
@@ -32,7 +37,7 @@ import com.forgeinnovations.android.githubelite.main.MainView;
 /**
  * Created by Rahul B Gautam on 7/4/18.
  */
-public class SearchTab extends Fragment implements MainView{
+public class SearchTab extends Fragment implements MainView, LoaderManager.LoaderCallbacks<GitHubSeachResponse> ,GitHubListItemAdapter.AddBookmarkListener{
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,6 +86,7 @@ public class SearchTab extends Fragment implements MainView{
     private String mGithubShareData;
     private Menu mMenu;
     private String mKeyword;
+    private LoaderManager mLoaderManager;
 
     public SearchTab() {
     }
@@ -193,6 +199,9 @@ public class SearchTab extends Fragment implements MainView{
         Context context = getActivity().getBaseContext();
 
         mDbOpenHelper = new GitHubSearchOpenHelper(context);
+        mBookmarkDbHelper =  new GitHubSearchOpenHelper(getActivity());
+
+        mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(getActivity(), mBookmarkDbHelper);
 
 //        TextView contextualtext = getActivity().findViewById(R.id.tv_contextual_text);
 //        contextualtext.setText(R.string.searchTabTopText);
@@ -207,7 +216,7 @@ public class SearchTab extends Fragment implements MainView{
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-
+        //mGitHubBookmarkItemAdapter.setGitHubData(data);
 
         mGitHubListItemAdapter = new GitHubListItemAdapter(getActivity());
 
@@ -216,6 +225,11 @@ public class SearchTab extends Fragment implements MainView{
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
         mPresenter = new MainPresenter(this, new GitHubRestAdapter(), mGitHubListItemAdapter);
+
+        mLoaderManager = getLoaderManager();
+        mLoaderManager.initLoader(LOADER_ID,null,this);
+
+        mGitHubListItemAdapter.setAddBookmarkListener(this);
         return view;
     }
 
@@ -229,6 +243,8 @@ public class SearchTab extends Fragment implements MainView{
                     + " must implement OnFragmentInteractionListener");
         }
     }
+
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -250,8 +266,10 @@ public class SearchTab extends Fragment implements MainView{
     @Override
     public void onDetach() {
         mListener = null;
-        mDbOpenHelper.close();
-        mBookmarkDbHelper.close();
+        if(mDbOpenHelper != null)
+            mDbOpenHelper.close();
+        if(mBookmarkDbHelper != null)
+            mBookmarkDbHelper.close();
         super.onDetach();
     }
 
@@ -262,8 +280,10 @@ public class SearchTab extends Fragment implements MainView{
     @Override
     public void onDestroy() {
         mListener = null;
-        mDbOpenHelper.close();
-        mBookmarkDbHelper.close();
+        if(mDbOpenHelper != null)
+            mDbOpenHelper.close();
+        if(mBookmarkDbHelper != null)
+            mBookmarkDbHelper.close();
         super.onDestroy();
     }
 
@@ -283,6 +303,7 @@ public class SearchTab extends Fragment implements MainView{
             public boolean onQueryTextSubmit(final String query) {
                 //setSearchStringEditText(query);
                 mPresenter.makeGithubSearchQuery(query);
+                mPresenter.hideKeyboard(getActivity());
                 return true;
             }
 
@@ -381,6 +402,50 @@ public class SearchTab extends Fragment implements MainView{
     public void setUrlDisplayTextView(String text) {
         mUrlDisplayTextView.setText(text);
 
+    }
+
+    @Override
+    public Loader<GitHubSeachResponse> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<GitHubSeachResponse>(getContext()) {
+
+
+            /**
+             * Subclasses must implement this to take care of loading their data,
+             * as per {@link #startLoading()}.  This is not called by clients directly,
+             * but as a result of a call to {@link #startLoading()}.
+             */
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                forceLoad();
+            }
+
+            @Override
+            public GitHubSeachResponse loadInBackground() {
+
+                return DataManager.loadFromDatabase(mBookmarkDbHelper);
+
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<GitHubSeachResponse> loader, GitHubSeachResponse data) {
+        if(data != null){
+            mGitHubBookmarkItemAdapter.setGitHubData(data);
+
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<GitHubSeachResponse> loader) {
+
+    }
+
+    @Override
+    public void onAddBookmark() {
+        mLoaderManager.restartLoader(LOADER_ID,null,this);
     }
 
     /**

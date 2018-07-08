@@ -34,6 +34,7 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
     private final Context mContext;
 
     private GitHubSearchOpenHelper mDbOpenHelper;
+    public GitHubBookmarkAdapterViewHolder mGitHubBookmarkAdapterViewHolder;
 
 
     public GitHubBookmarkItemAdapter(Context mContext, GitHubSearchOpenHelper dbHelper) {
@@ -43,7 +44,9 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
 
     public void setGitHubData(GitHubSeachResponse gitHubSeachResponse){
         mGitHubData = gitHubSeachResponse;
-        notifyDataSetChanged();
+
+        notifyItemRangeChanged(0,getItemCount()-1);
+
     }
     /**
      * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
@@ -71,7 +74,8 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
         int layoutListItem = R.layout.github_bookmark_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(layoutListItem,parent,false);
-        return new GitHubBookmarkAdapterViewHolder(view);
+        mGitHubBookmarkAdapterViewHolder = new GitHubBookmarkAdapterViewHolder(view);
+        return mGitHubBookmarkAdapterViewHolder;
     }
 
     /**
