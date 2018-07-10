@@ -47,6 +47,11 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
     private String mGithubShareData;
 
     private OnFragmentInteractionListener mListener;
+
+    public LoaderManager getBookLoaderManager() {
+        return mLoaderManager;
+    }
+
     private LoaderManager mLoaderManager;
 
     public BookmarkTab(){}
@@ -56,6 +61,7 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
 
         return fragment;
     }
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -240,5 +246,9 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_bookmark, container, false);
+    }
+
+    public void refreshRecyclerView(){
+        mLoaderManager.restartLoader(LOADER_ID,null,this);
     }
 }

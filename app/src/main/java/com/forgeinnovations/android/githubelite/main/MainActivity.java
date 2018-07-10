@@ -33,15 +33,16 @@ import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.tabs.BookmarkTab;
 import com.forgeinnovations.android.githubelite.tabs.SearchTab;
 import com.forgeinnovations.android.githubelite.tabs.Tab3Fragment;
-import com.forgeinnovations.android.githubelite.view.PageAdapter;
+import com.forgeinnovations.android.githubelite.view.TabPageAdapter;
 
-public class MainActivity extends AppCompatActivity implements SearchTab.OnFragmentInteractionListener,BookmarkTab.OnFragmentInteractionListener,Tab3Fragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements SearchTab.FragmentBookmarkListener ,BookmarkTab.OnFragmentInteractionListener,Tab3Fragment.OnFragmentInteractionListener {
 
 
     private MainPresenter mPresenter;
 
     private GitHubListItemAdapter mGitHubListItemAdapter;
     private RecyclerView mRecyclerView;
+    private TabPageAdapter mAdapter;
     //TODO:S
     //TODO: completed Add MVP pattern
     //TODO: completed : Add retofit to parse data
@@ -71,27 +72,39 @@ public class MainActivity extends AppCompatActivity implements SearchTab.OnFragm
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final PageAdapter adapter = new PageAdapter(getSupportFragmentManager(),tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
+        mAdapter = new TabPageAdapter(getSupportFragmentManager());
+        SearchTab searchTab = new SearchTab();
+        mAdapter.addFrag(searchTab, "Search");
 
-        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        BookmarkTab bookmarkTab = new BookmarkTab();
+        mAdapter.addFrag(bookmarkTab, "Bookmarks");
 
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
+        viewPager.setAdapter(mAdapter);
 
-            }
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
 
-            }
-        });
+        searchTab.setAddBookmarkListener(this);
+
+//        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+//
+//        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
 
         handleIntent(getIntent());
 
@@ -159,4 +172,9 @@ public class MainActivity extends AppCompatActivity implements SearchTab.OnFragm
     }
 
 
+    @Override
+    public void onFragmentAddBookMark(String tab) {
+        BookmarkTab fragment = (BookmarkTab) mAdapter.getItem(1);
+        fragment.refreshRecyclerView();
+    }
 }

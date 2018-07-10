@@ -48,7 +48,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     private String mParam2;
 
 
-    private OnFragmentInteractionListener mListener;
+    //private OnFragmentInteractionListener mListener;
 
 
     static final String LOG_TAG = "SlidingTabsMainFragment";
@@ -236,12 +236,12 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+//        if (context instanceof OnFragmentInteractionListener) {
+//            mListener = (OnFragmentInteractionListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
     }
 
 
@@ -256,16 +256,10 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
 
     @Override
     public void onDetach() {
-        mListener = null;
         if(mDbOpenHelper != null)
             mDbOpenHelper.close();
         if(mBookmarkDbHelper != null)
@@ -279,7 +273,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
      */
     @Override
     public void onDestroy() {
-        mListener = null;
+
         if(mDbOpenHelper != null)
             mDbOpenHelper.close();
         if(mBookmarkDbHelper != null)
@@ -445,7 +439,8 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
 
     @Override
     public void onAddBookmark() {
-        mLoaderManager.restartLoader(LOADER_ID,null,this);
+        //mLoaderManager.restartLoader(LOADER_ID,null,this);
+        onFragmentAddBookmarkListener.onFragmentAddBookMark("tab1");
     }
 
     /**
@@ -458,9 +453,19 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface FragmentBookmarkListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentAddBookMark(String tab);
+    }
+
+    private FragmentBookmarkListener onFragmentAddBookmarkListener;
+
+    public void setAddBookmarkListener(FragmentBookmarkListener fragmentAddBookmarkListener){
+        this.onFragmentAddBookmarkListener = fragmentAddBookmarkListener;
+    }
+
+    public FragmentBookmarkListener getAddBookmarkListener(){
+        return this.onFragmentAddBookmarkListener;
     }
 
 }
