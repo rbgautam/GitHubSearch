@@ -174,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
 
     @Override
     public void onFragmentAddBookMark(String tab) {
+
         BookmarkTab fragment = (BookmarkTab) mAdapter.getItem(1);
         fragment.refreshRecyclerView();
     }

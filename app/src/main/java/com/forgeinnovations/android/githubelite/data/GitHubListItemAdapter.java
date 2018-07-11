@@ -213,7 +213,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             public void onClick(View v) {
                 String temp = mKeyWord;
                 AddBookmark(v);
-                onAddBookmarkListener.onAddBookmark();
+
 
             }
         };
@@ -266,8 +266,12 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
                 @Override
                 protected void onPostExecute(Long result) {
                     super.onPostExecute(result);
-                    if(result > -1)
+                    if(result > -1){
+                        Log.i("bookmark trace","on post execute save bookmark");
                         mBookmarkIcon.setImageResource(R.drawable.ic_action_bookmarkadded);
+                        onAddBookmarkListener.onAddBookmark();
+                    }
+
                 }
             };
 

@@ -2,7 +2,6 @@ package com.forgeinnovations.android.githubelite.tabs;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +11,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -440,6 +440,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     @Override
     public void onAddBookmark() {
         //mLoaderManager.restartLoader(LOADER_ID,null,this);
+        Log.i("bookmark trace","inside onAddbookmark");
         onFragmentAddBookmarkListener.onFragmentAddBookMark("tab1");
     }
 

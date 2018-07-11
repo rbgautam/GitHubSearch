@@ -15,6 +15,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -164,6 +165,7 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
 
     @Override
     public void onLoadFinished(Loader<GitHubSeachResponse> loader, GitHubSeachResponse data) {
+        Log.i("bookmark trace",String.format("loader finished book mark count = %d",data.getTotalCount()));
         mGitHubBookmarkItemAdapter.setGitHubData(data);
         if(data.getItems().size() == 0)
             return;
@@ -250,5 +252,6 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
 
     public void refreshRecyclerView(){
         mLoaderManager.restartLoader(LOADER_ID,null,this);
+        //mGitHubBookmarkItemAdapter.notifyItemChanged(0);
     }
 }

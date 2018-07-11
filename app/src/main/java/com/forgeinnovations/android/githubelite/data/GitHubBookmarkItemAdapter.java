@@ -44,8 +44,9 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
 
     public void setGitHubData(GitHubSeachResponse gitHubSeachResponse){
         mGitHubData = gitHubSeachResponse;
-
-        notifyItemRangeChanged(0,getItemCount()-1);
+        Log.i("bookmark trace",String.format("book mark count = %d, gitHubSeachResponse = %d",getItemCount(), gitHubSeachResponse.getTotalCount()));
+        notifyDataSetChanged();
+        //notifyItemRangeChanged(0,getItemCount()-1);
 
     }
     /**
@@ -100,7 +101,8 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
      */
     @Override
     public void onBindViewHolder(GitHubBookmarkAdapterViewHolder holder, int position) {
-        //Log.i("OnBindViewholder",String.valueOf(position));
+        Log.i("OnBindViewholder",String.valueOf(position));
+        Log.i("bookmark trace",String.format("book mark count = %d",getItemCount()));
         if(position < getItemCount()) {
             //androidLog.i("OnBindViewholder",String.valueOf(position));
 
@@ -127,6 +129,7 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
      */
     @Override
     public int getItemCount() {
+
         if(mGitHubData == null)
             return 0;
         int totCount = mGitHubData.getSearchCount();
