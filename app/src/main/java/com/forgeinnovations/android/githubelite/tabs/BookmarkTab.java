@@ -251,6 +251,7 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
     }
 
     public void refreshRecyclerView(){
+        Log.i("bookmark trace","refreshRecyclerView " );
         mLoaderManager.restartLoader(LOADER_ID,null,this);
         //mGitHubBookmarkItemAdapter.notifyItemChanged(0);
     }
