@@ -28,6 +28,7 @@ import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
 import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
@@ -37,7 +38,7 @@ import com.forgeinnovations.android.githubelite.main.MainView;
 /**
  * Created by Rahul B Gautam on 7/4/18.
  */
-public class SearchTab extends Fragment implements MainView, LoaderManager.LoaderCallbacks<GitHubSeachResponse> ,GitHubListItemAdapter.AddBookmarkListener{
+public class SearchTab extends Fragment implements MainView, LoaderManager.LoaderCallbacks<GitHubBookmarkResponse> ,GitHubListItemAdapter.AddBookmarkListener{
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -226,8 +227,8 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
 
         mPresenter = new MainPresenter(this, new GitHubRestAdapter(), mGitHubListItemAdapter);
 
-        mLoaderManager = getLoaderManager();
-        mLoaderManager.initLoader(LOADER_ID,null,this);
+        //mLoaderManager = getLoaderManager();
+        //mLoaderManager.initLoader(LOADER_ID,null,this);
 
         mGitHubListItemAdapter.setAddBookmarkListener(this);
         return view;
@@ -399,8 +400,8 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     }
 
     @Override
-    public Loader<GitHubSeachResponse> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskLoader<GitHubSeachResponse>(getContext()) {
+    public Loader<GitHubBookmarkResponse> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<GitHubBookmarkResponse>(getContext()) {
 
 
             /**
@@ -415,7 +416,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
             }
 
             @Override
-            public GitHubSeachResponse loadInBackground() {
+            public GitHubBookmarkResponse loadInBackground() {
 
                 return DataManager.loadFromDatabase(mBookmarkDbHelper);
 
@@ -424,7 +425,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     }
 
     @Override
-    public void onLoadFinished(Loader<GitHubSeachResponse> loader, GitHubSeachResponse data) {
+    public void onLoadFinished(Loader<GitHubBookmarkResponse> loader, GitHubBookmarkResponse data) {
         if(data != null){
             mGitHubBookmarkItemAdapter.setGitHubData(data);
 
@@ -433,7 +434,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     }
 
     @Override
-    public void onLoaderReset(Loader<GitHubSeachResponse> loader) {
+    public void onLoaderReset(Loader<GitHubBookmarkResponse> loader) {
 
     }
 

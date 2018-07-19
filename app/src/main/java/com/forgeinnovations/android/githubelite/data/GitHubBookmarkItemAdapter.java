@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.forgeinnovations.android.githubelite.R;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.datamodel.Item;
 import com.forgeinnovations.android.githubelite.db.DataManager;
@@ -21,6 +22,8 @@ import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -28,7 +31,7 @@ import java.util.List;
  */
 public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookmarkItemAdapter.GitHubBookmarkAdapterViewHolder> {
 
-    private GitHubSeachResponse mGitHubData;
+    private GitHubBookmarkResponse mGitHubData;
 
     /* The context we use to utility methods, app resources and layout inflaters */
     private final Context mContext;
@@ -42,9 +45,9 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
         this.mDbOpenHelper = dbHelper;
     }
 
-    public void setGitHubData(GitHubSeachResponse gitHubSeachResponse){
-        mGitHubData = gitHubSeachResponse;
-        Log.i("bookmark trace",String.format("book mark count = %d, gitHubSeachResponse = %d",getItemCount(), gitHubSeachResponse.getTotalCount()));
+    public void setGitHubData(GitHubBookmarkResponse gitHubBookmarkResponse){
+        mGitHubData = gitHubBookmarkResponse;
+        Log.i("bookmark trace",String.format("book mark count = %d, gitHubSeachResponse = %d",getItemCount(), gitHubBookmarkResponse.getBookmarkCount() ));
         notifyDataSetChanged();
         //notifyItemRangeChanged(0,getItemCount()-1);
 
@@ -105,10 +108,10 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
         Log.i("bookmark trace",String.format("book mark count = %d",getItemCount()));
         if(position < getItemCount()) {
             //androidLog.i("OnBindViewholder",String.valueOf(position));
-
-            Item item = mGitHubData.getItems().get(position);
-            String name = mGitHubData.getItems().get(position).getName();
-            String description = mGitHubData.getItems().get(position).getDescription();
+            ArrayList<Item> bookMarkMap = new ArrayList<>(mGitHubData.getBookmarkItems().values());
+            Item item =  bookMarkMap.get(position);
+            String name = bookMarkMap.get(position).getName();
+            String description = bookMarkMap.get(position).getDescription();
 
             holder.mReponameTextView.setText(name);
             holder.mRepoDescTextView.setText(description);
@@ -132,7 +135,7 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
 
         if(mGitHubData == null)
             return 0;
-        int totCount = mGitHubData.getSearchCount();
+        int totCount = mGitHubData.getBookmarkCount();
 
         return  totCount;
     }
@@ -174,7 +177,7 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
 
             final int adapterPosition = getAdapterPosition();
             //String weatherForDay = mWeatherData[adapterPosition];
-            final Item item = mGitHubData.getItems().get(adapterPosition);
+            final Item item = new ArrayList<Item>(mGitHubData.getBookmarkItems().values()).get(adapterPosition);
             Log.i("onclick",item.getHtmlUrl());
             final Item favItem = item;
 
@@ -203,8 +206,9 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
                  */
                 @Override
                 protected void onPostExecute(Void aVoid) {
+                    LinkedHashMap<Integer,Item> bookmarkMap = mGitHubData.getBookmarkItems();
 
-                    mGitHubData.getItems().remove(adapterPosition);
+                    bookmarkMap.remove(favItem.getId());
                     notifyItemRemoved(adapterPosition);
                     notifyDataSetChanged();
                     super.onPostExecute(aVoid);
@@ -220,7 +224,7 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             //String weatherForDay = mWeatherData[adapterPosition];
-            Item item = mGitHubData.getItems().get(adapterPosition);
+            Item item = new ArrayList<Item>(mGitHubData.getBookmarkItems().values()).get(adapterPosition);
             Log.i("onclick",item.getHtmlUrl());
             Item favItem = item;
 

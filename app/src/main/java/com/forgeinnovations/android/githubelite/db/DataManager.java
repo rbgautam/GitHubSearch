@@ -4,11 +4,12 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
 import com.forgeinnovations.android.githubelite.datamodel.Item;
 import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class DataManager {
 
     private static DataManager singletonInstance  = null;
 
-    private static List<Item> mBookmarks = new ArrayList<Item>();
+    private static LinkedHashMap<Integer,Item> mBookmarks = new LinkedHashMap<>();
 
     public static DataManager getSingletonInstance(){
 
@@ -30,7 +31,7 @@ public class DataManager {
     }
 
 
-    public static GitHubSeachResponse loadFromDatabase(GitHubSearchOpenHelper dbHelper){
+    public static GitHubBookmarkResponse loadFromDatabase(GitHubSearchOpenHelper dbHelper){
 
         SQLiteDatabase sqlDb  = dbHelper.getReadableDatabase();
         final String[] bookmarkColumns = new String[] {GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID, GitHubSearchDbContract.BookmarkEntry.COLUMN_BOOKMARK_DATA, GitHubSearchDbContract.BookmarkEntry.COLUMN_KEYWORD};
@@ -40,7 +41,7 @@ public class DataManager {
 
     }
 
-    private static GitHubSeachResponse loadBookmarksFromDb(Cursor bookmarkCursor) {
+    private static GitHubBookmarkResponse loadBookmarksFromDb(Cursor bookmarkCursor) {
 
         int bookmarkDataPos = bookmarkCursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntry.COLUMN_BOOKMARK_DATA);
 
@@ -55,16 +56,17 @@ public class DataManager {
             //TODO: convert string to pojo
             Item item = NetworkUtils.ConvertFromJSON(bookmarkDataStr);
 
-            mBookmarks.add(item);
+            mBookmarks.put(item.getId(),item);
+            //mBookmarks.add(item);
 
         }
 
         bookmarkCursor.close();
 
-        GitHubSeachResponse result = new GitHubSeachResponse();
+        GitHubBookmarkResponse result = new GitHubBookmarkResponse();
 
-        result.setItems(mBookmarks);
-        result.setTotalCount(mBookmarks.size());
+        result.setBookmarkItems(mBookmarks);
+        //result.set (mBookmarks.size());
 
         return result;
     }

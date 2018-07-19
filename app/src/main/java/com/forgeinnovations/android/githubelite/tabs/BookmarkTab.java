@@ -26,17 +26,17 @@ import android.view.ViewGroup;
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
 import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
 import com.forgeinnovations.android.githubelite.datamodel.Item;
 import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * Created by Rahul B Gautam on 7/4/18.
  */
-public class BookmarkTab extends Fragment implements android.support.v4.app.LoaderManager.LoaderCallbacks<GitHubSeachResponse>{
+public class BookmarkTab extends Fragment implements android.support.v4.app.LoaderManager.LoaderCallbacks<GitHubBookmarkResponse>{
 
 
     public static final int LOADER_ID = 891; // random number
@@ -114,8 +114,8 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
     }
 
     @Override
-    public Loader<GitHubSeachResponse> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskLoader<GitHubSeachResponse>(getActivity()) {
+    public Loader<GitHubBookmarkResponse> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<GitHubBookmarkResponse>(getActivity()) {
 
 
             /**
@@ -130,7 +130,7 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
             }
 
             @Override
-            public GitHubSeachResponse loadInBackground() {
+            public GitHubBookmarkResponse loadInBackground() {
 
                 return DataManager.loadFromDatabase(mBookmarkDbHelper);
 
@@ -164,13 +164,13 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
     }
 
     @Override
-    public void onLoadFinished(Loader<GitHubSeachResponse> loader, GitHubSeachResponse data) {
-        Log.i("bookmark trace",String.format("loader finished book mark count = %d",data.getTotalCount()));
+    public void onLoadFinished(Loader<GitHubBookmarkResponse> loader, GitHubBookmarkResponse data) {
+        Log.i("bookmark trace",String.format("loader finished book mark count = %d",data.getBookmarkCount()));
         mGitHubBookmarkItemAdapter.setGitHubData(data);
-        if(data.getItems().size() == 0)
+        if(data.getBookmarkItems().size() == 0)
             return;
 
-        final List<Item> bookmarkData = data.getItems();
+        final HashMap<Integer,Item> bookmarkData = data.getBookmarkItems();
         AsyncTask<Void,Void,Void> asyncDataCreation =  new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -201,18 +201,18 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
     }
 
     @Override
-    public void onLoaderReset(Loader<GitHubSeachResponse> loader) {
+    public void onLoaderReset(Loader<GitHubBookmarkResponse> loader) {
 
     }
 
 
 
-    private String CreateShareDate(List<Item> bookmarkData) {
+    private String CreateShareDate(HashMap<Integer,Item> bookmarkData) {
         StringBuilder stringBuilder = new StringBuilder();
 
 
         stringBuilder.append("<html><body>");
-        for(Item item: bookmarkData){
+        for(Item item: bookmarkData.values()){
             String formattedString = String.format("%s<br/>%s<br/> Stars Count =%s, Watcher Count =%s,Forks Count =%s <br/>%s<br/>",item.getName(),item.getDescription(),item.getStargazersCount(), item.getWatchersCount(),item.getForksCount(), item.getHtmlUrl());
             stringBuilder.append(formattedString);
             stringBuilder.append("<hr/>");
