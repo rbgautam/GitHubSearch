@@ -4,8 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
-import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubBookmarkResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 
 import java.util.ArrayList;

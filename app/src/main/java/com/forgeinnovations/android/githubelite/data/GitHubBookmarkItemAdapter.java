@@ -14,9 +14,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.forgeinnovations.android.githubelite.R;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
-import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubBookmarkResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;

@@ -31,14 +31,14 @@ import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
 import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
-import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubBookmarkResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.main.MainPresenter;
 import com.forgeinnovations.android.githubelite.main.MainView;
 import com.forgeinnovations.android.githubelite.tabs.SearchTab;
-import com.forgeinnovations.android.githubelite.tabs.Tab3Fragment;
+import com.forgeinnovations.android.githubelite.tabs.TopRepositoryTab;
 
 import java.util.List;
 
@@ -131,7 +131,7 @@ public class SamplePagerAdapter extends FragmentStatePagerAdapter implements Mai
                 SearchTab searchTab= new SearchTab();
                 return searchTab;
             case 1:
-                Tab3Fragment tab3 =  new Tab3Fragment();
+                TopRepositoryTab tab3 =  new TopRepositoryTab();
                 return tab3;
             default:
                 return null;

@@ -26,8 +26,8 @@ import android.view.ViewGroup;
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
 import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
-import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubBookmarkResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 
@@ -79,16 +79,6 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
 
         mBookmarkRecyclerView.setAdapter(mGitHubBookmarkItemAdapter);
 
-
-//        android.support.v7.app.ActionBar actionBar = getActivity().getSupportActionBar();
-//
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-
-
-
-//        mBookmarkPresenter = new BookmarkPresenter(getActivity(), mGitHubBookmarkItemAdapter);
-//
-//        mBookmarkPresenter.inflateMenuItems(this);
         mLoaderManager = getLoaderManager();
 
         mLoaderManager.initLoader(LOADER_ID,null,this);

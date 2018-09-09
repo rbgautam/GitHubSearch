@@ -2,7 +2,7 @@ package com.forgeinnovations.android.githubelite.data;
 
 import android.os.AsyncTask;
 
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.main.MainPresenter;
 
 /**

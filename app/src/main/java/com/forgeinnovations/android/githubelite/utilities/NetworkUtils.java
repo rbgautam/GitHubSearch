@@ -17,8 +17,9 @@ package com.forgeinnovations.android.githubelite.utilities;
 
 import android.net.Uri;
 
-import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.error.ErrorInterceptor;
+import com.forgeinnovations.android.githubelite.viewmodel.URLService.GitHubSearchService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -37,11 +38,11 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
-import static com.forgeinnovations.android.githubelite.utilities.URLManager.GITHUB_API_URL;
-import static com.forgeinnovations.android.githubelite.utilities.URLManager.GITHUB_BASE_URL;
-import static com.forgeinnovations.android.githubelite.utilities.URLManager.PARAM_QUERY;
-import static com.forgeinnovations.android.githubelite.utilities.URLManager.PARAM_SORT;
-import static com.forgeinnovations.android.githubelite.utilities.URLManager.sortBy;
+import static com.forgeinnovations.android.githubelite.viewmodel.URLService.GitHubSearchService.GITHUB_API_URL;
+import static com.forgeinnovations.android.githubelite.viewmodel.URLService.GitHubSearchService.GITHUB_BASE_URL;
+import static com.forgeinnovations.android.githubelite.viewmodel.URLService.GitHubSearchService.PARAM_QUERY;
+import static com.forgeinnovations.android.githubelite.viewmodel.URLService.GitHubSearchService.PARAM_SORT;
+import static com.forgeinnovations.android.githubelite.viewmodel.URLService.GitHubSearchService.sortBy;
 
 /**
  * These utilities will be used to communicate with the network.
@@ -136,7 +137,7 @@ public class NetworkUtils {
 
         return new Retrofit.Builder()
                 .client(client)
-                .baseUrl(URLManager.GITHUB_BASE_URL)
+                .baseUrl(GitHubSearchService.GITHUB_BASE_URL)
                 .addConverterFactory(MoshiConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();

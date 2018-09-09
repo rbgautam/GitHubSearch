@@ -11,8 +11,8 @@ import com.forgeinnovations.android.githubelite.bookmark.BookmarkActivity;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubSearchQuery;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
-import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 
 import java.util.HashMap;
 import java.util.List;

@@ -32,10 +32,11 @@ import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.tabs.BookmarkTab;
 import com.forgeinnovations.android.githubelite.tabs.SearchTab;
-import com.forgeinnovations.android.githubelite.tabs.Tab3Fragment;
+import com.forgeinnovations.android.githubelite.tabs.TopDeveloperTab;
+import com.forgeinnovations.android.githubelite.tabs.TopRepositoryTab;
 import com.forgeinnovations.android.githubelite.view.TabPageAdapter;
 
-public class MainActivity extends AppCompatActivity implements SearchTab.FragmentBookmarkListener ,BookmarkTab.OnFragmentInteractionListener,Tab3Fragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements SearchTab.FragmentBookmarkListener ,BookmarkTab.OnFragmentInteractionListener,TopRepositoryTab.OnFragmentInteractionListener {
 
 
     private MainPresenter mPresenter;
@@ -67,23 +68,29 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
 
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tabLayout.addTab(tabLayout.newTab().setText("Top Repositories"));
+        tabLayout.addTab(tabLayout.newTab().setText("Top Developers"));
         tabLayout.addTab(tabLayout.newTab().setText("Search"));
         tabLayout.addTab(tabLayout.newTab().setText("Bookmarks"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         mAdapter = new TabPageAdapter(getSupportFragmentManager());
+        //Adding TopDev tab
+        TopRepositoryTab topDeveloperRepo = new TopRepositoryTab();
+        mAdapter.addFrag(topDeveloperRepo, "Top Repositories");
+        //Adding TopDev tab
+        TopDeveloperTab topDeveloperTab = new TopDeveloperTab();
+        mAdapter.addFrag(topDeveloperTab, "Top Developers");
+        //Adding Search Tab
         SearchTab searchTab = new SearchTab();
         mAdapter.addFrag(searchTab, "Search");
-
+        //Adding BookMark tab
         BookmarkTab bookmarkTab = new BookmarkTab();
         mAdapter.addFrag(bookmarkTab, "Bookmarks");
 
 
         viewPager.setAdapter(mAdapter);
-
-
-
         searchTab.setAddBookmarkListener(this);
 
         viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -92,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-
             }
 
             @Override
@@ -107,8 +113,6 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         });
 
         handleIntent(getIntent());
-
-
     }
 
     @Override

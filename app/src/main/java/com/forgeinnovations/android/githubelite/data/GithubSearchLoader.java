@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.main.MainPresenter;
 
 /**

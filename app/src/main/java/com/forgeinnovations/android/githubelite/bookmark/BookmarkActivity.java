@@ -20,8 +20,8 @@ import android.widget.CursorAdapter;
 
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
-import com.forgeinnovations.android.githubelite.datamodel.Item;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubBookmarkResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 

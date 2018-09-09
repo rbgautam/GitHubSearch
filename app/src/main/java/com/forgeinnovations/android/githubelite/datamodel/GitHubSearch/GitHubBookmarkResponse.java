@@ -1,4 +1,4 @@
-package com.forgeinnovations.android.githubelite.datamodel;
+package com.forgeinnovations.android.githubelite.datamodel.GitHubSearch;
 
 import java.util.LinkedHashMap;
 

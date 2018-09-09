@@ -2,9 +2,9 @@ package com.forgeinnovations.android.githubelite.data;
 
 import android.util.Log;
 
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.error.ErrorInterceptor;
-import com.forgeinnovations.android.githubelite.utilities.URLManager;
+import com.forgeinnovations.android.githubelite.viewmodel.URLService.GitHubSearchService;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,8 +14,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
 
 /**
  * Created by Rahul B Gautam on 4/16/18.
@@ -23,7 +21,7 @@ import retrofit2.http.Query;
 
 public class GitHubRestAdapter {
 
-    private final GitHubService gitHubService;
+    private final GitHubSearchService gitHubService;
 
     public String urlString = null;
 
@@ -41,21 +39,15 @@ public class GitHubRestAdapter {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(client)
-                .baseUrl(URLManager.GITHUB_BASE_URL)
+                .baseUrl(GitHubSearchService.GITHUB_BASE_URL)
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build();
 
-        this.gitHubService = retrofit.create(GitHubService.class);
+        this.gitHubService = retrofit.create(GitHubSearchService.class);
     }
 
     //sort=stars
 
-    public interface GitHubService{
-
-        @GET(URLManager.GITHUB_QUALIFIED_URL_WITH_SORT)
-        Call<GitHubSeachResponse> getGithubSearchData(@Query("q") String query, @Query("sort") String sort);
-
-    }
 
     public interface AsyncWebResponse {
         void processFinish(GitHubSeachResponse output);

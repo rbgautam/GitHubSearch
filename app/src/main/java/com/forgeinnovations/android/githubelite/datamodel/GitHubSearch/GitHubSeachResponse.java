@@ -1,4 +1,4 @@
-package com.forgeinnovations.android.githubelite.datamodel;
+package com.forgeinnovations.android.githubelite.datamodel.GitHubSearch;
 
 import com.squareup.moshi.Json;
 

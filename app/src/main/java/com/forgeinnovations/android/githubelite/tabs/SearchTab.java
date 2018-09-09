@@ -28,8 +28,7 @@ import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
 import com.forgeinnovations.android.githubelite.data.GitHubBookmarkItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubBookmarkResponse;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSeachResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubBookmarkResponse;
 import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.main.MainPresenter;
@@ -217,7 +216,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-        //mGitHubBookmarkItemAdapter.setGitHubData(data);
+        //mGitHubBookmarkItemAdapter.setGitHubTopDevData(data);
 
         mGitHubListItemAdapter = new GitHubListItemAdapter(getActivity());
 
