@@ -152,7 +152,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
         if(data.getBookmarkItems().size() == 0)
             return;
 
-        final HashMap<Integer,Item> bookmarkData = data.getBookmarkItems();
+        final HashMap<String,Item> bookmarkData = data.getBookmarkItems();
         AsyncTask<Void,Void,Void> asyncDataCreation =  new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -183,7 +183,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
 
     }
 
-    private String CreateShareDate(HashMap<Integer,Item> bookmarkData) {
+    private String CreateShareDate(HashMap<String,Item> bookmarkData) {
         StringBuilder stringBuilder = new StringBuilder();
 
 

@@ -267,7 +267,7 @@ public class SlidingTabsMainFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 //setSearchStringEditText(query);
-                mPresenter.makeGithubSearchQuery(query);
+                mPresenter.makeGithubSearchQuery(query,mDbOpenHelper);
                 return true;
             }
 

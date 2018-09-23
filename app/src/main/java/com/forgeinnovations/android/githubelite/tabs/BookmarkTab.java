@@ -32,6 +32,8 @@ import com.forgeinnovations.android.githubelite.db.DataManager;
 import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by Rahul B Gautam on 7/4/18.
@@ -156,15 +158,16 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
     @Override
     public void onLoadFinished(Loader<GitHubBookmarkResponse> loader, GitHubBookmarkResponse data) {
         Log.i("bookmark trace",String.format("loader finished book mark count = %d",data.getBookmarkCount()));
-        mGitHubBookmarkItemAdapter.setGitHubData(data);
-        if(data.getBookmarkItems().size() == 0)
+       if(data.getBookmarkItems().size() == 0)
             return;
+        mGitHubBookmarkItemAdapter.setGitHubData(data);
 
-        final HashMap<Integer,Item> bookmarkData = data.getBookmarkItems();
+        final HashMap<String,Item> bookmarkData = data.getBookmarkItems();
         AsyncTask<Void,Void,Void> asyncDataCreation =  new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                mGithubShareData = CreateShareDate(bookmarkData);
+
+                mGithubShareData = CreateShareData(bookmarkData);
                 return null;
             }
 
@@ -197,18 +200,29 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
 
 
 
-    private String CreateShareDate(HashMap<Integer,Item> bookmarkData) {
+    private String CreateShareData(HashMap<String,Item> bookmarkData) {
         StringBuilder stringBuilder = new StringBuilder();
 
+    try {
+            stringBuilder.append("<html><body>");
+            Iterator it = bookmarkData.entrySet().iterator();
 
-        stringBuilder.append("<html><body>");
-        for(Item item: bookmarkData.values()){
-            String formattedString = String.format("%s<br/>%s<br/> Stars Count =%s, Watcher Count =%s,Forks Count =%s <br/>%s<br/>",item.getName(),item.getDescription(),item.getStargazersCount(), item.getWatchersCount(),item.getForksCount(), item.getHtmlUrl());
-            stringBuilder.append(formattedString);
-            stringBuilder.append("<hr/>");
+            while (it.hasNext())
+            {
+                Map.Entry currItem = (Map.Entry) it.next();
+                Item item = (Item)currItem.getValue();
+                String formattedString = String.format("%s<br/>%s<br/> Stars Count =%s, Watcher Count =%s,Forks Count =%s <br/>%s<br/>",item.getName(),item.getDescription(),item.getStargazersCount(), item.getWatchersCount(),item.getForksCount(), item.getHtmlUrl());
+                stringBuilder.append(formattedString);
+                stringBuilder.append("<hr/>");
+            }
+
+            stringBuilder.append("</body></html>");
         }
 
-        stringBuilder.append("</body></html>");
+        catch(Exception ex){
+
+        }
+
         return stringBuilder.toString();
     }
 

@@ -21,6 +21,21 @@ public final class GitHubSearchDbContract {
     }
 
 
+    public static final class BookmarkEntryNew implements BaseColumns {
+
+        public static final String TABLE_NAME = "GithubBookmark";
+        public static final String COLUMN_GITHUB_ID = "githubId";
+        public static final String COLUMN_GITHUB_URL = "githubUrl";
+        public static final String COLUMN_BOOKMARK_DATA = "bookmarkData";
+        public static final String COLUMN_KEYWORD = "keyword";
+        public static final String COLUMN_DATATYPE = "saveDatatype";
+
+
+        public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + _ID + " INTEGER PRIMARY KEY ," +
+                                                              COLUMN_GITHUB_ID + " INTEGER NOT NULL, "+COLUMN_GITHUB_URL +" TEXT NOT NULL , " + COLUMN_BOOKMARK_DATA + " TEXT NOT NULL ," +COLUMN_KEYWORD +" TEXT NOT NULL , "+COLUMN_DATATYPE+" TEXT NOT NULL " + ")";
+
+
+    }
 
 
 }

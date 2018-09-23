@@ -29,6 +29,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <Switch
+            android:id="@+id/swt_repotype"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:paddingBottom="8dp"
+            android:paddingTop="4dp"
+            android:textOff="Repositories"
+            android:textOn="Developers"
+            android:visibility="gone" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

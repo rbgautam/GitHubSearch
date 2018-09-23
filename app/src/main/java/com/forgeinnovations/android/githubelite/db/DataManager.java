@@ -8,22 +8,21 @@ import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubBoo
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * Created by Rahul B Gautam on 5/22/18.
  */
 public class DataManager {
 
-    private static DataManager singletonInstance  = null;
+    private static DataManager singletonInstance = null;
 
-    private static LinkedHashMap<Integer,Item> mBookmarks = new LinkedHashMap<>();
+    private static LinkedHashMap<String, Item> mBookmarks = new LinkedHashMap<>();
 
-    public static DataManager getSingletonInstance(){
+    public static DataManager getSingletonInstance() {
 
-        if(singletonInstance == null){
+        if (singletonInstance == null) {
 
             singletonInstance = new DataManager();
         }
@@ -31,32 +30,45 @@ public class DataManager {
     }
 
 
-    public static GitHubBookmarkResponse loadFromDatabase(GitHubSearchOpenHelper dbHelper){
+    public static GitHubBookmarkResponse loadFromDatabase(GitHubSearchOpenHelper dbHelper) {
 
-        SQLiteDatabase sqlDb  = dbHelper.getReadableDatabase();
-        final String[] bookmarkColumns = new String[] {GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID, GitHubSearchDbContract.BookmarkEntry.COLUMN_BOOKMARK_DATA, GitHubSearchDbContract.BookmarkEntry.COLUMN_KEYWORD};
-        Cursor bookmarkCursor = sqlDb.query(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME, bookmarkColumns, null, null, null, null, GitHubSearchDbContract.BookmarkEntry._ID + " desc");
+        SQLiteDatabase sqlDb = dbHelper.getReadableDatabase();
+        final String[] bookmarkColumns = new String[]{GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_ID, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_BOOKMARK_DATA, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_KEYWORD, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE};
+        Cursor bookmarkCursor = sqlDb.query(GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME, bookmarkColumns, null, null, null, null, GitHubSearchDbContract.BookmarkEntry._ID + " desc");
 
         return loadBookmarksFromDb(bookmarkCursor);
 
     }
 
+
+
     private static GitHubBookmarkResponse loadBookmarksFromDb(Cursor bookmarkCursor) {
 
-        int bookmarkDataPos = bookmarkCursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntry.COLUMN_BOOKMARK_DATA);
+        int bookmarkDataPos = bookmarkCursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_BOOKMARK_DATA);
+        int dataTypePos = bookmarkCursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE);
 
         DataManager dm = getSingletonInstance();
 
         dm.mBookmarks.clear();
 
-        while (bookmarkCursor.moveToNext()){
+        while (bookmarkCursor.moveToNext()) {
 
             String bookmarkDataStr = bookmarkCursor.getString(bookmarkDataPos);
+            String datatype = bookmarkCursor.getString(dataTypePos);
 
+            Item item = null;
+            com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.Item newItem = null;
             //TODO: convert string to pojo
-            Item item = NetworkUtils.ConvertFromJSON(bookmarkDataStr);
+            if (datatype.equals("SEARCHDATA"))
+                item = NetworkUtils.ConvertFromJSON(bookmarkDataStr);
 
-            mBookmarks.put(item.getId(),item);
+            if (datatype.equals("TOPREPODATA")) {
+                newItem = NetworkUtils.ConvertFromTopRepoJSON(bookmarkDataStr);
+                item = newItem.convertToSerachItem(newItem);
+            }
+
+            if(item!= null)
+                mBookmarks.put(item.getHtmlUrl(), item);
             //mBookmarks.add(item);
 
         }
@@ -71,21 +83,23 @@ public class DataManager {
         return result;
     }
 
-    public static long saveBookmark(GitHubSearchOpenHelper dbHelper,String data, String key, String keyword){
+    public static long saveBookmark(GitHubSearchOpenHelper dbHelper, String data, String key, String keyword) {
 
-        long result = 0 ;
+        long result = 0;
         DataManager dm = getSingletonInstance();
 
-        SQLiteDatabase sqlDb  = dbHelper.getWritableDatabase();
+        SQLiteDatabase sqlDb = dbHelper.getWritableDatabase();
         ContentValues initialValues = new ContentValues();
-        initialValues.put(GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID, key);
-        initialValues.put(GitHubSearchDbContract.BookmarkEntry.COLUMN_BOOKMARK_DATA, data);
-        initialValues.put(GitHubSearchDbContract.BookmarkEntry.COLUMN_KEYWORD,keyword);
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_ID, key);
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_BOOKMARK_DATA, data);
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_KEYWORD, keyword);
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL, "http://localhost");
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE, "SEARCHDATA");
+
 
         try {
-            result = sqlDb.insertWithOnConflict  (GitHubSearchDbContract.BookmarkEntry.TABLE_NAME,null,initialValues,SQLiteDatabase.CONFLICT_IGNORE);
-        }
-        catch (Exception ex){
+            result = sqlDb.insertWithOnConflict(GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        } catch (Exception ex) {
 
         }
 
@@ -96,22 +110,47 @@ public class DataManager {
 
     }
 
-    public List<Integer> getBookmarks(GitHubSearchOpenHelper dbHelper){
+    public static long saveRepoBookmark(GitHubSearchOpenHelper dbHelper, String data, String key, String keyword, Integer gitHubId, String dataType) {
+
+        long result = 0;
+        DataManager dm = getSingletonInstance();
+
+        SQLiteDatabase sqlDb = dbHelper.getWritableDatabase();
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_ID, gitHubId);
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL, key);
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_BOOKMARK_DATA, data);
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_KEYWORD, keyword);
+        initialValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE, dataType);
+
+        try {
+            result = sqlDb.insertWithOnConflict(GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME, null, initialValues, SQLiteDatabase.CONFLICT_IGNORE);
+        } catch (Exception ex) {
+            String message = ex.getMessage();
+        }
+
+        sqlDb.close();
+
+        return result;
+
+
+    }
+
+    public HashSet<String> getBookmarks(GitHubSearchOpenHelper dbHelper, String dataType) {
 
         DataManager dm = getSingletonInstance();
-        List<Integer> itemList = new ArrayList<Integer>();
+        HashSet<String> itemList = new HashSet<String>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         try {
-            Cursor cursor = db.query(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME, new String[]{GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID}, null, null, null, null, null);
+            Cursor cursor = db.query(GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME, new String[]{GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL}, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE + "=?", new String[]{dataType}, null, null, null);
 
-            while (cursor.moveToNext()){
-                int index = cursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID);
-                Integer item = cursor.getInt(index);
-                itemList.add(item);
+            while (cursor.moveToNext()) {
+                int index = cursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL);
+                String itemUrl = cursor.getString(index);
+                itemList.add(itemUrl);
             }
 
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
 
         }
         return itemList;
@@ -123,13 +162,12 @@ public class DataManager {
 
         SQLiteDatabase sqlDb = dbHelper.getWritableDatabase();
 
-        try{
+        try {
 
-            String whereClause =  GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID +  "=?";
+            String whereClause = GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID + "=?";
 
-            sqlDb.delete(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME,whereClause,new String[]{id});
-        }
-        catch (Exception ex){
+            sqlDb.delete(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME, whereClause, new String[]{id});
+        } catch (Exception ex) {
 
 
         }

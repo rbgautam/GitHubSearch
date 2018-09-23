@@ -155,12 +155,29 @@ public class NetworkUtils {
 
         } catch (Exception ex) {
 
-
+            String message = ex.getMessage();
         }
         return pojo;
 
     }
 
+
+    public static com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.Item ConvertFromTopRepoJSON(String data) {
+        Gson gson = new Gson();
+        com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.Item pojo = new com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.Item();
+
+        try {
+
+            pojo = gson.fromJson(data, com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.Item.class);
+
+
+        } catch (Exception ex) {
+
+            String message = ex.getMessage();
+        }
+        return pojo;
+
+    }
 
     public static String ConvertToJSON(Item data) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create(); //new Gson(); // Gson
@@ -168,6 +185,22 @@ public class NetworkUtils {
         try {
 
             json = gson.toJson(data); //URLEncoder.encode(gson.toJson(data), "UTF-8");
+
+        } catch (Exception ex) {
+
+
+        }
+        return json;
+
+    }
+
+
+    public static String ConvertToRepoJSON(com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.Item data) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = new String();
+        try {
+
+            json = gson.toJson(data);
 
         } catch (Exception ex) {
 

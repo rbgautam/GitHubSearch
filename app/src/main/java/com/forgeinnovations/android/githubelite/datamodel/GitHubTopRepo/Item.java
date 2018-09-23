@@ -1,5 +1,6 @@
 package com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo;
 
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Owner;
 import com.squareup.moshi.Json;
 
 import java.util.List;
@@ -24,6 +25,17 @@ public class Item {
     private String repoLink;
     @Json(name = "stars")
     private String stars;
+
+    private boolean IsFavorite;
+
+    public boolean isFavorite() {
+        return IsFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        IsFavorite = favorite;
+    }
+
 
     public String getAddedStars() {
         return addedStars;
@@ -94,7 +106,32 @@ public class Item {
         strAdded = strAdded.replace(" stars this month", "");
         strAdded = strAdded.replace(" stars this week", "");
         strAdded = strAdded.replace(" stars today", "");
+        strAdded = strAdded.replace(",", "");
         return strAdded;
+    }
+
+    public String getForksValue() {
+        String strForks = getForks();
+        strForks = strForks.replace(",", "");
+        return strForks;
+    }
+
+    public com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item convertToSerachItem(Item item){
+
+        com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item convertedObj=  new com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item();
+
+        convertedObj.setName(item.getRepo());
+        convertedObj.setDescription(item.getDesc());
+        convertedObj.setStargazersCount(Integer.valueOf(item.getAddedStarsValue()));
+        convertedObj.setForksCount(Integer.valueOf(item.getForksValue()));
+        convertedObj.setWatchersCount(0);
+        convertedObj.setOwner(new Owner());
+        String avatarUrl = item.getAvatars().get(0).replace("?s=40&","?s=80&");
+
+        convertedObj.getOwner().setAvatarUrl(avatarUrl);
+        convertedObj.setHtmlUrl(item.getRepoLink());
+
+        return convertedObj;
     }
 }
 

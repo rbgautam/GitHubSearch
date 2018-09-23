@@ -13,6 +13,7 @@ import com.forgeinnovations.android.githubelite.data.GitHubRestAdapter;
 import com.forgeinnovations.android.githubelite.data.GitHubSearchQuery;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
+import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,11 +43,11 @@ public class MainPresenter implements MainPresenterContract {
      * Calls the AsyncTask for N/W call
      */
     @Override
-    public void makeGithubSearchQuery(String searchStr) {
+    public void makeGithubSearchQuery(String searchStr, GitHubSearchOpenHelper mDbOpenHelper) {
 
         if (!searchStr.isEmpty()) {
 
-            GitHubSearchQuery repoAsychQuery = new GitHubSearchQuery(mGitHubRestAdapter, this);
+            GitHubSearchQuery repoAsychQuery = new GitHubSearchQuery(mGitHubRestAdapter, this, mDbOpenHelper);
             this.mKeyword = searchStr;
             repoAsychQuery.execute(searchStr);
 

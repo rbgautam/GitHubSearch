@@ -30,13 +30,14 @@ import android.view.View;
 
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.data.GitHubListItemAdapter;
+import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.tabs.BookmarkTab;
 import com.forgeinnovations.android.githubelite.tabs.SearchTab;
 import com.forgeinnovations.android.githubelite.tabs.TopDeveloperTab;
 import com.forgeinnovations.android.githubelite.tabs.TopRepositoryTab;
 import com.forgeinnovations.android.githubelite.view.TabPageAdapter;
 
-public class MainActivity extends AppCompatActivity implements SearchTab.FragmentBookmarkListener ,BookmarkTab.OnFragmentInteractionListener,TopRepositoryTab.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements SearchTab.FragmentBookmarkListener,TopRepositoryTab.FragmentTopRepoListener ,BookmarkTab.OnFragmentInteractionListener {
 
 
     private MainPresenter mPresenter;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
     private GitHubListItemAdapter mGitHubListItemAdapter;
     private RecyclerView mRecyclerView;
     private TabPageAdapter mAdapter;
+    private GitHubSearchOpenHelper mDbOpenHelper;
     //TODO:S
     //TODO: completed Add MVP pattern
     //TODO: completed : Add retofit to parse data
@@ -64,8 +66,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
+        mDbOpenHelper = new GitHubSearchOpenHelper(this);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
         tabLayout.addTab(tabLayout.newTab().setText("Top Repositories"));
@@ -77,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         mAdapter = new TabPageAdapter(getSupportFragmentManager());
         //Adding TopDev tab
-        TopRepositoryTab topDeveloperRepo = new TopRepositoryTab();
-        mAdapter.addFrag(topDeveloperRepo, "Top Repositories");
+        TopRepositoryTab topRepo = new TopRepositoryTab();
+        mAdapter.addFrag(topRepo, "Top Repositories");
         //Adding TopDev tab
         TopDeveloperTab topDeveloperTab = new TopDeveloperTab();
         mAdapter.addFrag(topDeveloperTab, "Top Developers");
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
 
         viewPager.setAdapter(mAdapter);
         searchTab.setAddBookmarkListener(this);
+        topRepo.setAddTopRepoListener(this);
 
         viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
     }
 
 
+
     /**
      * Handling intent data
      */
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            mPresenter.makeGithubSearchQuery(query);
+            mPresenter.makeGithubSearchQuery(query,mDbOpenHelper);
 
 
         }
@@ -179,7 +182,13 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
     @Override
     public void onFragmentAddBookMark(String tab) {
 
-        BookmarkTab fragment = (BookmarkTab) mAdapter.getItem(1);
+        BookmarkTab fragment = (BookmarkTab) mAdapter.getItem(3);
+        fragment.refreshRecyclerView();
+    }
+
+    @Override
+    public void onFragmentAddTopRepoBookMark(String tab) {
+        BookmarkTab fragment = (BookmarkTab) mAdapter.getItem(3);
         fragment.refreshRecyclerView();
     }
 }

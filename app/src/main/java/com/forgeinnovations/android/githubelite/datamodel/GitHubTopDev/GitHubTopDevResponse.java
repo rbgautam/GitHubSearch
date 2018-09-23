@@ -13,6 +13,16 @@ public class GitHubTopDevResponse {
     @Json(name = "items")
     private List<Item> items = null;
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    private String errorMessage;
+
     public Integer getCount() {
         return count;
     }

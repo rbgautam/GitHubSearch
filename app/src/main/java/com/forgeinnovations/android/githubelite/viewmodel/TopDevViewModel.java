@@ -27,11 +27,11 @@ public class TopDevViewModel extends ViewModel {
     //we will call this method to get the data
     public LiveData<GitHubTopDevResponse> GetTopDevs(String language, String since) {
         //if the list is null
-        if (topDevList == null) {
-            topDevList = new MutableLiveData<GitHubTopDevResponse>();
-            //we will load it asynchronously from server in this method
-            loadTopDevs(language, since);
-        }
+
+        topDevList = new MutableLiveData<GitHubTopDevResponse>();
+        //we will load it asynchronously from server in this method
+        loadTopDevs(language, since);
+
         //finally we will return the list
         return topDevList;
     }
@@ -46,14 +46,17 @@ public class TopDevViewModel extends ViewModel {
         call.enqueue(new Callback<GitHubTopDevResponse>() {
             @Override
             public void onResponse(Call<GitHubTopDevResponse> call, Response<GitHubTopDevResponse> response) {
-                topDevList.setValue(response.body());
+                topDevList.postValue(response.body());
             }
 
             @Override
             public void onFailure(Call<GitHubTopDevResponse> call, Throwable t) {
                 String errorMessage = t.getMessage();
-                Log.e(ERROR_TAG,errorMessage);
+                Log.e(ERROR_TAG, errorMessage);
                 call.cancel();
+                GitHubTopDevResponse repoResponse = new GitHubTopDevResponse();
+                repoResponse.setErrorMessage(errorMessage);
+                topDevList.postValue(repoResponse);
             }
         });
 

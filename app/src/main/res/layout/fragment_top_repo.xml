@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +10,41 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="end"
+            android:padding="4dp"
+            >
+
+            <TextView
+                android:id="@+id/textViewState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+
+                android:text="Weekly"
+                android:textStyle="normal|bold" />
+
+            <com.rm.rmswitch.RMTristateSwitch
+                android:id="@+id/switch_top_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:padding="4dp"
+                app:enabled="true"
+
+                app:forceAspectRatio="false"
+                app:state="middle"
+                app:switchBkgLeftColor="@android:color/holo_red_light"
+                app:switchBkgMiddleColor="@android:color/darker_gray"
+                app:switchBkgRightColor="@android:color/holo_green_light"
+                app:switchDesign="large" />
+
+        </LinearLayout>
 
         <ScrollView
             android:layout_width="match_parent"
@@ -19,10 +54,11 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview_toprepo"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:paddingBottom="8dp"
                 android:visibility="visible" />
+
         </ScrollView>
 
         <TextView

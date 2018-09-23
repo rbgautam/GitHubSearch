@@ -27,16 +27,17 @@ public class TopRepoViewModel extends ViewModel {
     //we will call this method to get the data
     public LiveData<GitHubTopRepoResponse> GetTopRepos(String language, String since) {
         //if the list is null
-        if (repoList == null) {
-            repoList = new MutableLiveData<GitHubTopRepoResponse>();
-            //we will load it asynchronously from server in this method
-            loadTopRepos(language, since);
-        }
+        // if (repoList == null) {
+        repoList = new MutableLiveData<GitHubTopRepoResponse>();
+        //we will load it asynchronously from server in this method
+        loadTopRepos(language, since);
+        //}
         //finally we will return the list
         return repoList;
     }
 
     private void loadTopRepos(String language, String since) {
+
         OkHttpClient client = Utility.GetOkHttpClient();
         Retrofit retrofit = Utility.BuildRetrofitClient(GitHubTopRepoService.BASE_URL, client);
 
@@ -46,17 +47,17 @@ public class TopRepoViewModel extends ViewModel {
         call.enqueue(new Callback<GitHubTopRepoResponse>() {
             @Override
             public void onResponse(Call<GitHubTopRepoResponse> call, Response<GitHubTopRepoResponse> response) {
-                repoList.setValue(response.body());
+                repoList.postValue(response.body());
             }
 
             @Override
             public void onFailure(Call<GitHubTopRepoResponse> call, Throwable t) {
                 String errorMessage = t.getMessage();
-                Log.e(ERROR_TAG,errorMessage);
+                Log.e(ERROR_TAG, errorMessage);
                 call.cancel();
                 GitHubTopRepoResponse repoResponse = new GitHubTopRepoResponse();
                 repoResponse.setErrorMessage(errorMessage);
-                repoList.setValue(repoResponse);
+                repoList.postValue(repoResponse);
             }
         });
 

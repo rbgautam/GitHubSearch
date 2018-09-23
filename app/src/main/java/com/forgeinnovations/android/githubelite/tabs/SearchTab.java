@@ -37,47 +37,33 @@ import com.forgeinnovations.android.githubelite.main.MainView;
 /**
  * Created by Rahul B Gautam on 7/4/18.
  */
-public class SearchTab extends Fragment implements MainView, LoaderManager.LoaderCallbacks<GitHubBookmarkResponse> ,GitHubListItemAdapter.AddBookmarkListener{
+public class SearchTab extends Fragment implements MainView, LoaderManager.LoaderCallbacks<GitHubBookmarkResponse>, GitHubListItemAdapter.AddBookmarkListener {
 
+    //members for bookmark tab
+    public static final int LOADER_ID = 890; // random number
+    static final String LOG_TAG = "SlidingTabsMainFragment";
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+
+    //private OnFragmentInteractionListener mListener;
+    GitHubRestAdapter queryAdapter = new GitHubRestAdapter();
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-
-    //private OnFragmentInteractionListener mListener;
-
-
-    static final String LOG_TAG = "SlidingTabsMainFragment";
-
     private EditText mSearchBoxEditText;
-
     private TextView mUrlDisplayTextView;
-
     private TextView mSearchResultsTextView;
-
     // TODO (12) Create a variable to store a reference to the error message TextView
     private TextView mErrorMessageTextView;
-
-
     // TODO (24) Create a ProgressBar variable to store a reference to the ProgressBar
     private ProgressBar mDownloadRequestProgressBar;
-
-    GitHubRestAdapter queryAdapter = new GitHubRestAdapter();
-
     private MainPresenter mPresenter;
-
     private GitHubListItemAdapter mGitHubListItemAdapter;
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
-
     private GitHubSearchOpenHelper mDbOpenHelper;
-
-    //members for bookmark tab
-    public static final int LOADER_ID = 890; // random number
     private BookmarkPresenter mBookmarkPresenter;
     private GitHubBookmarkItemAdapter mGitHubBookmarkItemAdapter;
     private GitHubSearchOpenHelper mBookmarkDbHelper;
@@ -87,6 +73,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     private Menu mMenu;
     private String mKeyword;
     private LoaderManager mLoaderManager;
+    private FragmentBookmarkListener onFragmentAddBookmarkListener;
 
     public SearchTab() {
     }
@@ -168,6 +155,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         super.onCreateOptionsMenu(menu, inflater);
     }
+
     /**
      * Called to have the fragment instantiate its user interface view.
      * This is optional, and non-graphical fragments can return null (which
@@ -190,7 +178,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view =  inflater.inflate(R.layout.fragment_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_github);
 
@@ -199,7 +187,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
         Context context = getActivity().getBaseContext();
 
         mDbOpenHelper = new GitHubSearchOpenHelper(context);
-        mBookmarkDbHelper =  new GitHubSearchOpenHelper(getActivity());
+        mBookmarkDbHelper = new GitHubSearchOpenHelper(getActivity());
 
         mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(getActivity(), mBookmarkDbHelper);
 
@@ -244,25 +232,16 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
 //        }
     }
 
-
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
-
-
-
     }
-
-
 
     @Override
     public void onDetach() {
-        if(mDbOpenHelper != null)
+        if (mDbOpenHelper != null)
             mDbOpenHelper.close();
-        if(mBookmarkDbHelper != null)
+        if (mBookmarkDbHelper != null)
             mBookmarkDbHelper.close();
         super.onDetach();
     }
@@ -274,14 +253,12 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     @Override
     public void onDestroy() {
 
-        if(mDbOpenHelper != null)
+        if (mDbOpenHelper != null)
             mDbOpenHelper.close();
-        if(mBookmarkDbHelper != null)
+        if (mBookmarkDbHelper != null)
             mBookmarkDbHelper.close();
         super.onDestroy();
     }
-
-
 
     /**
      * Creates and returns a listener, which allows to start a search query when the user enters
@@ -296,7 +273,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 //setSearchStringEditText(query);
-                mPresenter.makeGithubSearchQuery(query);
+                mPresenter.makeGithubSearchQuery(query,mDbOpenHelper);
                 mPresenter.hideKeyboard(getActivity());
                 return true;
             }
@@ -391,7 +368,6 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
 
     }
 
-
     @Override
     public void setUrlDisplayTextView(String text) {
         mUrlDisplayTextView.setText(text);
@@ -425,7 +401,7 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<GitHubBookmarkResponse> loader, GitHubBookmarkResponse data) {
-        if(data != null){
+        if (data != null) {
             mGitHubBookmarkItemAdapter.setGitHubData(data);
 
         }
@@ -440,8 +416,16 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     @Override
     public void onAddBookmark() {
         //mLoaderManager.restartLoader(LOADER_ID,null,this);
-        Log.i("bookmark trace","inside onAddbookmark");
-        onFragmentAddBookmarkListener.onFragmentAddBookMark("tab1");
+        Log.i("bookmark trace", "inside onAddbookmark");
+        onFragmentAddBookmarkListener.onFragmentAddBookMark("Search");
+    }
+
+    public FragmentBookmarkListener getAddBookmarkListener() {
+        return this.onFragmentAddBookmarkListener;
+    }
+
+    public void setAddBookmarkListener(FragmentBookmarkListener fragmentAddBookmarkListener) {
+        this.onFragmentAddBookmarkListener = fragmentAddBookmarkListener;
     }
 
     /**
@@ -457,16 +441,6 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     public interface FragmentBookmarkListener {
         // TODO: Update argument type and name
         void onFragmentAddBookMark(String tab);
-    }
-
-    private FragmentBookmarkListener onFragmentAddBookmarkListener;
-
-    public void setAddBookmarkListener(FragmentBookmarkListener fragmentAddBookmarkListener){
-        this.onFragmentAddBookmarkListener = fragmentAddBookmarkListener;
-    }
-
-    public FragmentBookmarkListener getAddBookmarkListener(){
-        return this.onFragmentAddBookmarkListener;
     }
 
 }

@@ -24,6 +24,7 @@ import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
 
     private GitHubSearchOpenHelper mDbOpenHelper;
 
-    private List<Integer> mBookmarkList =  new ArrayList<Integer>();
+    private HashSet<String> mBookmarkList =  new HashSet<String>();
     /* The context we use to utility methods, app resources and layout inflaters */
     private final Context mContext;
 
@@ -51,11 +52,11 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
     }
 
     private void getBookmarks() {
-        AsyncTask<Void,Void,List<Integer>> asyncTask = new AsyncTask<Void, Void, List<Integer>>() {
+        AsyncTask<Void,Void,HashSet<String>> asyncTask = new AsyncTask<Void, Void, HashSet<String>>() {
             @Override
-            protected List<Integer> doInBackground(Void... voids) {
+            protected HashSet<String> doInBackground(Void... voids) {
                 DataManager dm = DataManager.getSingletonInstance();
-                mBookmarkList = dm.getBookmarks(mDbOpenHelper);
+                mBookmarkList = dm.getBookmarks(mDbOpenHelper,"SEARCHDATA");
                 return mBookmarkList;
             }
 
@@ -140,7 +141,7 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             holder.mForksCountTextView.setText(String.valueOf(item.getForksCount()));
             holder.mStarsCountTextView.setText(String.valueOf(item.getStargazersCount()));
 
-            if(mBookmarkList.contains(item.getId()))
+            if(item.isFavorite())
                 holder.mBookmarkIcon.setImageResource(R.drawable.ic_action_bookmarkadded);
 
             Picasso.get().load(item.getOwner().getAvatarUrl()).into(holder.mAvatarImageview);
@@ -240,14 +241,19 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
             Log.i("onclick",item.getHtmlUrl());
             final Item favItem = item;
 
+            if(mBookmarkList.contains(item.getHtmlUrl()))
+                return;
+
             AsyncTask<Void,Void,Long> newTask = new AsyncTask<Void, Void, Long>() {
                 @Override
                 protected Long doInBackground(Void... voids) {
                     //TODO: Convert Item to string and save to db
                     String dataJSON = NetworkUtils.ConvertToJSON(favItem);
 
+
+
                     DataManager dm = DataManager.getSingletonInstance();
-                    long result = dm.saveBookmark(mDbOpenHelper,dataJSON,item.getId().toString(),mKeyWord);
+                    long result = dm.saveRepoBookmark(mDbOpenHelper,dataJSON,item.getHtmlUrl(),mKeyWord,item.getId(),"SEARCHDATA"); //dm.saveBookmark(mDbOpenHelper,dataJSON,item.getId().toString(),mKeyWord);
                     //After spinning off an AsysncTask
                     return result;
                 }
@@ -269,7 +275,8 @@ public class GitHubListItemAdapter extends RecyclerView.Adapter<GitHubListItemAd
                     if(result > -1){
                         Log.i("bookmark trace","on post execute save bookmark");
                         mBookmarkIcon.setImageResource(R.drawable.ic_action_bookmarkadded);
-                        onAddBookmarkListener.onAddBookmark();
+                        AddBookmarkListener listener = onAddBookmarkListener;
+                        listener.onAddBookmark();
                     }
 
                 }

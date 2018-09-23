@@ -149,6 +149,18 @@ public class Item {
     @Json(name = "score")
     private Double score;
 
+    private boolean IsFavorite;
+
+    public boolean isFavorite() {
+        return IsFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        IsFavorite = favorite;
+    }
+
+
+
     public Integer getId() {
         return id;
     }

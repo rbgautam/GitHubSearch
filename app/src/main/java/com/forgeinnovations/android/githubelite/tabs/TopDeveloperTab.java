@@ -1,8 +1,10 @@
 package com.forgeinnovations.android.githubelite.tabs;
 
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
@@ -29,8 +32,11 @@ import com.forgeinnovations.android.githubelite.data.GitHubTopDevItemAdapter;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubTopDev.GitHubTopDevResponse;
 import com.forgeinnovations.android.githubelite.viewmodel.TopDevViewModel;
+import com.rm.rmswitch.RMTristateSwitch;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Rahul B Gautam on 9/8/18.
@@ -41,9 +47,15 @@ public class TopDeveloperTab extends Fragment {
     private RecyclerView mTopDeveloperRecyclerView;
     private ProgressBar mTopDevTabProgressbar;
     private ShareActionProvider mShareActionProvider;
+    private TextView mtopDevErrorMessage;
     private BookmarkPresenter mBookmarkPresenter;
     private String mGithubShareData;
     private OnFragmentInteractionListener mListener;
+    private int currentSelectedLang;
+    private int currentSelectedDuration;
+    private RMTristateSwitch mTristateSwitch;
+    private TextView mTextViewState;
+    private String[] topLangauges = new String[]{"Python","Java","Javascript","PHP","CPP","CSharp","R","Objective-C","Swift","Matlab","Ruby","TypeScript","VBA","Scala","Visual Basic","Kotlin","GO","Perl"};
 
     public TopDeveloperTab() {
     }
@@ -73,28 +85,101 @@ public class TopDeveloperTab extends Fragment {
         mGitHubTopDevItemAdapter = new GitHubTopDevItemAdapter(getActivity());
 
         mTopDeveloperRecyclerView.setAdapter(mGitHubTopDevItemAdapter);
+        mtopDevErrorMessage = (TextView) getActivity().findViewById(R.id.tv_topdev_error_message);
+        mTextViewState = (TextView) getActivity().findViewById(R.id.textDevViewState);
+
+        mTristateSwitch = (RMTristateSwitch) getActivity().findViewById(R.id.switch_toprepo_duration);
+        mTristateSwitch.setState(RMTristateSwitch.STATE_MIDDLE);
+        mTristateSwitch.addSwitchObserver(new RMTristateSwitch.RMTristateSwitchObserver() {
+            @Override
+            public void onCheckStateChange(RMTristateSwitch switchView, @RMTristateSwitch.State int state) {
+                String currState =  state == RMTristateSwitch.STATE_LEFT ? "Daily" : state == RMTristateSwitch.STATE_MIDDLE ? "Weekly" : "Monthly";
+                mTextViewState.setText(currState);
+                mTopDevTabProgressbar.setVisibility(View.VISIBLE);
+                LoadGitHubTopDevs();
+            }
+        });
+
+        currentSelectedLang = 1;
+
         LoadGitHubTopDevs();
     }
 
     private void LoadGitHubTopDevs() {
-
+        mTristateSwitch.setEnabled(false);
+        mTopDeveloperRecyclerView.setVisibility(View.GONE);
         TopDevViewModel model = ViewModelProviders.of(this).get(TopDevViewModel.class);
 
         Observer<GitHubTopDevResponse> observer = new Observer<GitHubTopDevResponse>() {
             @Override
             public void onChanged(@Nullable GitHubTopDevResponse topDevList) {
-                mGitHubTopDevItemAdapter = new GitHubTopDevItemAdapter(getActivity());
-                mGitHubTopDevItemAdapter.setGitHubTopDevData(topDevList);
-                mTopDevTabProgressbar.setVisibility(View.INVISIBLE);
-                mTopDeveloperRecyclerView.setAdapter(mGitHubTopDevItemAdapter);
+                mTristateSwitch.setEnabled(true);
+                if(topDevList.getErrorMessage() == null) {
+                    mGitHubTopDevItemAdapter = new GitHubTopDevItemAdapter(getActivity());
+                    mGitHubTopDevItemAdapter.setGitHubTopDevData(topDevList);
+                    mTopDevTabProgressbar.setVisibility(View.INVISIBLE);
+                    mTopDeveloperRecyclerView.setVisibility(View.VISIBLE);
+                    mTopDeveloperRecyclerView.setAdapter(mGitHubTopDevItemAdapter);
+                }else{
+                    mTopDeveloperRecyclerView.setVisibility(View.VISIBLE);
+                    mTopDevTabProgressbar.setVisibility(View.INVISIBLE);
+                    mtopDevErrorMessage.setText(R.string.error_message);
+                }
+
+
             }
 
 
 
 
         };
+
+        String duration =  (mTristateSwitch.getState()== RMTristateSwitch.STATE_LEFT ? "daily" : (mTristateSwitch.getState()== RMTristateSwitch.STATE_MIDDLE?"weekly":"monthly"));
         //TODO: Pass langauage and duration from UI
-        model.GetTopDevs("java", "weekly").observe(this, observer);
+        String langauge = topLangauges[currentSelectedLang];
+
+        model.GetTopDevs(langauge, duration).observe(this, observer);
+    }
+
+    public void showFilterDialog(View view){
+        AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity());
+
+        final List<Integer> mSelectedItems = new ArrayList<>();  // Where we track the selected items
+        int checkedItem = -1;
+        // Set the dialog title
+        builder.setTitle(R.string.dialogTitle)
+                // Specify the list array, the items to be selected by default (null for none),
+                // and the listener through which to receive callbacks when items are selected
+                .setSingleChoiceItems(topLangauges, currentSelectedLang , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.i("dailog",String.valueOf(which));
+                        currentSelectedLang = which;
+                    }
+                })
+                // Set the action buttons
+                .setPositiveButton(R.string.str_apply, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK, so save the mSelectedItems results somewhere
+                        // or return them to the component that opened the dialog
+                        mTopDeveloperRecyclerView.setVisibility(View.GONE);
+                        mTopDevTabProgressbar.setVisibility(View.VISIBLE);
+                        LoadGitHubTopDevs();
+                    }
+                })
+                .setNegativeButton(R.string.str_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+
+
+
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
@@ -112,7 +197,7 @@ public class TopDeveloperTab extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate(R.menu.bookmark_menu, menu);
+        inflater.inflate(R.menu.toprepo, menu);
 
         // Locate MenuItem with ShareActionProvider
         MenuItem item = menu.findItem(R.id.menu_item_share);
@@ -127,8 +212,24 @@ public class TopDeveloperTab extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mBookmarkPresenter.onMenuItemClicked(item);
+        int itemThatWasClickedId = item.getItemId();
+
+        switch (itemThatWasClickedId) {
+
+            case R.id.action_filter:
+                showFilterDialog(getView());
+                break;
+            case R.id.action_toprepo_item_share:
+                shareBookmarks();
+                break;
+
+        }
+
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void shareBookmarks() {
     }
 
     private String CreateShareData(HashMap<Integer, Item> bookmarkData) {

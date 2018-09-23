@@ -51,6 +51,9 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
         //notifyItemRangeChanged(0,getItemCount()-1);
 
     }
+
+
+
     /**
      * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
      * an item.
@@ -119,7 +122,8 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
             holder.mForksCountTextView.setText(String.valueOf(item.getForksCount()));
             holder.mStarsCountTextView.setText(String.valueOf(item.getStargazersCount()));
 
-            Picasso.get().load(item.getOwner().getAvatarUrl()).into(holder.mAvatarImageview);
+            if(item.getOwner() != null)
+                Picasso.get().load(item.getOwner().getAvatarUrl()).into(holder.mAvatarImageview);
         }
 
     }
@@ -205,9 +209,9 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
                  */
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    LinkedHashMap<Integer,Item> bookmarkMap = mGitHubData.getBookmarkItems();
+                    LinkedHashMap<String,Item> bookmarkMap = mGitHubData.getBookmarkItems();
 
-                    bookmarkMap.remove(favItem.getId());
+                    bookmarkMap.remove(favItem.getHtmlUrl());
                     notifyItemRemoved(adapterPosition);
                     notifyDataSetChanged();
                     super.onPostExecute(aVoid);

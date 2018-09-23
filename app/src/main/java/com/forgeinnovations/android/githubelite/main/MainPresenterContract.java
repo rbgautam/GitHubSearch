@@ -5,6 +5,7 @@ import android.view.MenuItem;
 
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubSeachResponse;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
+import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface MainPresenterContract {
     /**
      * Calls the AsyncTask for N/W call
      */
-    public void makeGithubSearchQuery(String searchStr);
+    public void makeGithubSearchQuery(String searchStr, GitHubSearchOpenHelper mDbOpenHelper);
 
     /**
      * Returns the data to be displayed on the results textView

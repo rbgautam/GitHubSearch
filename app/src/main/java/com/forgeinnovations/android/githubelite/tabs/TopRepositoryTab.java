@@ -1,9 +1,10 @@
 package com.forgeinnovations.android.githubelite.tabs;
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,17 +21,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.forgeinnovations.android.githubelite.R;
 import com.forgeinnovations.android.githubelite.bookmark.BookmarkPresenter;
 import com.forgeinnovations.android.githubelite.data.GitHubTopRepoItemAdapter;
-import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.GitHubTopRepoResponse;
+import com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.Item;
+import com.forgeinnovations.android.githubelite.db.GitHubSearchOpenHelper;
 import com.forgeinnovations.android.githubelite.viewmodel.TopRepoViewModel;
+import com.rm.rmswitch.RMTristateSwitch;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 
 /**
@@ -41,7 +48,7 @@ import java.util.HashMap;
  * Use the {@link TopRepositoryTab#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TopRepositoryTab extends Fragment {
+public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapter.AddTopRepoBookmarkListener {
     private GitHubTopRepoItemAdapter mGitHubTopDevItemAdapter;
     private RecyclerView mTopRepoRecyclerView;
 
@@ -52,12 +59,23 @@ public class TopRepositoryTab extends Fragment {
     private BookmarkPresenter mBookmarkPresenter;
     private String mGithubShareData;
     private TopDeveloperTab.OnFragmentInteractionListener mListener;
+    private GitHubSearchOpenHelper mBookmarkDbHelper;
+    private HashSet<String> mBookmarkList;
+
+    private int currentSelectedLang;
+    private int currentSelectedDuration;
+    private RMTristateSwitch mTristateSwitch;
+    private TextView mTextViewState;
+
+    private ListView mListView;
+    String[] topLangauges = new String[]{"Python","Java","Javascript","PHP","CPP","CSharp","R","Objective-C","Swift","Matlab","Ruby","TypeScript","VBA","Scala","Visual Basic","Kotlin","GO","Perl"};
 
     public TopRepositoryTab() {
     }
 
     public static TopRepositoryTab newInstance(String param1, String param2) {
         TopRepositoryTab fragment = new TopRepositoryTab();
+
         return fragment;
     }
 
@@ -65,7 +83,10 @@ public class TopRepositoryTab extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_top_repo, container, false);
+        View view = inflater.inflate(R.layout.fragment_top_repo, container, false);
+
+
+        return view;
     }
 
     @Override
@@ -75,18 +96,80 @@ public class TopRepositoryTab extends Fragment {
         mTopRepoTabProgressbar = (ProgressBar) getActivity().findViewById(R.id.pb_toprepo_loading_indicator);
         mTopRepoTabErrorMessage = (TextView) getActivity().findViewById(R.id.tv_toprepo_error_message);
         mTopRepoTabErrorImage = (ImageView) getActivity().findViewById(R.id.img_error_message);
+        mBookmarkDbHelper =  new GitHubSearchOpenHelper(getActivity());
+        mGitHubTopDevItemAdapter = new GitHubTopRepoItemAdapter(getActivity());
+        mGitHubTopDevItemAdapter.setAddTopRepoBookmarkListener(this);
         mTopRepoTabProgressbar.setVisibility(View.VISIBLE);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mTopRepoRecyclerView.setLayoutManager(linearLayoutManager);
 
-        mGitHubTopDevItemAdapter = new GitHubTopRepoItemAdapter(getActivity());
-
         mTopRepoRecyclerView.setAdapter(mGitHubTopDevItemAdapter);
+
+        mTextViewState = (TextView) getActivity().findViewById(R.id.textViewState);
+
+        mTristateSwitch = (RMTristateSwitch) getActivity().findViewById(R.id.switch_top_duration);
+        mTristateSwitch.setState(RMTristateSwitch.STATE_MIDDLE);
+        mTristateSwitch.addSwitchObserver(new RMTristateSwitch.RMTristateSwitchObserver() {
+            @Override
+            public void onCheckStateChange(RMTristateSwitch switchView, @RMTristateSwitch.State int state) {
+                String currState =  state == RMTristateSwitch.STATE_LEFT ? "Daily" : state == RMTristateSwitch.STATE_MIDDLE ? "Weekly" : "Monthly";
+                mTextViewState.setText(currState);
+                mTopRepoTabProgressbar.setVisibility(View.VISIBLE);
+                mTopRepoRecyclerView.setVisibility(View.GONE);
+                LoadGitHubTopRepos();
+            }
+        });
+
+        currentSelectedLang = 1;
         LoadGitHubTopRepos();
     }
 
+    public void showFilterDialog(View view){
+        AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity());
+        //builder.setCancelable(true);
+        //builder.setPositiveButton(R.string.str_apply,null);
+        //builder.setView(mListView);
+        //builder.setTitle(R.string.dialogTitle);
+        final List<Integer> mSelectedItems = new ArrayList<>();  // Where we track the selected items
+        int checkedItem = -1;
+        // Set the dialog title
+        builder.setTitle(R.string.dialogTitle)
+                // Specify the list array, the items to be selected by default (null for none),
+                // and the listener through which to receive callbacks when items are selected
+                .setSingleChoiceItems(topLangauges, currentSelectedLang , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                         Log.i("dailog",String.valueOf(which));
+                        currentSelectedLang = which;
+                    }
+                })
+                // Set the action buttons
+                .setPositiveButton(R.string.str_apply, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK, so save the mSelectedItems results somewhere
+                        // or return them to the component that opened the dialog
+                        mTopRepoRecyclerView.setVisibility(View.GONE);
+                        mTopRepoTabProgressbar.setVisibility(View.VISIBLE);
+                        LoadGitHubTopRepos();
+                    }
+                })
+                .setNegativeButton(R.string.str_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+
+
+
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void LoadGitHubTopRepos() {
+        mTristateSwitch.setEnabled(false);
 
         TopRepoViewModel model = ViewModelProviders.of(this).get(TopRepoViewModel.class);
 
@@ -94,23 +177,42 @@ public class TopRepositoryTab extends Fragment {
             @Override
             public void onChanged(@Nullable GitHubTopRepoResponse topRepoList) {
                 if(topRepoList.getErrorMessage() == null){
+
                     mGitHubTopDevItemAdapter = new GitHubTopRepoItemAdapter(getActivity());
+
+                    mTopRepoRecyclerView.setVisibility(View.VISIBLE);
                     mGitHubTopDevItemAdapter.setGitHubRepoDevData(topRepoList);
                     mTopRepoTabProgressbar.setVisibility(View.INVISIBLE);
                     mTopRepoTabErrorMessage.setVisibility(View.INVISIBLE);
                     mTopRepoTabErrorImage.setVisibility(View.INVISIBLE);
                     mTopRepoRecyclerView.setAdapter(mGitHubTopDevItemAdapter);
                 }else {
+                    mTopRepoRecyclerView.setVisibility(View.GONE);
                     mTopRepoTabProgressbar.setVisibility(View.INVISIBLE);
                     mTopRepoTabErrorMessage.setVisibility(View.VISIBLE);
                     mTopRepoTabErrorImage.setVisibility(View.VISIBLE);
                     mTopRepoTabErrorMessage.setText("Oops something went wrong,\nTry Again after sometime");
                 }
+
+                mTristateSwitch.setEnabled(true);
+                mTopRepoTabProgressbar.setVisibility(View.INVISIBLE);
             }
         };
+        String duration =  (mTristateSwitch.getState()== RMTristateSwitch.STATE_LEFT ? "daily" : (mTristateSwitch.getState()== RMTristateSwitch.STATE_MIDDLE?"weekly":"monthly"));
         //TODO: Pass langauage and duration from UI
-        model.GetTopRepos ("java", "weekly").observe(this, observer);
+        String langauge = topLangauges[currentSelectedLang];
+
+        model.GetTopRepos (langauge, duration).observe(this, observer);
     }
+
+    private void updateToprepoFavorite(GitHubTopRepoResponse topRepoList, HashSet<String> bookmarkList) {
+
+        for (Item item: topRepoList.getItems()) {
+            if(bookmarkList.contains(item.getRepoLink()))
+                item.setFavorite(true);
+        }
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,18 +221,28 @@ public class TopRepositoryTab extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        if(mBookmarkDbHelper!=null)
+            mBookmarkDbHelper.close();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
+
+        if(mBookmarkDbHelper!=null)
+            mBookmarkDbHelper.close();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate(R.menu.bookmark_menu, menu);
+        inflater.inflate(R.menu.toprepo, menu);
 
         // Locate MenuItem with ShareActionProvider
-        MenuItem item = menu.findItem(R.id.menu_item_share);
+        MenuItem item = menu.findItem(R.id.menu_toprepo_item_share);
 
         // Fetch and store ShareActionProvider
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
@@ -142,16 +254,35 @@ public class TopRepositoryTab extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mBookmarkPresenter.onMenuItemClicked(item);
+        int itemThatWasClickedId = item.getItemId();
+
+        switch (itemThatWasClickedId) {
+
+            case R.id.action_filter:
+                showFilterDialog(getView());
+                break;
+            case R.id.action_toprepo_item_share:
+                shareBookmarks();
+                break;
+
+        }
+
+
         return super.onOptionsItemSelected(item);
     }
 
-    private String CreateShareData(HashMap<Integer, Item> bookmarkData) {
+    private void shareBookmarks() {
+
+
+    }
+
+
+    private String CreateShareData(HashMap<Integer, com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item> bookmarkData) {
         StringBuilder stringBuilder = new StringBuilder();
 
 
         stringBuilder.append("<html><body>");
-        for (Item item : bookmarkData.values()) {
+        for (com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item item : bookmarkData.values()) {
             String formattedString = String.format("%s<br/>%s<br/> Stars Count =%s, Watcher Count =%s,Forks Count =%s <br/>%s<br/>", item.getName(), item.getDescription(), item.getStargazersCount(), item.getWatchersCount(), item.getForksCount(), item.getHtmlUrl());
             stringBuilder.append(formattedString);
             stringBuilder.append("<hr/>");
@@ -196,8 +327,23 @@ public class TopRepositoryTab extends Fragment {
         //mGitHubTopDevItemAdapter.notifyItemChanged(0);
     }
 
-    public interface OnFragmentInteractionListener {
+    @Override
+    public void onAddTopRepoBookmark() {
+        onFragmentAddBookmarkListener.onFragmentAddTopRepoBookMark("TopRepo");
+    }
+
+    public interface FragmentTopRepoListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentAddTopRepoBookMark(String tab);
+    }
+
+    private FragmentTopRepoListener onFragmentAddBookmarkListener;
+
+    public void setAddTopRepoListener(FragmentTopRepoListener fragmentAddBookmarkListener){
+        this.onFragmentAddBookmarkListener = fragmentAddBookmarkListener;
+    }
+
+    public FragmentTopRepoListener getAddTopRepoListener(){
+        return this.onFragmentAddBookmarkListener;
     }
 }

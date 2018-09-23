@@ -2,6 +2,7 @@ package com.forgeinnovations.android.githubelite.datamodel.GitHubSearch;
 
 import com.squareup.moshi.Json;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GitHubSeachResponse {
@@ -11,7 +12,7 @@ public class GitHubSeachResponse {
     @Json(name = "incomplete_results")
     private Boolean incompleteResults;
     @Json(name = "items")
-    private List<Item> items = null;
+    private List<Item> items = new ArrayList<>();
 
 
 

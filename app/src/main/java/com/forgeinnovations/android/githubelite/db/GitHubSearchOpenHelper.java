@@ -1,8 +1,13 @@
 package com.forgeinnovations.android.githubelite.db;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
+import com.forgeinnovations.android.githubelite.utilities.NetworkUtils;
 
 /**
  * Created by Rahul B Gautam on 5/22/18.
@@ -11,7 +16,7 @@ public class GitHubSearchOpenHelper extends SQLiteOpenHelper {
 
 
     public static final String DATABASE_NAME = "GitHubSearch.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     /**
      * Create a helper object to create, open, and/or manage a database.
      * This method always returns very quickly.  The database is not actually
@@ -33,8 +38,8 @@ public class GitHubSearchOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL(GitHubSearchDbContract.BookmarkEntry.SQL_CREATE_TABLE);
-
+        //db.execSQL(GitHubSearchDbContract.BookmarkEntry.SQL_CREATE_TABLE);
+        db.execSQL(GitHubSearchDbContract.BookmarkEntryNew.SQL_CREATE_TABLE);
     }
 
     /**
@@ -59,6 +64,44 @@ public class GitHubSearchOpenHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        if(oldVersion < 3){
+            //db.execSQL(GitHubSearchDbContract.BookmarkEntryNew.SQL_CREATE_TABLE);
+            db.execSQL("INSERT INTO "+GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME+" ("+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_BOOKMARK_DATA+","+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_ID +","+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_KEYWORD+","+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL+","+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE + ") SELECT "+GitHubSearchDbContract.BookmarkEntry.COLUMN_BOOKMARK_DATA+","+GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID+","+GitHubSearchDbContract.BookmarkEntry.COLUMN_KEYWORD +", 'olddata' ,'SEARCHDATA' FROM "+GitHubSearchDbContract.BookmarkEntry.TABLE_NAME);
+            updateBookmarksFromOldDb(db);
+        }
+
+    }
+
+    private void updateBookmarksFromOldDb(SQLiteDatabase sqlDb) {
+        final String[] bookmarkColumns = new String[]{GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_ID, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_BOOKMARK_DATA, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_KEYWORD, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE};
+        Cursor bookmarkCursor = sqlDb.query(GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME, bookmarkColumns, GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL+" = ?", new String[]{"olddata"}, null, null, GitHubSearchDbContract.BookmarkEntry._ID + " desc");
+
+        int bookmarkDataPos = bookmarkCursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_BOOKMARK_DATA);
+        int dataTypePos = bookmarkCursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE);
+        int githubUrlPos = bookmarkCursor.getColumnIndex(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL);
+
+        while (bookmarkCursor.moveToNext()) {
+
+            String bookmarkDataStr = bookmarkCursor.getString(bookmarkDataPos);
+            String datatype = bookmarkCursor.getString(dataTypePos);
+            String githubUrl = bookmarkCursor.getString(githubUrlPos);
+            Item item = null;
+            com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo.Item newItem = null;
+            //TODO: convert string to pojo
+            if (datatype.equals("SEARCHDATA") && githubUrl.equals("olddata")){
+                item = NetworkUtils.ConvertFromJSON(bookmarkDataStr);
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL,item.getHtmlUrl());
+                sqlDb.update(GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME,contentValues,null,null );
+            }
+            //TODO: update db with item.getHtmlUrl()
+
+        }
+
+        bookmarkCursor.close();
+
 
     }
 }
