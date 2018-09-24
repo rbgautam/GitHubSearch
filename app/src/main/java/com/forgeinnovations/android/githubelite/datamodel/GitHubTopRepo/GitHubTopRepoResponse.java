@@ -2,6 +2,7 @@ package com.forgeinnovations.android.githubelite.datamodel.GitHubTopRepo;
 
 import com.squareup.moshi.Json;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,6 +31,32 @@ public class GitHubTopRepoResponse {
         this.items = items;
     }
 
+    public String GetTopRepoShareData(){
+
+        StringBuilder stringBuilder =  new StringBuilder();
+
+        try {
+            stringBuilder.append("<html><body>");
+            Iterator it = getItems().iterator();
+
+            while (it.hasNext())
+            {
+                //Map.Entry currItem = (Map.Entry) it.next();
+                Item item = (Item)it.next();
+                String formattedString = String.format("%s<br/>%s<br/> Stars Count =%s, Watcher Count =%s,Forks Count =%s <br/>%s<br/>",item.getRepo(),item.getDesc(),item.getStars(), item.getAddedStarsValue(),item.getForks(), item.getRepoLink());
+                stringBuilder.append(formattedString);
+                stringBuilder.append("<hr/>");
+            }
+
+            stringBuilder.append("</body></html>");
+        }
+
+        catch(Exception ex){
+
+        }
+
+        return  stringBuilder.toString();
+    }
 
     public String getErrorMessage() {
         return errorMessage;

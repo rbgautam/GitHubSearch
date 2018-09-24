@@ -66,7 +66,7 @@ public class GitHubSearchOpenHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         if(oldVersion < 3){
-            //db.execSQL(GitHubSearchDbContract.BookmarkEntryNew.SQL_CREATE_TABLE);
+            db.execSQL(GitHubSearchDbContract.BookmarkEntryNew.SQL_CREATE_TABLE);
             db.execSQL("INSERT INTO "+GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME+" ("+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_BOOKMARK_DATA+","+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_ID +","+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_KEYWORD+","+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL+","+GitHubSearchDbContract.BookmarkEntryNew.COLUMN_DATATYPE + ") SELECT "+GitHubSearchDbContract.BookmarkEntry.COLUMN_BOOKMARK_DATA+","+GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID+","+GitHubSearchDbContract.BookmarkEntry.COLUMN_KEYWORD +", 'olddata' ,'SEARCHDATA' FROM "+GitHubSearchDbContract.BookmarkEntry.TABLE_NAME);
             updateBookmarksFromOldDb(db);
         }
