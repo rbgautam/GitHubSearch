@@ -109,6 +109,7 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
 
         mTristateSwitch = (RMTristateSwitch) getActivity().findViewById(R.id.switch_top_duration);
         mTristateSwitch.setState(RMTristateSwitch.STATE_MIDDLE);
+
         mTristateSwitch.addSwitchObserver(new RMTristateSwitch.RMTristateSwitchObserver() {
             @Override
             public void onCheckStateChange(RMTristateSwitch switchView, @RMTristateSwitch.State int state) {
@@ -177,7 +178,7 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
             @Override
             public void onChanged(@Nullable GitHubTopRepoResponse topRepoList) {
                 if(topRepoList.getErrorMessage() == null){
-
+                    mGithubShareData = topRepoList.GetTopRepoShareData();
                     mGitHubTopDevItemAdapter = new GitHubTopRepoItemAdapter(getActivity());
 
                     mTopRepoRecyclerView.setVisibility(View.VISIBLE);
@@ -261,9 +262,9 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
             case R.id.action_filter:
                 showFilterDialog(getView());
                 break;
-            case R.id.action_toprepo_item_share:
-                shareBookmarks();
-                break;
+//            case R.id.action_toprepo_item_share:
+//                shareTopRepo();
+//                break;
 
         }
 
@@ -271,7 +272,7 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
         return super.onOptionsItemSelected(item);
     }
 
-    private void shareBookmarks() {
+    private void shareTopRepo() {
 
 
     }

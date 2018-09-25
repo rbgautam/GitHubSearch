@@ -219,9 +219,9 @@ public class TopDeveloperTab extends Fragment {
             case R.id.action_filter:
                 showFilterDialog(getView());
                 break;
-            case R.id.action_toprepo_item_share:
-                shareBookmarks();
-                break;
+//            case R.id.action_toprepo_item_share:
+//                shareBookmarks();
+//                break;
 
         }
 
