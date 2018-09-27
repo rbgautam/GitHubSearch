@@ -80,12 +80,19 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_top_repo, container, false);
 
 
+        currentSelectedDuration = RMTristateSwitch.STATE_MIDDLE;
+        currentSelectedLang = 1;
         return view;
     }
 
@@ -106,9 +113,8 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
         mTopRepoRecyclerView.setAdapter(mGitHubTopDevItemAdapter);
 
         mTextViewState = (TextView) getActivity().findViewById(R.id.textViewState);
-
         mTristateSwitch = (RMTristateSwitch) getActivity().findViewById(R.id.switch_top_duration);
-        mTristateSwitch.setState(RMTristateSwitch.STATE_MIDDLE);
+        mTristateSwitch.setState(currentSelectedDuration);
 
         mTristateSwitch.addSwitchObserver(new RMTristateSwitch.RMTristateSwitchObserver() {
             @Override
@@ -117,11 +123,11 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
                 mTextViewState.setText(currState);
                 mTopRepoTabProgressbar.setVisibility(View.VISIBLE);
                 mTopRepoRecyclerView.setVisibility(View.GONE);
+                currentSelectedDuration = state;
                 LoadGitHubTopRepos();
             }
         });
 
-        currentSelectedLang = 1;
         LoadGitHubTopRepos();
     }
 

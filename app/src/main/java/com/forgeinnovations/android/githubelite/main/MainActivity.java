@@ -69,13 +69,15 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         mDbOpenHelper = new GitHubSearchOpenHelper(this);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
-        tabLayout.addTab(tabLayout.newTab().setText("Top Repositories"));
-        tabLayout.addTab(tabLayout.newTab().setText("Top Developers"));
+        tabLayout.addTab(tabLayout.newTab().setText("Top\nRepositories"));
+        tabLayout.addTab(tabLayout.newTab().setText("Top\nDevelopers"));
         tabLayout.addTab(tabLayout.newTab().setText("Search"));
         tabLayout.addTab(tabLayout.newTab().setText("Bookmarks"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setOffscreenPageLimit(3);
+
         mAdapter = new TabPageAdapter(getSupportFragmentManager());
         //Adding TopDev tab
         TopRepositoryTab topRepo = new TopRepositoryTab();

@@ -40,10 +40,13 @@
 
                 app:forceAspectRatio="false"
                 app:state="middle"
-                app:switchBkgLeftColor="@android:color/holo_red_light"
-                app:switchBkgMiddleColor="@android:color/darker_gray"
-                app:switchBkgRightColor="@android:color/holo_green_light"
-                app:switchDesign="large" />
+                app:switchToggleLeftColor="@android:color/white"
+                app:switchToggleMiddleColor="@android:color/white"
+                app:switchToggleRightColor="@android:color/white"
+                app:switchBkgLeftColor="@color/colorPrimaryDark"
+                app:switchBkgMiddleColor="@color/colorPrimaryDark"
+                app:switchBkgRightColor="@color/colorPrimaryDark"
+                app:switchDesign="android" />
 
         </LinearLayout>
         <ScrollView
