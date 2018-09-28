@@ -24,6 +24,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +38,7 @@ import com.forgeinnovations.android.githubelite.tabs.TopDeveloperTab;
 import com.forgeinnovations.android.githubelite.tabs.TopRepositoryTab;
 import com.forgeinnovations.android.githubelite.view.TabPageAdapter;
 
-public class MainActivity extends AppCompatActivity implements SearchTab.FragmentBookmarkListener,TopRepositoryTab.FragmentTopRepoListener ,BookmarkTab.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements SearchTab.FragmentBookmarkListener, TopRepositoryTab.FragmentTopRepoListener, BookmarkTab.OnFragmentInteractionListener {
 
 
     private MainPresenter mPresenter;
@@ -57,25 +58,35 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
     //TODO: completed Fix appname and Icon - HitHub elite
     //TODO: completed Fix issue when no network
     //TODO:completed fix packagename
+    private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            //makeGithubSearchQuery();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         mDbOpenHelper = new GitHubSearchOpenHelper(this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+
+        setSupportActionBar(toolbar);
+        toolbar.setVisibility(View.GONE);
+        tabLayout.setVisibility(View.GONE); //Hide when displaying Onboarding
+
         tabLayout.addTab(tabLayout.newTab().setText("Top\nRepositories"));
         tabLayout.addTab(tabLayout.newTab().setText("Top\nDevelopers"));
         tabLayout.addTab(tabLayout.newTab().setText("Search"));
         tabLayout.addTab(tabLayout.newTab().setText("Bookmarks"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+
         viewPager.setOffscreenPageLimit(3);
 
         mAdapter = new TabPageAdapter(getSupportFragmentManager());
@@ -93,16 +104,18 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         mAdapter.addFrag(bookmarkTab, "Bookmarks");
 
 
-        viewPager.setAdapter(mAdapter);
-        searchTab.setAddBookmarkListener(this);
-        topRepo.setAddTopRepoListener(this);
+//        viewPager.setAdapter(mAdapter);
+//        searchTab.setAddBookmarkListener(this);
+//        topRepo.setAddTopRepoListener(this);
 
-        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+
+                Log.i("Tab Logger", tab.getText() + " Tab clicked");
             }
 
             @Override
@@ -125,8 +138,6 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         handleIntent(intent);
     }
 
-
-
     /**
      * Handling intent data
      */
@@ -134,21 +145,12 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            mPresenter.makeGithubSearchQuery(query,mDbOpenHelper);
+            mPresenter.makeGithubSearchQuery(query, mDbOpenHelper);
 
 
         }
 
     }
-
-
-    private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //makeGithubSearchQuery();
-        }
-    };
-
 
     // TODO (2) Create a method called makeGithubSearchQuery
     // TODO (3) Within this method, build the URL with the text from the EditText and set the built URL to the TextView
