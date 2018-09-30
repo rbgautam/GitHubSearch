@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * Created by Rahul B Gautam on 7/9/18.
  */
+
 public class TabPageAdapter extends FragmentPagerAdapter {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -21,7 +22,9 @@ public class TabPageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return mFragmentList.get(position);
+        Fragment frag = mFragmentList.get(position);
+
+        return frag;
     }
 
     @Override
