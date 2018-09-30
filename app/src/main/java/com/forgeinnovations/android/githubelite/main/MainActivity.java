@@ -53,25 +53,22 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
 
 
     private static final String TAG = "Main Activity";
+    public ImageButton mNextBtn;
+    public Button mSkipBtn, mFinishBtn;
+    public ImageView zero, one, two;
+    public int page = 0;   //  to track page position
     private MainPresenter mPresenter;
-
     private GitHubListItemAdapter mGitHubListItemAdapter;
     private RecyclerView mRecyclerView;
     private TabPageAdapter mAdapter;
     private GitHubSearchOpenHelper mDbOpenHelper;
-
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private ImageView[] indicators;
-    public ImageButton mNextBtn;
-    public Button mSkipBtn, mFinishBtn;
-    public ImageView zero, one, two;
     private SectionsPagerAdapter mIntroAdapter;
     private LinearLayout mIntroAppLayout;
     private LinearLayout mIntroFragment;
-    public int page = 0;   //  to track page position
-
     private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -93,16 +90,16 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         mIntroAppLayout = (LinearLayout) findViewById(R.id.app_intro);
 
         setSupportActionBar(mToolbar);
-        mToolbar.setVisibility(View.GONE);
-        mTabLayout.setVisibility(View.GONE); //Hide when displaying Onboarding
 
-
-
-        if (Utility.ShowOnBoarding(MainActivity.this )) {
-            Log.i(TAG,"onBoarding on");
+        if (Utility.ShowOnBoarding(MainActivity.this)) {
+            Log.i(TAG, "onBoarding on");
+            mToolbar.setVisibility(View.GONE);
+            mTabLayout.setVisibility(View.GONE); //Hide when displaying Onboarding
             showOnBoardingScreen();
         } else {
-            Log.i(TAG,"onBoarding off");
+            Log.i(TAG, "onBoarding off");
+            mToolbar.setVisibility(View.VISIBLE);
+            mTabLayout.setVisibility(View.VISIBLE); //Hide when displaying Onboarding
             showMainScreen();
         }
 
@@ -115,10 +112,11 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         //getFragmentManager().beginTransaction().replace(R.id.hosted_fragment, fragment).commit();
 
     }
+
     private void showOnBoardingScreen() {
 
         mIntroAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        final IntroFrag introTab =  IntroFrag.newInstance(1);
+        final IntroFrag introTab = IntroFrag.newInstance(1);
 
         mViewPager.setAdapter(mIntroAdapter);
         mViewPager.setCurrentItem(0);
@@ -138,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
             public void onClick(View v) {
 
                 page += 1;
-                Log.i(TAG, "next clicked " + String.valueOf(page) );
+                Log.i(TAG, "next clicked " + String.valueOf(page));
 
                 updateIndicators(page);
                 mViewPager.setCurrentItem(page, true);
@@ -160,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
 
                 //  update 1st time pref
                 Utility.SkipOnBoarding(MainActivity.this);
-
+                showMainScreen();
             }
         });
 
@@ -224,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
             );
         }
     }
+
     private void showMainScreen() {
 
         mViewPager.clearOnPageChangeListeners();
@@ -236,12 +235,15 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         //Log.i(TAG,"onBoarding off");
         mIntroAppLayout.setVisibility(View.GONE);
         mToolbar.setVisibility(View.VISIBLE);
+
         mTabLayout.setVisibility(View.VISIBLE); //Hide when displaying Onboarding
         mTabLayout.addTab(mTabLayout.newTab().setText("Top\nRepositories"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Top\nDevelopers"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Search"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Bookmarks"));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+        mToolbar.setPadding(0, 25, 0, 0);
+        mTabLayout.setPadding(0, 2, 0, 0);
 
         mViewPager.setOffscreenPageLimit(3);
 
