@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         mToolbar.setPadding(0, 25, 0, 0);
         mTabLayout.setPadding(0, 2, 0, 0);
 
-        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setOffscreenPageLimit(2);
 
         //mAdapter = new TabPageAdapter(getSupportFragmentManager());
         //Adding TopDev tab
@@ -274,10 +274,9 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                mViewPager.setCurrentItem(tab.getPosition());
+                int tabPosition = tab.getPosition();
+                mViewPager.setCurrentItem(tabPosition);
 
-//                if(findViewById(R.id.intro_tab_layout) != null)
-//                    getSupportFragmentManager().beginTransaction().replace(R.id.intro_tab_layout, mAdapter.getItem(tab.getPosition())).commit();
 
                 Log.i("Tab Logger", tab.getText() + " Tab clicked");
             }

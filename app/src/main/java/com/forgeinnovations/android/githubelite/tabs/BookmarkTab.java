@@ -1,6 +1,7 @@
 package com.forgeinnovations.android.githubelite.tabs;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -51,6 +52,7 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
 
     private OnFragmentInteractionListener mListener;
 
+    private static String TAG = "Bookmark Fragment";
     public LoaderManager getBookLoaderManager() {
         return mLoaderManager;
     }
@@ -65,6 +67,12 @@ public class BookmarkTab extends Fragment implements android.support.v4.app.Load
         return fragment;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        Log.i(TAG,"ON Attach");
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
