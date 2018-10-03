@@ -1,5 +1,6 @@
 package com.forgeinnovations.android.githubelite.tabs;
 
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,11 +37,15 @@ public class IntroFrag extends Fragment {
     CoordinatorLayout mCoordinator;
 
     ImageView img;
-    int[] bgs = new int[]{R.drawable.ic_action_deletebookmark, R.drawable.ic_action_deletebookmark, R.drawable.ic_action_deletebookmark};
+    int[] bgs = new int[]{R.drawable.octocat_jetpack, R.drawable.intro_screen_1, R.drawable.intro_screen_2};
     private TabPageAdapter mAdapter;
     private OnFragmentInteractionListener mListener;
     private ViewPager mViewPager;
     private ImageView[] indicators;
+    private TextView mSectionHeadingTextView;
+    private TextView mSectionDescTextView;
+    private String[] mPageHeadings;
+    private String[] mPageDescs;
 
     public IntroFrag() {
         // Required empty public constructor
@@ -65,18 +70,17 @@ public class IntroFrag extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Resources res = getResources();
+        mPageDescs = res.getStringArray(R.array.intro_page_desc);
+        mPageHeadings = res.getStringArray(R.array.intro_page_headings);
+
         super.onCreate(savedInstanceState);
 
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
-
-
         mCoordinator = (CoordinatorLayout) getActivity().findViewById(R.id.tab_main_layout);
-
-
 
         showOnBoardingScreen();
         super.onViewCreated(view, savedInstanceState);
@@ -87,8 +91,13 @@ public class IntroFrag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_intro, container, false);
-        TextView textView = (TextView) view.findViewById(R.id.section_label);
-        textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+        mSectionHeadingTextView = (TextView) view.findViewById(R.id.section_label);
+        mSectionHeadingTextView.setText(mPageHeadings[getArguments().getInt(ARG_SECTION_NUMBER) - 1]);
+
+        mSectionDescTextView = (TextView) view.findViewById(R.id.intro_desc);
+        mSectionDescTextView.setText(mPageDescs[getArguments().getInt(ARG_SECTION_NUMBER) - 1]);
+
 
         img = (ImageView) view.findViewById(R.id.section_img);
         img.setBackgroundResource(bgs[getArguments().getInt(ARG_SECTION_NUMBER) - 1]);

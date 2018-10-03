@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
 import android.view.Menu;
@@ -41,21 +40,21 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_bookmark);
-        mBookmarkDbHelper =  new GitHubSearchOpenHelper(this);
-        mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(this, mBookmarkDbHelper);
-        mBookmarkRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_bookmark);
-        LinearLayoutManager linearLayoutManager =  new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
-
-
-
-        mBookmarkRecyclerView.setLayoutManager(linearLayoutManager);
-
-        mBookmarkRecyclerView.setAdapter(mGitHubBookmarkItemAdapter);
-
-
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
+//        mBookmarkDbHelper =  new GitHubSearchOpenHelper(this);
+//        mGitHubBookmarkItemAdapter = new GitHubBookmarkItemAdapter(this, mBookmarkDbHelper);
+//        mBookmarkRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_bookmark);
+//        LinearLayoutManager linearLayoutManager =  new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+//
+//
+//
+//        mBookmarkRecyclerView.setLayoutManager(linearLayoutManager);
+//
+//        mBookmarkRecyclerView.setAdapter(mGitHubBookmarkItemAdapter);
+//
+//
+//        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+//
+//        actionBar.setDisplayHomeAsUpEnabled(true);
 
 
 
@@ -147,7 +146,7 @@ public class BookmarkActivity extends AppCompatActivity implements LoaderManager
      */
     @Override
     public void onLoadFinished(Loader<GitHubBookmarkResponse> loader, GitHubBookmarkResponse data) {
-        mGitHubBookmarkItemAdapter.setGitHubData(data);
+        //mGitHubBookmarkItemAdapter.setGitHubData(data);
 
         if(data.getBookmarkItems().size() == 0)
             return;

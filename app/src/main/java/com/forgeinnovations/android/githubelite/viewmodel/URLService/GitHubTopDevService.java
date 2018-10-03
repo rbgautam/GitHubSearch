@@ -10,7 +10,7 @@ import retrofit2.http.Query;
  * Created by Rahul B Gautam on 9/8/18.
  */
 public interface GitHubTopDevService {
-    static final String BASE_URL = "https://trendings.herokuapp.com";
+    static final String BASE_URL = "https://gittrends.herokuapp.com";
     static final String BASE_URL_PARAM = "/developer";
     //?lang=java&since=daily";
     static final String PARAM_LANGUAGE = "lang";

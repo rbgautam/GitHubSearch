@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
@@ -66,6 +67,7 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
     private int currentSelectedDuration;
     private RMTristateSwitch mTristateSwitch;
     private TextView mTextViewState;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private ListView mListView;
     String[] topLangauges = new String[]{"Python","Java","Javascript","PHP","CPP","CSharp","R","Objective-C","Swift","Matlab","Ruby","TypeScript","VBA","Scala","Visual Basic","Kotlin","GO","Perl"};
@@ -106,6 +108,7 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
         mBookmarkDbHelper =  new GitHubSearchOpenHelper(getActivity());
         mGitHubTopDevItemAdapter = new GitHubTopRepoItemAdapter(getActivity());
         mGitHubTopDevItemAdapter.setAddTopRepoBookmarkListener(this);
+        mSwipeRefreshLayout = getActivity().findViewById(R.id.swipeToRefresh);
         mTopRepoTabProgressbar.setVisibility(View.VISIBLE);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mTopRepoRecyclerView.setLayoutManager(linearLayoutManager);
@@ -123,12 +126,28 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
                 mTextViewState.setText(currState);
                 mTopRepoTabProgressbar.setVisibility(View.VISIBLE);
                 mTopRepoRecyclerView.setVisibility(View.GONE);
+                mSwipeRefreshLayout.setVisibility(View.GONE);
                 currentSelectedDuration = state;
                 LoadGitHubTopRepos();
             }
         });
 
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mTopRepoTabProgressbar.setVisibility(View.VISIBLE);
+                mTopRepoRecyclerView.setVisibility(View.GONE);
+                mSwipeRefreshLayout.setVisibility(View.GONE);
+                LoadGitHubTopRepos();
+
+                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        mSwipeRefreshLayout.setVisibility(View.GONE);
         LoadGitHubTopRepos();
+
+
     }
 
     public void showFilterDialog(View view){
@@ -186,19 +205,21 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
                 if(topRepoList.getErrorMessage() == null){
                     mGithubShareData = topRepoList.GetTopRepoShareData();
                     mGitHubTopDevItemAdapter = new GitHubTopRepoItemAdapter(getActivity());
-
+                    mSwipeRefreshLayout.setVisibility(View.VISIBLE);
                     mTopRepoRecyclerView.setVisibility(View.VISIBLE);
                     mGitHubTopDevItemAdapter.setGitHubRepoDevData(topRepoList);
                     mTopRepoTabProgressbar.setVisibility(View.INVISIBLE);
                     mTopRepoTabErrorMessage.setVisibility(View.INVISIBLE);
                     mTopRepoTabErrorImage.setVisibility(View.INVISIBLE);
                     mTopRepoRecyclerView.setAdapter(mGitHubTopDevItemAdapter);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }else {
                     mTopRepoRecyclerView.setVisibility(View.GONE);
                     mTopRepoTabProgressbar.setVisibility(View.INVISIBLE);
                     mTopRepoTabErrorMessage.setVisibility(View.VISIBLE);
                     mTopRepoTabErrorImage.setVisibility(View.VISIBLE);
                     mTopRepoTabErrorMessage.setText("Oops something went wrong,\nTry Again after sometime");
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
 
                 mTristateSwitch.setEnabled(true);
@@ -249,13 +270,13 @@ public class TopRepositoryTab extends Fragment implements GitHubTopRepoItemAdapt
         inflater.inflate(R.menu.toprepo, menu);
 
         // Locate MenuItem with ShareActionProvider
-        MenuItem item = menu.findItem(R.id.menu_toprepo_item_share);
-
-        // Fetch and store ShareActionProvider
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
-
-        if (mShareActionProvider != null)
-            mShareActionProvider.setShareIntent(createShareDataIntent());
+//        MenuItem item = menu.findItem(R.id.menu_toprepo_item_share);
+//
+//        // Fetch and store ShareActionProvider
+//        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+//
+//        if (mShareActionProvider != null)
+//            mShareActionProvider.setShareIntent(createShareDataIntent());
 
     }
 

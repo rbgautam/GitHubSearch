@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
 
             }
         });
+        updateIndicators(0);
     }
 
     private void updateIndicators(int position) {
@@ -276,8 +277,6 @@ public class MainActivity extends AppCompatActivity implements SearchTab.Fragmen
             public void onTabSelected(TabLayout.Tab tab) {
                 int tabPosition = tab.getPosition();
                 mViewPager.setCurrentItem(tabPosition);
-
-
                 Log.i("Tab Logger", tab.getText() + " Tab clicked");
             }
 

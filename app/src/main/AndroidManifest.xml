@@ -24,11 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".bookmark.BookmarkActivity"
-            android:label="@string/bookmark"
-            android:parentActivityName=".main.MainActivity" />
-        <activity android:name=".trend.TrendActivity"></activity>
+
     </application>
 
 </manifest>

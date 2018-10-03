@@ -39,5 +39,17 @@
     <string name="str_cancel">Cancel</string>
     <string name="section_format">Page %1$d</string>
 
+    <string-array name="intro_page_headings">
+        <item>New and Improved Github Elite</item>
+        <item>Filters for Top tabs </item>
+        <item>Add Favorites</item>
+
+    </string-array>
+
+    <string-array name="intro_page_desc">
+        <item>Fully redesigned and upgraded Github Elite with Top 25 repositories and developers</item>
+        <item>Filters for Top programming Languages and duration (Weekly, Monthly, Daily)</item>
+        <item>Bookmark your Top Repositories, Developers or your custom search and share Bookmarks</item>
+    </string-array>
 
 </resources>

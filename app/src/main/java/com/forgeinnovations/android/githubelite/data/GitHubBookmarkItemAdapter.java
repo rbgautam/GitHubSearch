@@ -45,6 +45,7 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
     }
 
     public void setGitHubData(GitHubBookmarkResponse gitHubBookmarkResponse){
+
         mGitHubData = gitHubBookmarkResponse;
         Log.i("bookmark trace",String.format("book mark count = %d, gitHubSeachResponse = %d",getItemCount(), gitHubBookmarkResponse.getBookmarkCount() ));
         notifyDataSetChanged();
@@ -108,6 +109,10 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
     public void onBindViewHolder(GitHubBookmarkAdapterViewHolder holder, int position) {
         Log.i("OnBindViewholder",String.valueOf(position));
         Log.i("bookmark trace",String.format("book mark count = %d",getItemCount()));
+
+        if(getItemCount() == 0)
+            return;
+
         if(position < getItemCount() && mGitHubData.getBookmarkItems().size() > 0) {
             //androidLog.i("OnBindViewholder",String.valueOf(position));
             ArrayList<Item> bookMarkMap = new ArrayList<>(mGitHubData.getBookmarkItems().values());
@@ -191,7 +196,7 @@ public class GitHubBookmarkItemAdapter extends RecyclerView.Adapter<GitHubBookma
                     String dataJSON = NetworkUtils.ConvertToJSON(favItem);
 
                     DataManager dm = DataManager.getSingletonInstance();
-                    dm.deleteBookmark(mDbOpenHelper,item.getId().toString());
+                    dm.deleteBookmark(mDbOpenHelper,item.getHtmlUrl());
                     //After spinning off an AsysncTask
                     return null;
                 }

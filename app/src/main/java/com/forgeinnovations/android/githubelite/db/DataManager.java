@@ -3,6 +3,7 @@ package com.forgeinnovations.android.githubelite.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.GitHubBookmarkResponse;
 import com.forgeinnovations.android.githubelite.datamodel.GitHubSearch.Item;
@@ -19,6 +20,7 @@ public class DataManager {
     private static DataManager singletonInstance = null;
 
     private static LinkedHashMap<String, Item> mBookmarks = new LinkedHashMap<>();
+    private String TAG = "DATAMANAGER";
 
     public static DataManager getSingletonInstance() {
 
@@ -164,11 +166,11 @@ public class DataManager {
 
         try {
 
-            String whereClause = GitHubSearchDbContract.BookmarkEntry.COLUMN_GITHUB_ID + "=?";
+            String whereClause = GitHubSearchDbContract.BookmarkEntryNew.COLUMN_GITHUB_URL + "=?";
 
-            sqlDb.delete(GitHubSearchDbContract.BookmarkEntry.TABLE_NAME, whereClause, new String[]{id});
+            sqlDb.delete(GitHubSearchDbContract.BookmarkEntryNew.TABLE_NAME, whereClause, new String[]{id});
         } catch (Exception ex) {
-
+            Log.e(TAG,"Delete failed : "+ ex.getMessage());
 
         }
     }

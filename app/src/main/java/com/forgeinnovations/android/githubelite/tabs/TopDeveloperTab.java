@@ -120,9 +120,11 @@ public class TopDeveloperTab extends Fragment {
                     mTopDevTabProgressbar.setVisibility(View.INVISIBLE);
                     mTopDeveloperRecyclerView.setVisibility(View.VISIBLE);
                     mTopDeveloperRecyclerView.setAdapter(mGitHubTopDevItemAdapter);
+                    mtopDevErrorMessage.setVisibility(View.INVISIBLE);
                 }else{
-                    mTopDeveloperRecyclerView.setVisibility(View.VISIBLE);
+                    mTopDeveloperRecyclerView.setVisibility(View.INVISIBLE);
                     mTopDevTabProgressbar.setVisibility(View.INVISIBLE);
+                    mtopDevErrorMessage.setVisibility(View.VISIBLE);
                     mtopDevErrorMessage.setText(R.string.error_message);
                 }
 

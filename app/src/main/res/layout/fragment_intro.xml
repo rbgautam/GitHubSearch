@@ -19,11 +19,11 @@
 
         <ImageView
             android:id="@+id/section_img"
-            android:layout_width="192dp"
-            android:layout_height="192dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
-            android:alpha="0.30"
+            android:alpha="0.85"
             android:background="@drawable/ic_action_bookmark"
             android:scaleType="fitCenter"
             android:padding="@dimen/margin_huge"/>
@@ -38,10 +38,11 @@
 
         <TextView
             style="@style/TextAppearance.AppCompat.Body1"
+            android:id="@+id/intro_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:alpha="0.7"
+            android:alpha="0.8"
             android:gravity="center"
             android:text="Add a long description here about your app's important feature."
             android:textColor="@android:color/white" />

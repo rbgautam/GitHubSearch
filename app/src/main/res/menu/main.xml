@@ -14,7 +14,8 @@
   limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id = "@+id/menu_main">
     <!-- Search Widget -->
     <item
         android:id="@+id/action_search_widget"
@@ -24,11 +25,11 @@
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/menu_toprepo_item_share"
-        android:icon="@drawable/ic_menu_share"
-        android:orderInCategory="3"
-        android:title="Share"
-        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        app:showAsAction="ifRoom" />
+    <!--<item-->
+        <!--android:id="@+id/menu_toprepo_item_share"-->
+        <!--android:icon="@drawable/ic_menu_share"-->
+        <!--android:orderInCategory="3"-->
+        <!--android:title="Share"-->
+        <!--app:actionProviderClass="android.support.v7.widget.ShareActionProvider"-->
+        <!--app:showAsAction="ifRoom" />-->
 </menu>

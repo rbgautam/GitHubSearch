@@ -142,17 +142,18 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
+
         inflater.inflate(R.menu.main, menu);
-
-
         //Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search_widget).getActionView();
 
-
-        searchView.setOnQueryTextListener(createSearchQueryListener());
+        searchView.setOnQueryTextListener(createSearchQueryListener(menu));
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        Log.v("Search Tab", "Menu inflate");
+        searchView.setIconified(false);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -243,7 +244,14 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
             mDbOpenHelper.close();
         if (mBookmarkDbHelper != null)
             mBookmarkDbHelper.close();
+        mPresenter.hideKeyboard(getActivity());
         super.onDetach();
+    }
+
+    @Override
+    public void onDestroyOptionsMenu() {
+        super.onDestroyOptionsMenu();
+        mPresenter.hideKeyboard(getActivity());
     }
 
     /**
@@ -267,14 +275,19 @@ public class SearchTab extends Fragment implements MainView, LoaderManager.Loade
      * @return The listener, which has been created, as an instance of the type {@link
      * OnQueryTextListener}
      */
-    public SearchView.OnQueryTextListener createSearchQueryListener() {
+    public SearchView.OnQueryTextListener createSearchQueryListener(final Menu menu) {
         return new SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 //setSearchStringEditText(query);
-                mPresenter.makeGithubSearchQuery(query,mDbOpenHelper);
+                SearchView searchView = (SearchView) menu.findItem(R.id.action_search_widget).getActionView();
+
+                searchView.setIconified(true);
+                searchView.setIconified(true);
+                mPresenter.makeGithubSearchQuery(query, mDbOpenHelper);
                 mPresenter.hideKeyboard(getActivity());
+
                 return true;
             }
 
