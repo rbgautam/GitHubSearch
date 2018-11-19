@@ -14,7 +14,7 @@
   limitations under the License.
   -->
 <resources>
-    <string name="app_name">GitHub Elite</string>
+    <string name="app_name">GitRepo Stars</string>
     <string name="search">Search</string>
     <string name="bookmark">Bookmarks</string>
     <string name="error_message">An error occured, please retry!!</string>
@@ -40,16 +40,16 @@
     <string name="section_format">Page %1$d</string>
 
     <string-array name="intro_page_headings">
-        <item>New and Improved Github Elite</item>
+        <item>New and Improved GitRepo Stars</item>
         <item>Filters for Top tabs </item>
         <item>Add Favorites</item>
 
     </string-array>
 
     <string-array name="intro_page_desc">
-        <item>Fully redesigned and upgraded Github Elite with Top 25 repositories and developers</item>
+        <item>Fully redesigned and upgraded GitRepo Stars with Top 25 repositories and developers</item>
         <item>Filters for Top programming Languages and duration (Weekly, Monthly, Daily)</item>
-        <item>Bookmark your Top Repositories, Developers or your custom search and share Bookmarks</item>
+        <item>Bookmark your Top Repositories or your custom search and share Bookmarks</item>
     </string-array>
 
 </resources>
