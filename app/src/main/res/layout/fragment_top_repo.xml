@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".tabs.TopDeveloperTab">
+    tools:context="com.forgeinnovations.android.gitrepoelite.tabs.TopDeveloperTab">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -47,11 +47,11 @@
 
         </LinearLayout>
 
-        <ScrollView
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeToRefresh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp">
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview_toprepo"
                 android:layout_width="match_parent"
@@ -60,7 +60,7 @@
                 android:paddingBottom="8dp"
                 android:visibility="visible" />
 
-        </ScrollView>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <TextView
             android:id="@+id/tv_toprepo_error_message"

@@ -19,7 +19,7 @@
 
     <item android:id="@+id/action_filter"
         android:orderInCategory="1"
-        android:icon="@drawable/ic_filter_none_white"
+        android:icon="@drawable/ic_filter_list"
         app:showAsAction="ifRoom|withText"
         android:tooltipText="@string/filter"
         android:title="@string/filter"/>

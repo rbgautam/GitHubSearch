@@ -20,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.forgeinnovations.android.githubelite.main.MainActivity">
+    tools:context="com.forgeinnovations.android.gitrepoelite.main.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
