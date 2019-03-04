@@ -126,9 +126,12 @@ public class Item {
         convertedObj.setForksCount(Integer.valueOf(item.getForksValue()));
         convertedObj.setWatchersCount(0);
         convertedObj.setOwner(new Owner());
-        String avatarUrl = item.getAvatars().get(0).replace("?s=40&","?s=80&");
+        List<String> avatars = item.getAvatars();
+        if(avatars.size() > 0){
+            String avatarUrl = avatars.get(0).replace("?s=40&","?s=80&");
+            convertedObj.getOwner().setAvatarUrl(avatarUrl);
+        }
 
-        convertedObj.getOwner().setAvatarUrl(avatarUrl);
         convertedObj.setHtmlUrl(item.getRepoLink());
 
         return convertedObj;
